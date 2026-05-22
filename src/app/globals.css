@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #171717;
+  --background: #f5f5f5;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Premium gradient backgrounds */
+.bg-premium {
+  background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 25%, #d4d4d4 50%, #f0f0f0 75%, #e0e0e0 100%);
+}
+
+.bg-premium-dark {
+  background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 25%, #1a1a1a 50%, #333333 75%, #2a2a2a 100%);
+}
+
+/* Card glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Certificate styling */
+.certificate-border {
+  border: 2px solid #c0c0c0;
+  box-shadow: 0 0 0 4px #f0f0f0, 0 0 0 6px #c0c0c0;
+}
+
+/* Shine animation */
+@keyframes shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.shine-effect {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shine 3s ease-in-out infinite;
+}
+
+/* Tab active indicator */
+.tab-active {
+  border-bottom: 3px solid #333;
+  color: #111;
+  font-weight: 600;
+}
+
+.tab-inactive {
+  border-bottom: 3px solid transparent;
+  color: #888;
+}
+
+/* Smooth transitions */
+.transition-all-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

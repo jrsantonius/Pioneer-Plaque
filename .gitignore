@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Next.js build
+.next/
+out/
+
+# Production deploy
+deploy-package/
+
+# Database (berisi data member - jangan commit ke git publik)
+tis-pioneer.db
+tis-pioneer.db-shm
+tis-pioneer.db-wal
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# CPanel deploy files
+deploy-upload.zip
+deploy.sh
+app.js
+.htaccess
+DEPLOY-CPANEL.md
+
+# Claude
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Debug
+npm-debug.log*
