@@ -1,0 +1,22 @@
+RewriteEngine On
+
+# Redirect to HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Allow direct access to public assets
+RewriteRule ^public/ - [L]
+
+# Block direct access to sensitive files
+RewriteRule ^config\.php$ - [F,L]
+RewriteRule ^database\.php$ - [F,L]
+RewriteRule ^seed\.php$ - [F,L]
+RewriteRule ^includes/ - [F,L]
+RewriteRule ^pages/ - [F,L]
+RewriteRule \.db$ - [F,L]
+RewriteRule ^\.claude/ - [F,L]
+
+# Route everything else through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
