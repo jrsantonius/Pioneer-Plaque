@@ -88,7 +88,7 @@ loginForm.addEventListener('submit', async function(e) {
   loginBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Verifying...</span>';
 
   try {
-    const res = await fetch('<?= BASE_URL ?>/api/auth', {
+    const res = await fetch('/api/auth', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ unique_code: code }),
@@ -104,9 +104,9 @@ loginForm.addEventListener('submit', async function(e) {
     }
 
     if (data.registered) {
-      window.location.href = '<?= BASE_URL ?>/membership';
+      window.location.href = '/membership';
     } else {
-      window.location.href = '<?= BASE_URL ?>/register';
+      window.location.href = '/register';
     }
   } catch (err) {
     errorMsg.textContent = 'Connection error. Please try again.';

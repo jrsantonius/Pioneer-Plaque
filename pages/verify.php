@@ -65,7 +65,7 @@ require __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-const BASE = '<?= BASE_URL ?>';
+const BASE = '';
 const VERIFY_ID = '<?= e($verifyId) ?>';
 
 async function init() {

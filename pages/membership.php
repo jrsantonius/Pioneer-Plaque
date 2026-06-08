@@ -93,7 +93,7 @@ require __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-const BASE = '<?= BASE_URL ?>';
+const BASE = '';
 
 function addDetail(label, value, isHighlight) {
   const container = document.getElementById('detailsContainer');

@@ -107,7 +107,7 @@ require __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
-const BASE = '<?= BASE_URL ?>';
+const BASE = '';
 
 async function init() {
   try {

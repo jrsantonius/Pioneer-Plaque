@@ -429,19 +429,19 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <?php
             $partners = [
-                ['name' => 'Nuxcle', 'type' => 'EV Product Innovation', 'img' => 'collab-nuxcle.png'],
-                ['name' => 'Kemendiktisaintek', 'type' => 'Social Campaign', 'img' => 'collab-kemendikti.png'],
-                ['name' => 'Odoo', 'type' => 'CRM Automation', 'img' => 'collab-odoo.png'],
-                ['name' => '3D Zaiku', 'type' => 'Creative Technology', 'img' => 'collab-3dzaiku.png'],
+                ['name' => 'Nuxcle', 'type' => 'EV Product Innovation', 'img' => 'collab-kemendikti.png', 'link' => 'https://www.instagram.com/p/DXEcOR3pzk0/'],
+                ['name' => 'Kemendiktisaintek', 'type' => 'Social Campaign', 'img' => 'collab-nuxcle.png', 'link' => 'https://www.instagram.com/p/DRM7Z3bEnBU/'],
+                ['name' => 'Odoo', 'type' => 'CRM Automation', 'img' => 'collab-odoo.png', 'link' => 'https://www.instagram.com/p/DVa3dikEgy9/'],
+                ['name' => '3D Zaiku', 'type' => 'Creative Technology', 'img' => 'collab-3dzaiku.png', 'link' => 'https://www.instagram.com/p/DQ4UxI8klcU/'],
             ];
             foreach($partners as $i => $p): ?>
-            <div class="reveal d<?= $i+1 ?> partner-card rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer group">
+            <a href="<?= $p['link'] ?>" target="_blank" class="reveal d<?= $i+1 ?> partner-card rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer group block">
                 <img src="/public/images/<?= $p['img'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 <div class="partner-info">
                     <h3 class="text-white font-bold text-lg"><?= $p['name'] ?></h3>
                     <p class="text-white/60 text-sm mt-0.5"><?= $p['type'] ?></p>
                 </div>
-            </div>
+            </a>
             <?php endforeach; ?>
         </div>
     </div>
