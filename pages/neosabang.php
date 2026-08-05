@@ -17,6 +17,7 @@
 
         :root {
             --blueprint: #0d2847;
+            --blueprint-rgb: 13, 40, 71;
             --blueprint-light: #163a6a;
             --blueprint-line: rgba(255,255,255,0.06);
             --gold: #c9a84c;
@@ -28,11 +29,49 @@
 
         html { scroll-behavior: smooth; }
         body {
-            background: #fff;
+            background: #000;
             color: var(--text);
             font-family: 'Inter', system-ui, sans-serif;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== INTRO VIDEO (hero background) ===== */
+        .hero-video-bg {
+            position: absolute; inset: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .hero-video-bg video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+        .hero-video-tint {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(var(--blueprint-rgb), 0.55) 0%, rgba(var(--blueprint-rgb), 0.8) 100%);
+            z-index: 1;
+        }
+        .intro-unmute-btn {
+            position: absolute;
+            bottom: 32px; right: 32px;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            transition: background 0.3s ease;
+            z-index: 2;
+        }
+        .intro-unmute-btn:hover { background: rgba(255,255,255,0.2); }
+        .intro-unmute-btn.hidden { display: none; }
+        @media (max-width: 600px) {
+            .intro-unmute-btn { bottom: 20px; right: 20px; padding: 8px 14px; font-size: 12px; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -42,7 +81,7 @@
         /* ===== HERO / TITLE CARD ===== */
         .hero-title-card {
             min-height: 100vh;
-            background: var(--blueprint);
+            background: rgba(var(--blueprint-rgb), 0.8);
             display: flex; align-items: center; justify-content: center;
             flex-direction: column;
             position: relative;
@@ -58,6 +97,14 @@
             z-index: 2;
         }
 
+        .hero-revealed .title-presents,
+        .hero-revealed .title-neo,
+        .hero-revealed .title-neo::after,
+        .hero-revealed .title-extras,
+        .hero-revealed .title-scroll {
+            animation-play-state: running;
+        }
+
         .title-block {
             text-align: center;
         }
@@ -70,6 +117,7 @@
             opacity: 0;
             transform: translateY(20px);
             animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
+            animation-play-state: paused;
         }
         .title-presents strong { font-weight: 800; }
         .title-presents span { font-weight: 400; color: rgba(255,255,255,0.65); }
@@ -85,6 +133,7 @@
             opacity: 0;
             transform: translateY(30px);
             animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 0.9s forwards;
+            animation-play-state: paused;
             position: relative;
             display: inline-block;
         }
@@ -97,6 +146,7 @@
             transform: scaleX(0);
             transform-origin: left;
             animation: lineGrow 0.8s cubic-bezier(0.22,1,0.36,1) 1.5s forwards;
+            animation-play-state: paused;
         }
 
         @keyframes slideUp {
@@ -113,6 +163,7 @@
             opacity: 0;
             transform: translateY(20px);
             animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 2.4s forwards;
+            animation-play-state: paused;
         }
         .title-badge {
             display: inline-block;
@@ -151,6 +202,7 @@
             font-weight: 700;
             opacity: 0;
             animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 3.2s forwards;
+            animation-play-state: paused;
         }
         .title-scroll svg {
             animation: scrollBounce 2s ease-in-out infinite;
@@ -476,9 +528,21 @@
 </head>
 <body>
 
-<!-- ===== HERO TITLE CARD (Blueprint blue, stays as hero) ===== -->
+<!-- ===== HERO TITLE CARD (video background) ===== -->
 <div class="hero-title-card">
+    <div class="hero-video-bg">
+        <video id="introVideo" autoplay playsinline>
+            <source src="/public/images/neosabang-intro.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="hero-video-tint"></div>
     <div class="blueprint-grid"></div>
+
+    <button id="introUnmuteBtn" class="intro-unmute-btn hidden" type="button">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        Tap for sound
+    </button>
+
     <div class="title-block">
         <div class="title-presents">
             <strong>The Innovators Studio</strong> <span>presents</span>
@@ -714,6 +778,42 @@
 </div>
 
 <script>
+(function() {
+    var video = document.getElementById('introVideo');
+    var unmuteBtn = document.getElementById('introUnmuteBtn');
+    var hero = document.querySelector('.hero-title-card');
+
+    function revealTitle() {
+        if (hero) hero.classList.add('hero-revealed');
+    }
+
+    if (video) {
+        video.addEventListener('ended', revealTitle);
+        video.addEventListener('error', revealTitle);
+        setTimeout(revealTitle, 8000);
+
+        video.muted = false;
+        var playPromise = video.play();
+        if (playPromise && playPromise.catch) {
+            playPromise.catch(function() {
+                video.muted = true;
+                video.play();
+                if (unmuteBtn) unmuteBtn.classList.remove('hidden');
+            });
+        }
+
+        if (unmuteBtn) {
+            unmuteBtn.addEventListener('click', function() {
+                video.muted = false;
+                video.play();
+                unmuteBtn.classList.add('hidden');
+            });
+        }
+    } else {
+        revealTitle();
+    }
+})();
+
 (function() {
     var scrollLine = document.getElementById('scrollLine');
     window.addEventListener('scroll', function() {
