@@ -16,8 +16,8 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --blueprint: #0d2847;
-            --blueprint-rgb: 13, 40, 71;
+            --blueprint: #082241;
+            --blueprint-rgb: 8, 34, 65;
             --blueprint-light: #163a6a;
             --blueprint-line: rgba(255,255,255,0.06);
             --gold: #c9a84c;
