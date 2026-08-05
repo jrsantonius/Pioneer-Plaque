@@ -12,9 +12,10 @@
     <link rel="icon" type="image/jpeg" href="/public/images/tis-logo-circle.jpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=General+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lenis@1.1.16/dist/lenis.min.js"></script>
     <script>
     tailwind.config = {
         theme: {
@@ -28,7 +29,9 @@
     }
     </script>
     <style>
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: auto; /* Lenis handles smooth scroll */ }
+        html.lenis, html.lenis body { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
         body { font-family: 'General Sans', system-ui, sans-serif; letter-spacing: -0.01em; }
         h1, h2, h3, .font-display { font-family: 'Sora', system-ui, sans-serif; letter-spacing: -0.03em; }
 
@@ -36,6 +39,97 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 2px; }
+
+        /* ===== LOADING SCREEN ===== */
+        .loader {
+            position: fixed; inset: 0;
+            background: #fafafa;
+            z-index: 10000;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), visibility 0.8s;
+        }
+        .loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-logo {
+            width: 80px; height: 80px; border-radius: 50%;
+            animation: loaderPulse 1.2s ease-in-out infinite;
+        }
+        .loader-text {
+            margin-top: 20px;
+            font-family: 'Sora', sans-serif;
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.35em; color: #a3a3a3;
+            overflow: hidden;
+        }
+        .loader-text span {
+            display: inline-block;
+            animation: slideUp 0.5s ease forwards;
+            opacity: 0; transform: translateY(100%);
+        }
+        @keyframes loaderPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.6; }
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .loader-bar {
+            width: 120px; height: 2px; background: #e5e5e5;
+            border-radius: 2px; margin-top: 20px; overflow: hidden;
+        }
+        .loader-bar-fill {
+            height: 100%; width: 0%; border-radius: 2px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+            animation: loaderFill 1.8s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+        @keyframes loaderFill { to { width: 100%; } }
+
+        /* ===== CUSTOM CURSOR ===== */
+        .custom-cursor { cursor: none !important; }
+        .cursor-dot {
+            position: fixed; width: 6px; height: 6px;
+            background: #7c3aed; border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease, background-color 0.3s ease;
+        }
+        .cursor-ring {
+            position: fixed; width: 42px; height: 42px;
+            border: 1.5px solid rgba(124,58,237,0.4);
+            border-radius: 50%; pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s cubic-bezier(0.22,1,0.36,1), height 0.4s cubic-bezier(0.22,1,0.36,1),
+                        border-color 0.3s ease, background 0.3s ease, opacity 0.3s ease;
+        }
+        .cursor-ring.hover {
+            width: 64px; height: 64px;
+            border-color: rgba(124,58,237,0.6);
+            background: rgba(124,58,237,0.04);
+        }
+        .cursor-ring.click {
+            width: 32px; height: 32px;
+        }
+        .cursor-ring.on-dark {
+            border-color: rgba(255,255,255,0.4);
+        }
+        .cursor-ring.on-dark.hover {
+            border-color: rgba(168,85,247,0.6);
+            background: rgba(168,85,247,0.06);
+        }
+        .cursor-dot.on-dark { background: #a855f7; }
+
+        /* ===== SCROLL PROGRESS ===== */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+            z-index: 9997; width: 0%;
+            transform-origin: left;
+        }
+
+        /* ===== NOISE GRAIN OVERLAY ===== */
+        .noise-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 9990; opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
 
         /* ===== ANIMATIONS ===== */
         .reveal { opacity: 0; transform: translateY(50px); transition: all 1s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -50,19 +144,33 @@
         .d3 { transition-delay: 0.3s; } .d4 { transition-delay: 0.4s; }
         .d5 { transition-delay: 0.5s; } .d6 { transition-delay: 0.6s; }
 
+        /* ===== TEXT REVEAL PER WORD ===== */
+        .word-reveal .word {
+            display: inline-block; opacity: 0;
+            transform: translateY(30px) rotateX(-40deg);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+            transform-origin: bottom center;
+        }
+        .word-reveal.visible .word { opacity: 1; transform: translateY(0) rotateX(0deg); }
+        /* Gradient text inside word-reveal */
+        .gradient-text .word {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #7c3aed 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== TEXT STROKE ===== */
+        .text-stroke-reveal {
+            -webkit-text-stroke: 2px currentColor;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: -webkit-text-fill-color 1.2s cubic-bezier(0.22,1,0.36,1);
+        }
+        .text-stroke-reveal.filled { -webkit-text-fill-color: currentColor; }
+
         /* ===== HERO ===== */
-        .hero-bg {
-            background: #fafafa;
-            position: relative;
-            overflow: hidden;
-        }
-        #hero-canvas {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+        .hero-bg { background: #fafafa; position: relative; overflow: hidden; }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
 
         /* ===== NAVBAR ===== */
         .nav-glass {
@@ -75,8 +183,7 @@
 
         /* ===== CARDS ===== */
         .glass-card {
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.8);
             box-shadow: 0 4px 24px rgba(0,0,0,0.03);
             transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -87,17 +194,24 @@
             border-color: rgba(124,58,237,0.15);
         }
 
-        /* Process connector */
-        .process-connector {
-            position: relative;
+        /* ===== 3D TILT ===== */
+        .tilt-card { transform-style: preserve-3d; perspective: 800px; }
+        .tilt-card-inner {
+            transition: transform 0.15s ease-out;
+            transform-style: preserve-3d;
         }
+        .tilt-card .tilt-shine {
+            position: absolute; inset: 0; border-radius: inherit;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.15), transparent 60%);
+            pointer-events: none; opacity: 0; transition: opacity 0.3s ease; z-index: 2;
+        }
+        .tilt-card:hover .tilt-shine { opacity: 1; }
+
+        /* Process connector */
+        .process-connector { position: relative; }
         .process-connector::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -16px;
-            width: 32px;
-            height: 2px;
+            content: ''; position: absolute; top: 50%; right: -16px;
+            width: 32px; height: 2px;
             background: linear-gradient(90deg, #d4d4d4, transparent);
         }
         .process-connector:last-child::after { display: none; }
@@ -105,8 +219,7 @@
         /* ===== GRADIENT TEXT ===== */
         .gradient-text {
             background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #7c3aed 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
@@ -121,74 +234,213 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* ===== STATS COUNTER ===== */
-        .stat-glow {
-            position: relative;
+        /* ===== BLOB MORPHING ===== */
+        .blob {
+            position: absolute; pointer-events: none;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            filter: blur(60px); opacity: 0.07;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            animation: blobMorph 10s ease-in-out infinite;
         }
-        .stat-glow::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(124,58,237,0.08), transparent, rgba(124,58,237,0.08));
-            z-index: -1;
-        }
-
-        /* ===== PARTNER CARD ===== */
-        .partner-card {
-            position: relative;
-            overflow: hidden;
-        }
-        .partner-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7) 100%);
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        .partner-card:hover::before { opacity: 1; }
-        .partner-card .partner-info {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 24px;
-            z-index: 2;
-            transform: translateY(20px);
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-        .partner-card:hover .partner-info {
-            transform: translateY(0);
-            opacity: 1;
+        .blob-2 { animation-delay: -5s; animation-duration: 12s; }
+        @keyframes blobMorph {
+            0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; transform: rotate(0deg) scale(1); }
+            33% { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; transform: rotate(60deg) scale(1.05); }
+            66% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; transform: rotate(-30deg) scale(0.95); }
         }
 
-        /* ===== CTA ===== */
-        .cta-section {
+        /* ===== MAGNETIC BUTTON ===== */
+        .magnetic-btn {
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        /* ===== CHARACTER SELECT PORTFOLIO ===== */
+        .char-select-arena {
             background: #0a0a0a;
             position: relative;
             overflow: hidden;
         }
-        .cta-section::before {
+        .char-select-arena::before {
             content: '';
             position: absolute;
-            top: -30%;
-            left: -10%;
-            width: 50%;
-            height: 160%;
+            top: -20%; left: 50%; transform: translateX(-50%);
+            width: 80%; height: 60%;
+            background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        /* Floor glow */
+        .arena-floor {
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 200px;
+            background: linear-gradient(0deg, rgba(124,58,237,0.06) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        .arena-floor::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
+        }
+
+        /* Character cards */
+        .char-card {
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+            transform-origin: bottom center;
+        }
+        .char-card:hover { transform: scale(1.05) translateY(-8px); }
+        .char-card.selected { transform: scale(1.1) translateY(-16px); }
+
+        .char-card .char-img-wrap {
+            position: relative;
+            aspect-ratio: 3/4;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.06);
+            transition: all 0.5s cubic-bezier(0.22,1,0.36,1);
+        }
+        .char-card:hover .char-img-wrap {
+            border-color: rgba(124,58,237,0.4);
+            box-shadow: 0 0 40px rgba(124,58,237,0.15), 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .char-card.selected .char-img-wrap {
+            border-color: rgba(124,58,237,0.7);
+            box-shadow: 0 0 60px rgba(124,58,237,0.25), 0 0 120px rgba(124,58,237,0.1), 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .char-card .char-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: all 0.7s cubic-bezier(0.22,1,0.36,1);
+            filter: brightness(0.7) saturate(0.8);
+        }
+        .char-card:hover .char-img-wrap img {
+            filter: brightness(0.9) saturate(1);
+            transform: scale(1.05);
+        }
+        .char-card.selected .char-img-wrap img {
+            filter: brightness(1) saturate(1.1);
+            transform: scale(1.05);
+        }
+
+        /* Glow underneath card */
+        .char-glow {
+            position: absolute;
+            bottom: -20px; left: 10%; right: 10%; height: 40px;
+            background: radial-gradient(ellipse, rgba(124,58,237,0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            filter: blur(10px);
+        }
+        .char-card:hover .char-glow { opacity: 0.6; }
+        .char-card.selected .char-glow { opacity: 1; }
+
+        /* Name plate */
+        .char-nameplate {
+            text-align: center;
+            padding-top: 16px;
+            transition: all 0.4s ease;
+        }
+        .char-nameplate h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 14px; font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.1em; text-transform: uppercase;
+            transition: color 0.4s ease;
+        }
+        .char-card:hover .char-nameplate h3 { color: rgba(255,255,255,0.8); }
+        .char-card.selected .char-nameplate h3 { color: #fff; }
+        .char-nameplate .char-type {
+            font-size: 11px; color: rgba(124,58,237,0.4);
+            margin-top: 4px; text-transform: uppercase;
+            letter-spacing: 0.15em; font-weight: 600;
+            transition: color 0.4s ease;
+        }
+        .char-card:hover .char-nameplate .char-type { color: rgba(124,58,237,0.7); }
+        .char-card.selected .char-nameplate .char-type { color: #a855f7; }
+
+        /* Selection indicator dots */
+        .char-select-dots {
+            display: flex; gap: 8px; justify-content: center;
+        }
+        .char-select-dots .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .char-select-dots .dot.active {
+            background: #7c3aed;
+            box-shadow: 0 0 12px rgba(124,58,237,0.5);
+            transform: scale(1.2);
+        }
+
+        /* Detail panel */
+        .char-detail-panel {
+            position: relative;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.22,1,0.36,1);
+            pointer-events: none;
+            max-height: 0;
+        }
+        .char-detail-panel.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+            max-height: 500px;
+        }
+        .char-detail-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);
+        }
+
+        /* Scanline effect */
+        .char-scanline {
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(124,58,237,0.015) 2px, rgba(124,58,237,0.015) 4px
+            );
+            pointer-events: none; z-index: 1;
+        }
+
+        /* SELECT prompt */
+        .select-prompt {
+            animation: selectPulse 2s ease-in-out infinite;
+        }
+        @keyframes selectPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            background: #0a0a0a; position: relative; overflow: hidden;
+        }
+        .cta-section::before {
+            content: ''; position: absolute; top: -30%; left: -10%;
+            width: 50%; height: 160%;
             background: radial-gradient(ellipse, rgba(124,58,237,0.1) 0%, transparent 65%);
             pointer-events: none;
         }
         .cta-section::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            right: -10%;
-            width: 50%;
-            height: 160%;
+            content: ''; position: absolute; bottom: -30%; right: -10%;
+            width: 50%; height: 160%;
             background: radial-gradient(ellipse, rgba(168,85,247,0.07) 0%, transparent 65%);
             pointer-events: none;
         }
+
+        /* ===== SECTION BG TRANSITIONS ===== */
+        section { transition: background-color 0.6s ease; }
 
         /* ===== MOBILE MENU ===== */
         .mobile-menu { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -200,9 +452,34 @@
             border: 1px solid rgba(124,58,237,0.12);
         }
 
+        /* ===== PARALLAX ===== */
+        .parallax-slow { will-change: transform; }
+        .parallax-fast { will-change: transform; }
+
     </style>
 </head>
 <body class="bg-white text-neutral-800 antialiased overflow-x-hidden">
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loader" class="loader">
+    <img src="/public/images/tis-logo-circle.jpeg" alt="TIS" class="loader-logo">
+    <div class="loader-text">
+        <?php foreach(str_split('THE INNOVATORS STUDIO') as $i => $c): ?>
+        <span style="animation-delay: <?= 0.3 + $i * 0.03 ?>s"><?= $c === ' ' ? '&nbsp;' : $c ?></span>
+        <?php endforeach; ?>
+    </div>
+    <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- ============ CUSTOM CURSOR ============ -->
+<div id="cursorDot" class="cursor-dot" style="display:none"></div>
+<div id="cursorRing" class="cursor-ring" style="display:none"></div>
+
+<!-- ============ SCROLL PROGRESS ============ -->
+<div id="scrollProgress" class="scroll-progress"></div>
+
+<!-- ============ NOISE GRAIN ============ -->
+<div class="noise-overlay"></div>
 
 <!-- ============ NAVBAR ============ -->
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-500">
@@ -221,7 +498,7 @@
                 <a href="#services" class="px-4 py-2 text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors font-medium rounded-full hover:bg-neutral-50">Services</a>
                 <a href="#work" class="px-4 py-2 text-[13px] text-neutral-500 hover:text-neutral-900 transition-colors font-medium rounded-full hover:bg-neutral-50">Work</a>
                 <div class="w-px h-5 bg-neutral-200 mx-2"></div>
-                <a href="#contact" class="ml-1 px-6 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-full hover:bg-neutral-800 transition-all hover:shadow-lg hover:shadow-neutral-900/10 active:scale-95">Let's Talk</a>
+                <a href="#contact" class="magnetic-btn ml-1 px-6 py-2.5 bg-neutral-900 text-white text-[13px] font-semibold rounded-full hover:bg-neutral-800 transition-all hover:shadow-lg hover:shadow-neutral-900/10 active:scale-95">Let's Talk</a>
             </div>
             <button class="md:hidden p-2" onclick="toggleMenu()">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -249,8 +526,12 @@
 <div id="menuOverlay" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-[55] hidden" onclick="toggleMenu()"></div>
 
 <!-- ============ HERO ============ -->
-<section class="hero-bg min-h-screen flex items-center pt-20 relative">
+<section class="hero-bg min-h-screen flex items-center pt-20 relative" data-section="light">
     <canvas id="hero-canvas"></canvas>
+
+    <!-- Blobs -->
+    <div class="blob w-[500px] h-[500px] -top-40 -right-40 parallax-slow" data-speed="0.03"></div>
+    <div class="blob blob-2 w-[400px] h-[400px] bottom-20 -left-32 parallax-slow" data-speed="-0.02"></div>
 
     <div class="max-w-7xl mx-auto px-6 lg:px-8 w-full relative z-10 py-16 lg:py-0">
         <div class="max-w-3xl">
@@ -262,9 +543,9 @@
                     </span>
                 </div>
 
-                <h1 class="reveal d1 font-display text-[clamp(2.5rem,6vw,5rem)] font-bold text-neutral-900 leading-[1.05] tracking-tight">
-                    We turn<br>
-                    <span class="gradient-text">crazy ideas</span> into<br>
+                <h1 class="word-reveal font-display text-[clamp(2.5rem,6vw,5rem)] font-bold text-neutral-900 leading-[1.05] tracking-tight">
+                    We turn
+                    <span class="gradient-text">crazy ideas</span> into
                     things people want.
                 </h1>
 
@@ -273,23 +554,22 @@
                 </p>
 
                 <div class="reveal d3 flex flex-wrap gap-4 pt-2">
-                    <a href="#contact" class="group px-8 py-4 bg-neutral-900 text-white font-semibold rounded-full hover:bg-neutral-800 transition-all hover:shadow-xl hover:shadow-neutral-900/15 active:scale-95 flex items-center gap-2">
+                    <a href="#contact" class="magnetic-btn group px-8 py-4 bg-neutral-900 text-white font-semibold rounded-full hover:bg-neutral-800 transition-all hover:shadow-xl hover:shadow-neutral-900/15 active:scale-95 flex items-center gap-2">
                         Start a Project
                         <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
-                    <a href="#process" class="px-8 py-4 text-neutral-600 font-semibold rounded-full border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all active:scale-95">
+                    <a href="#process" class="magnetic-btn px-8 py-4 text-neutral-600 font-semibold rounded-full border border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 transition-all active:scale-95">
                         See How We Work
                     </a>
                 </div>
             </div>
-
         </div>
 
         <!-- Brand Marquee -->
         <div class="mt-20 lg:mt-28 reveal d4 border-t border-neutral-100 pt-10">
             <p class="text-[10px] font-semibold text-neutral-300 tracking-[0.3em] uppercase text-center mb-6">Trusted Collaborations</p>
             <div class="overflow-hidden">
-                <div class="marquee-track">
+                <div class="marquee-track" id="marqueeTrack">
                     <?php for($i=0; $i<2; $i++): ?>
                     <div class="flex items-center gap-16 px-8">
                         <span class="text-xl font-bold text-neutral-200 whitespace-nowrap tracking-wide">NUXCLE</span>
@@ -309,23 +589,25 @@
 </section>
 
 <!-- ============ ABOUT ============ -->
-<section id="about" class="py-28 lg:py-36 bg-white relative">
+<section id="about" class="py-28 lg:py-36 bg-white relative" data-section="light">
+    <!-- Blob accent -->
+    <div class="blob w-[350px] h-[350px] top-20 right-10 parallax-slow" data-speed="0.04" style="opacity:0.04"></div>
+
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             <div class="reveal-left relative">
                 <div class="rounded-[2rem] overflow-hidden">
-                    <img src="/public/images/about-workspace.png" alt="TIS Workspace" class="w-full h-auto">
+                    <img src="/public/images/about-workspace.png" alt="TIS Workspace" class="w-full h-auto parallax-slow" data-speed="0.02">
                 </div>
-                <!-- Accent shape -->
                 <div class="absolute -z-10 -bottom-6 -right-6 w-full h-full rounded-[2rem] bg-gradient-to-br from-purple-50 to-neutral-50"></div>
             </div>
             <div class="space-y-8">
                 <div class="reveal">
                     <span class="pill inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 tracking-wide">OUR STORY</span>
                 </div>
-                <h2 class="reveal d1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1]">
+                <h2 class="word-reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1]">
                     Indonesia has enough creators.
-                    <span class="text-neutral-300">Not enough builders.</span>
+                    <span class="text-stroke-reveal text-neutral-300">Not enough builders.</span>
                 </h2>
                 <p class="reveal d2 text-lg sm:text-xl text-neutral-600 leading-relaxed font-light">
                     So we built. We're a creative studio that doesn't just make content &mdash; we build products, ideas, and conversations that last. Content is the byproduct of real work.
@@ -336,11 +618,11 @@
 </section>
 
 <!-- ============ PROCESS ============ -->
-<section id="process" class="py-28 lg:py-36 bg-neutral-50/50 relative overflow-hidden">
+<section id="process" class="py-28 lg:py-36 bg-neutral-50/50 relative overflow-hidden" data-section="light">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="max-w-xl mb-16">
             <span class="reveal pill inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 tracking-wide mb-6">HOW WE WORK</span>
-            <h2 class="reveal d1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1]">
+            <h2 class="word-reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1]">
                 Six steps from <span class="gradient-text">problem</span> to <span class="gradient-text">impact.</span>
             </h2>
         </div>
@@ -356,13 +638,16 @@
                 ['num' => '06', 'title' => 'Impact', 'desc' => 'Refine, produce & collaborate', 'icon' => 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z'],
             ];
             foreach($steps as $i => $step): ?>
-            <div class="reveal d<?= $i+1 ?> glass-card rounded-2xl p-7 lg:p-8 text-center group">
-                <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-neutral-50 to-white border border-neutral-100 flex items-center justify-center group-hover:from-purple-50 group-hover:border-purple-100 transition-all">
-                    <svg class="w-6 h-6 text-neutral-600 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<?= $step['icon'] ?>"/></svg>
+            <div class="reveal d<?= $i+1 ?> tilt-card">
+                <div class="tilt-card-inner glass-card rounded-2xl p-7 lg:p-8 text-center group relative">
+                    <div class="tilt-shine rounded-2xl"></div>
+                    <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-neutral-50 to-white border border-neutral-100 flex items-center justify-center group-hover:from-purple-50 group-hover:border-purple-100 transition-all">
+                        <svg class="w-6 h-6 text-neutral-600 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="<?= $step['icon'] ?>"/></svg>
+                    </div>
+                    <div class="text-xs font-bold text-purple-400 tracking-widest mb-1.5"><?= $step['num'] ?></div>
+                    <h3 class="text-base font-bold text-neutral-900 mb-1.5"><?= $step['title'] ?></h3>
+                    <p class="text-sm text-neutral-600 leading-relaxed"><?= $step['desc'] ?></p>
                 </div>
-                <div class="text-xs font-bold text-purple-400 tracking-widest mb-1.5"><?= $step['num'] ?></div>
-                <h3 class="text-base font-bold text-neutral-900 mb-1.5"><?= $step['title'] ?></h3>
-                <p class="text-sm text-neutral-600 leading-relaxed"><?= $step['desc'] ?></p>
             </div>
             <?php endforeach; ?>
         </div>
@@ -370,12 +655,12 @@
 </section>
 
 <!-- ============ SERVICES ============ -->
-<section id="services" class="py-28 lg:py-36 bg-white">
+<section id="services" class="py-28 lg:py-36 bg-white" data-section="light">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="grid lg:grid-cols-12 gap-16 items-start">
             <div class="lg:col-span-4 lg:sticky lg:top-28">
                 <span class="reveal pill inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 tracking-wide mb-6">WHAT WE DO</span>
-                <h2 class="reveal d1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1] mb-6">
+                <h2 class="word-reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1] mb-6">
                     From research to <span class="gradient-text">real impact.</span>
                 </h2>
                 <p class="reveal d2 text-lg text-neutral-600 leading-relaxed font-light">
@@ -393,22 +678,25 @@
                     ['title' => 'Partnership', 'desc' => 'We collaborate with brands and organizations to create real impact together.', 'items' => ['Brand Collab', 'Product Partnership', 'Co-Creation'], 'gradient' => 'from-purple-500/10 to-purple-500/3', 'highlight' => true],
                 ];
                 foreach($services as $i => $svc): ?>
-                <div class="reveal d<?= ($i % 3) + 1 ?> rounded-2xl p-8 lg:p-9 border <?= !empty($svc['highlight']) ? 'bg-neutral-900 border-neutral-800' : 'bg-gradient-to-br ' . $svc['gradient'] . ' border-neutral-100 hover:border-purple-100' ?> transition-all group">
-                    <h3 class="text-lg font-bold <?= !empty($svc['highlight']) ? 'text-white' : 'text-neutral-900' ?> mb-3"><?= $svc['title'] ?></h3>
-                    <p class="text-sm <?= !empty($svc['highlight']) ? 'text-neutral-400' : 'text-neutral-600' ?> leading-relaxed mb-5"><?= $svc['desc'] ?></p>
-                    <div class="space-y-2">
-                        <?php foreach($svc['items'] as $item): ?>
-                        <div class="flex items-center gap-2.5 text-sm <?= !empty($svc['highlight']) ? 'text-neutral-500' : 'text-neutral-600' ?>">
-                            <div class="w-1.5 h-1.5 rounded-full <?= !empty($svc['highlight']) ? 'bg-purple-400' : 'bg-purple-400' ?>"></div>
-                            <?= $item ?>
+                <div class="reveal d<?= ($i % 3) + 1 ?> tilt-card">
+                    <div class="tilt-card-inner rounded-2xl p-8 lg:p-9 border <?= !empty($svc['highlight']) ? 'bg-neutral-900 border-neutral-800' : 'bg-gradient-to-br ' . $svc['gradient'] . ' border-neutral-100 hover:border-purple-100' ?> transition-all group relative">
+                        <div class="tilt-shine rounded-2xl"></div>
+                        <h3 class="text-lg font-bold <?= !empty($svc['highlight']) ? 'text-white' : 'text-neutral-900' ?> mb-3"><?= $svc['title'] ?></h3>
+                        <p class="text-sm <?= !empty($svc['highlight']) ? 'text-neutral-400' : 'text-neutral-600' ?> leading-relaxed mb-5"><?= $svc['desc'] ?></p>
+                        <div class="space-y-2">
+                            <?php foreach($svc['items'] as $item): ?>
+                            <div class="flex items-center gap-2.5 text-sm <?= !empty($svc['highlight']) ? 'text-neutral-500' : 'text-neutral-600' ?>">
+                                <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                                <?= $item ?>
+                            </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php endforeach; ?>
+                        <?php if(!empty($svc['highlight'])): ?>
+                        <a href="#contact" class="magnetic-btn mt-5 inline-flex items-center gap-2 text-[13px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">
+                            Let's collaborate <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                        <?php endif; ?>
                     </div>
-                    <?php if(!empty($svc['highlight'])): ?>
-                    <a href="#contact" class="mt-5 inline-flex items-center gap-2 text-[13px] font-semibold text-purple-400 hover:text-purple-300 transition-colors">
-                        Let's collaborate <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </a>
-                    <?php endif; ?>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -416,43 +704,138 @@
     </div>
 </section>
 
-<!-- ============ WORK / PARTNERS ============ -->
-<section id="work" class="py-28 lg:py-36 bg-neutral-50/50">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="text-center max-w-2xl mx-auto mb-16">
-            <span class="reveal pill inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 tracking-wide mb-6">SELECTED WORK</span>
-            <h2 class="reveal d1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.1]">
-                Ideas we brought to life.
+<!-- ============ WORK / CHARACTER SELECT ============ -->
+<section id="work" class="char-select-arena py-24 lg:py-32 relative" data-section="dark">
+    <div class="char-scanline"></div>
+    <div class="arena-floor"></div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <span class="reveal inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest text-purple-400 border border-purple-500/20 bg-purple-500/5 mb-6">
+                <span class="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></span>
+                SELECTED WORK
+            </span>
+            <h2 class="word-reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1]">
+                Choose your <span class="gradient-text">project.</span>
             </h2>
+            <p class="select-prompt text-sm text-neutral-500 mt-4 font-medium tracking-wider uppercase">Select a project to explore</p>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Character Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mb-10" id="charGrid">
             <?php
-            $partners = [
-                ['name' => 'Nuxcle', 'type' => 'EV Product Innovation', 'img' => 'collab-kemendikti.png', 'link' => 'https://www.instagram.com/p/DXEcOR3pzk0/'],
-                ['name' => 'Kemendiktisaintek', 'type' => 'Social Campaign', 'img' => 'collab-nuxcle.png', 'link' => 'https://www.instagram.com/p/DRM7Z3bEnBU/'],
-                ['name' => 'Odoo', 'type' => 'CRM Automation', 'img' => 'collab-odoo.png', 'link' => 'https://www.instagram.com/p/DVa3dikEgy9/'],
-                ['name' => '3D Zaiku', 'type' => 'Creative Technology', 'img' => 'collab-3dzaiku.png', 'link' => 'https://www.instagram.com/p/DQ4UxI8klcU/'],
+            $projects = [
+                [
+                    'name' => 'Nuxcle',
+                    'type' => 'EV Product Innovation',
+                    'img' => 'collab-kemendikti.png',
+                    'link' => 'https://www.instagram.com/p/DXEcOR3pzk0/',
+                    'desc' => 'Developed the brand identity, product storytelling, and go-to-market content strategy for Nuxcle — an Indonesian electric vehicle startup pushing sustainable urban mobility.',
+                    'role' => 'Branding · Content Strategy · Video Production',
+                    'year' => '2024',
+                ],
+                [
+                    'name' => 'Kemendiktisaintek',
+                    'type' => 'Social Campaign',
+                    'img' => 'collab-nuxcle.png',
+                    'link' => 'https://www.instagram.com/p/DRM7Z3bEnBU/',
+                    'desc' => 'Created a national-scale social media campaign for the Ministry of Education, Culture, Research and Technology — amplifying Indonesia\'s innovation narrative to millions.',
+                    'role' => 'Campaign Design · Social Media · Content',
+                    'year' => '2024',
+                ],
+                [
+                    'name' => 'Odoo',
+                    'type' => 'CRM Automation',
+                    'img' => 'collab-odoo.png',
+                    'link' => 'https://www.instagram.com/p/DVa3dikEgy9/',
+                    'desc' => 'Partnered with Odoo to produce educational content and product demos that simplified CRM and ERP adoption for Indonesian small businesses.',
+                    'role' => 'Product Demo · Educational Content · Design',
+                    'year' => '2024',
+                ],
+                [
+                    'name' => '3D Zaiku',
+                    'type' => 'Creative Technology',
+                    'img' => 'collab-3dzaiku.png',
+                    'link' => 'https://www.instagram.com/p/DQ4UxI8klcU/',
+                    'desc' => 'Brought 3D Zaiku\'s precision manufacturing and creative technology story to life through cinematic product films and brand content that bridges tech and craft.',
+                    'role' => 'Film Production · Brand Story · Photography',
+                    'year' => '2024',
+                ],
             ];
-            foreach($partners as $i => $p): ?>
-            <a href="<?= $p['link'] ?>" target="_blank" class="reveal d<?= $i+1 ?> partner-card rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer group block">
-                <img src="/public/images/<?= $p['img'] ?>" alt="<?= $p['name'] ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                <div class="partner-info">
-                    <h3 class="text-white font-bold text-lg"><?= $p['name'] ?></h3>
-                    <p class="text-white/60 text-sm mt-0.5"><?= $p['type'] ?></p>
+            foreach($projects as $i => $p): ?>
+            <div class="reveal d<?= $i+1 ?> char-card" data-index="<?= $i ?>" onclick="selectCharacter(<?= $i ?>)">
+                <div class="char-img-wrap">
+                    <img src="/public/images/<?= $p['img'] ?>" alt="<?= $p['name'] ?>">
                 </div>
-            </a>
+                <div class="char-glow"></div>
+                <div class="char-nameplate">
+                    <h3><?= $p['name'] ?></h3>
+                    <div class="char-type"><?= $p['type'] ?></div>
+                </div>
+            </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- Selection Dots -->
+        <div class="char-select-dots mb-10" id="charDots">
+            <?php for($i=0; $i<4; $i++): ?>
+            <div class="dot" data-index="<?= $i ?>" onclick="selectCharacter(<?= $i ?>)"></div>
+            <?php endfor; ?>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="char-detail-panel" id="charDetail">
+            <div class="p-8 lg:p-10">
+                <div class="grid lg:grid-cols-[1fr,1.2fr] gap-8 lg:gap-12 items-center">
+                    <!-- Left: Info -->
+                    <div class="space-y-5">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-widest text-purple-300 border border-purple-500/30 bg-purple-500/10 uppercase" id="detailType"></span>
+                            <span class="text-[11px] text-neutral-500 font-semibold" id="detailYear"></span>
+                        </div>
+                        <h3 class="font-display text-3xl lg:text-4xl font-bold text-white" id="detailName"></h3>
+                        <p class="text-neutral-400 leading-relaxed text-[15px]" id="detailDesc"></p>
+                        <div class="pt-2">
+                            <div class="text-[10px] text-neutral-600 font-semibold tracking-widest uppercase mb-2">Our Role</div>
+                            <div class="text-sm text-neutral-300 font-medium" id="detailRole"></div>
+                        </div>
+                        <a id="detailLink" href="#" target="_blank" class="magnetic-btn inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white text-sm font-semibold rounded-full hover:bg-purple-500 transition-all mt-2">
+                            View on Instagram
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                    <!-- Right: Large Image -->
+                    <div class="rounded-2xl overflow-hidden border border-white/5 shadow-2xl shadow-purple-900/20">
+                        <img id="detailImg" src="" alt="" class="w-full aspect-[4/3] object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Project data for JS -->
+    <script>
+    const PROJECT_DATA = <?= json_encode(array_map(function($p) {
+        return [
+            'name' => $p['name'],
+            'type' => $p['type'],
+            'img' => '/public/images/' . $p['img'],
+            'link' => $p['link'],
+            'desc' => $p['desc'],
+            'role' => $p['role'],
+            'year' => $p['year'],
+        ];
+    }, $projects)) ?>;
+    </script>
 </section>
 
 <!-- ============ CTA ============ -->
-<section id="contact" class="cta-section py-24 lg:py-36 relative">
+<section id="contact" class="cta-section py-24 lg:py-36 relative" data-section="dark">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div class="space-y-8">
-                <h2 class="reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1]">
+                <h2 class="word-reveal font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1]">
                     Let's build something
                     <span class="gradient-text">meaningful.</span>
                 </h2>
@@ -489,15 +872,14 @@
                         </div>
                     </a>
                 </div>
-
             </div>
             <!-- Right side: CTA Buttons -->
             <div class="reveal d3 flex flex-col gap-5">
-                <a href="mailto:partnership@theinnovatorsstudio.id" class="group flex items-center justify-center gap-3 px-8 py-5 bg-white text-neutral-900 font-bold text-lg rounded-2xl hover:bg-neutral-100 transition-all active:scale-[0.98] shadow-lg shadow-white/10">
+                <a href="mailto:partnership@theinnovatorsstudio.id" class="magnetic-btn group flex items-center justify-center gap-3 px-8 py-5 bg-white text-neutral-900 font-bold text-lg rounded-2xl hover:bg-neutral-100 transition-all active:scale-[0.98] shadow-lg shadow-white/10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     Send Email
                 </a>
-                <a href="https://wa.me/6285156087265" target="_blank" class="group flex items-center justify-center gap-3 px-8 py-5 bg-[#25D366] text-white font-bold text-lg rounded-2xl hover:bg-[#20bd5a] transition-all active:scale-[0.98] shadow-lg shadow-[#25D366]/20">
+                <a href="https://wa.me/6285156087265" target="_blank" class="magnetic-btn group flex items-center justify-center gap-3 px-8 py-5 bg-[#25D366] text-white font-bold text-lg rounded-2xl hover:bg-[#20bd5a] transition-all active:scale-[0.98] shadow-lg shadow-[#25D366]/20">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     Chat WhatsApp
                 </a>
@@ -508,9 +890,8 @@
 </section>
 
 <!-- ============ FOOTER ============ -->
-<footer class="bg-[#050505] pt-16 pb-8">
+<footer class="bg-[#050505] pt-16 pb-8" data-section="dark">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <!-- Top -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 pb-12 border-b border-neutral-800/50">
             <div class="flex items-center gap-4">
                 <img src="/public/images/tis-logo-circle.jpeg" alt="TIS" class="w-12 h-12 rounded-full ring-2 ring-neutral-800">
@@ -528,7 +909,6 @@
                 </a>
             </div>
         </div>
-        <!-- Bottom -->
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8">
             <p class="text-[11px] text-neutral-700">&copy; <?= date('Y') ?> The Innovators Studio. All rights reserved.</p>
             <a href="/login" class="text-[11px] text-neutral-500 hover:text-purple-400 transition-colors font-medium">Pioneer Members &rarr;</a>
@@ -538,162 +918,411 @@
 
 <!-- ============ SCRIPTS ============ -->
 <script>
-// Intersection Observer
-const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => obs.observe(el));
-
-// Navbar scroll
-window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-});
-
-// Mobile menu
-function toggleMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-    document.getElementById('menuOverlay').classList.toggle('hidden');
-    document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
-}
-
-// Smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', function(e) {
-        e.preventDefault();
-        const t = document.querySelector(this.getAttribute('href'));
-        if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
-    });
-});
-
-// Hero canvas - interactive floating dots with mouse
 (function() {
-    const canvas = document.getElementById('hero-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let w, h, particles = [];
-    let mouse = { x: -9999, y: -9999 };
-    const PARTICLE_COUNT = 50;
-    const MAX_DIST = 160;
-    const MOUSE_RADIUS = 200;
-    const purple = { r: 124, g: 58, b: 237 };
+    'use strict';
 
-    function resize() {
-        const rect = canvas.parentElement.getBoundingClientRect();
-        w = canvas.width = rect.width;
-        h = canvas.height = rect.height;
+    // ===== 1. LOADING SCREEN =====
+    const loader = document.getElementById('loader');
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            loader.classList.add('done');
+            document.body.classList.add('custom-cursor');
+            // Show cursor after loader
+            document.getElementById('cursorDot').style.display = '';
+            document.getElementById('cursorRing').style.display = '';
+        }, 2000);
+    });
+
+    // ===== 2. LENIS SMOOTH SCROLL =====
+    let lenis = null;
+    if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            touchMultiplier: 2,
+        });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
     }
 
-    function createParticles() {
-        particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
-            particles.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3,
-                baseR: Math.random() * 2 + 1,
-                r: 0,
-                baseOpacity: Math.random() * 0.15 + 0.04,
-                opacity: 0,
+    // ===== 3. CUSTOM CURSOR =====
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    const isTouch = 'ontouchstart' in window;
+
+    if (!isTouch) {
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+        });
+
+        // Smooth ring follow
+        function animateRing() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+
+        // Hover detection
+        const hoverTargets = 'a, button, .char-card, .tilt-card, .magnetic-btn, input, textarea, [role="button"]';
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(hoverTargets)) ring.classList.add('hover');
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(hoverTargets)) ring.classList.remove('hover');
+        });
+
+        // Click effect
+        document.addEventListener('mousedown', () => ring.classList.add('click'));
+        document.addEventListener('mouseup', () => ring.classList.remove('click'));
+
+        // Dark section detection
+        const darkSections = document.querySelectorAll('[data-section="dark"]');
+        function checkDarkSection() {
+            let onDark = false;
+            darkSections.forEach(s => {
+                const r = s.getBoundingClientRect();
+                if (mouseY >= r.top && mouseY <= r.bottom) onDark = true;
             });
+            ring.classList.toggle('on-dark', onDark);
+            dot.classList.toggle('on-dark', onDark);
         }
+        document.addEventListener('mousemove', checkDarkSection);
+    } else {
+        // Hide cursor on touch devices
+        dot.style.display = 'none';
+        ring.style.display = 'none';
     }
 
-    // Track mouse relative to canvas
-    canvas.parentElement.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
-    });
-    canvas.parentElement.addEventListener('mouseleave', () => {
-        mouse.x = -9999;
-        mouse.y = -9999;
+    // ===== 4. SCROLL PROGRESS BAR =====
+    const progressBar = document.getElementById('scrollProgress');
+    window.addEventListener('scroll', () => {
+        const h = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = (window.scrollY / h) * 100;
+        progressBar.style.width = pct + '%';
     });
 
-    function draw() {
-        ctx.clearRect(0, 0, w, h);
+    // ===== 5. INTERSECTION OBSERVER (reveal animations) =====
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .word-reveal').forEach(el => obs.observe(el));
 
-        for (const p of particles) {
-            // Distance from mouse
-            const dx = p.x - mouse.x;
-            const dy = p.y - mouse.y;
-            const mouseDist = Math.sqrt(dx * dx + dy * dy);
-            const mouseInfluence = Math.max(0, 1 - mouseDist / MOUSE_RADIUS);
+    // ===== 6. TEXT REVEAL PER WORD =====
+    document.querySelectorAll('.word-reveal').forEach(el => {
+        const html = el.innerHTML;
+        // Split text nodes into words, preserve HTML tags
+        const frag = document.createElement('div');
+        frag.innerHTML = html;
 
-            // Particles grow & brighten near mouse
-            p.r = p.baseR + mouseInfluence * 4;
-            p.opacity = p.baseOpacity + mouseInfluence * 0.35;
-
-            // Gentle push away from mouse
-            if (mouseDist < MOUSE_RADIUS && mouseDist > 0) {
-                const force = mouseInfluence * 0.5;
-                p.vx += (dx / mouseDist) * force;
-                p.vy += (dy / mouseDist) * force;
+        function wrapWords(node) {
+            if (node.nodeType === 3) { // text node
+                const words = node.textContent.split(/(\s+)/);
+                const span = document.createDocumentFragment();
+                let wordIdx = 0;
+                words.forEach(w => {
+                    if (w.trim() === '') {
+                        span.appendChild(document.createTextNode(w));
+                    } else {
+                        const s = document.createElement('span');
+                        s.className = 'word';
+                        s.style.transitionDelay = (wordIdx * 0.05) + 's';
+                        s.textContent = w;
+                        span.appendChild(s);
+                        wordIdx++;
+                    }
+                });
+                node.parentNode.replaceChild(span, node);
+            } else if (node.nodeType === 1 && !node.classList.contains('word')) {
+                // Keep special spans (gradient-text, text-stroke) but wrap their inner text
+                Array.from(node.childNodes).forEach(wrapWords);
             }
+        }
+        Array.from(frag.childNodes).forEach(wrapWords);
+        el.innerHTML = frag.innerHTML;
+    });
 
-            // Dampen velocity
-            p.vx *= 0.98;
-            p.vy *= 0.98;
+    // ===== 7. TEXT STROKE FILL ON SCROLL =====
+    const strokeEls = document.querySelectorAll('.text-stroke-reveal');
+    const strokeObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) e.target.classList.add('filled');
+        });
+    }, { threshold: 0.5 });
+    strokeEls.forEach(el => strokeObs.observe(el));
 
-            // Keep base movement
-            if (Math.abs(p.vx) < 0.1) p.vx += (Math.random() - 0.5) * 0.1;
-            if (Math.abs(p.vy) < 0.1) p.vy += (Math.random() - 0.5) * 0.1;
+    // ===== 8. NAVBAR SCROLL =====
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ===== 9. MOBILE MENU =====
+    window.toggleMenu = function() {
+        document.getElementById('mobileMenu').classList.toggle('open');
+        document.getElementById('menuOverlay').classList.toggle('hidden');
+        document.body.style.overflow = document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+    };
+
+    // ===== 10. SMOOTH SCROLL NAV LINKS =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            e.preventDefault();
+            const t = document.querySelector(this.getAttribute('href'));
+            if (t) {
+                if (lenis) lenis.scrollTo(t, { offset: -80 });
+                else window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+            }
+        });
+    });
+
+    // ===== 11. MAGNETIC BUTTONS =====
+    if (!isTouch) {
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
+    }
+
+    // ===== 12. 3D TILT CARDS =====
+    if (!isTouch) {
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            const inner = card.querySelector('.tilt-card-inner');
+            const shine = card.querySelector('.tilt-shine');
+            if (!inner) return;
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const rotateX = (y - 0.5) * -12;
+                const rotateY = (x - 0.5) * 12;
+                inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02,1.02,1.02)`;
+                if (shine) {
+                    shine.style.setProperty('--mx', (x * 100) + '%');
+                    shine.style.setProperty('--my', (y * 100) + '%');
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                inner.style.transform = 'rotateX(0) rotateY(0) scale3d(1,1,1)';
+            });
+        });
+    }
+
+    // ===== 13. CHARACTER SELECT PORTFOLIO =====
+    let selectedChar = -1;
+    const charCards = document.querySelectorAll('.char-card');
+    const charDots = document.querySelectorAll('.char-select-dots .dot');
+    const detailPanel = document.getElementById('charDetail');
+
+    window.selectCharacter = function(idx) {
+        // Toggle if already selected
+        if (selectedChar === idx) {
+            // Deselect
+            selectedChar = -1;
+            charCards.forEach(c => c.classList.remove('selected'));
+            charDots.forEach(d => d.classList.remove('active'));
+            detailPanel.classList.remove('visible');
+            return;
         }
 
-        // Draw connections
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < MAX_DIST) {
-                    // Lines brighter near mouse
-                    const midX = (particles[i].x + particles[j].x) / 2;
-                    const midY = (particles[i].y + particles[j].y) / 2;
-                    const mDist = Math.sqrt((midX - mouse.x) ** 2 + (midY - mouse.y) ** 2);
-                    const mBoost = Math.max(0, 1 - mDist / MOUSE_RADIUS);
-                    const alpha = (1 - dist / MAX_DIST) * (0.04 + mBoost * 0.15);
+        selectedChar = idx;
+        const data = window.PROJECT_DATA[idx];
 
-                    ctx.strokeStyle = `rgba(${purple.r},${purple.g},${purple.b},${alpha})`;
-                    ctx.lineWidth = 0.5 + mBoost * 1;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
+        // Update card states
+        charCards.forEach((c, i) => {
+            c.classList.toggle('selected', i === idx);
+        });
+        charDots.forEach((d, i) => {
+            d.classList.toggle('active', i === idx);
+        });
+
+        // Populate detail panel
+        document.getElementById('detailName').textContent = data.name;
+        document.getElementById('detailType').textContent = data.type;
+        document.getElementById('detailDesc').textContent = data.desc;
+        document.getElementById('detailRole').textContent = data.role;
+        document.getElementById('detailYear').textContent = data.year;
+        document.getElementById('detailImg').src = data.img;
+        document.getElementById('detailImg').alt = data.name;
+        document.getElementById('detailLink').href = data.link;
+
+        // Show panel with animation
+        detailPanel.classList.remove('visible');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                detailPanel.classList.add('visible');
+            });
+        });
+
+        // Scroll to panel on mobile
+        if (window.innerWidth < 1024) {
+            setTimeout(() => {
+                detailPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+    };
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        const arena = document.querySelector('.char-select-arena');
+        if (!arena) return;
+        const rect = arena.getBoundingClientRect();
+        if (rect.top > window.innerHeight || rect.bottom < 0) return;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            selectCharacter(Math.min((selectedChar + 1), PROJECT_DATA.length - 1));
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            selectCharacter(Math.max((selectedChar - 1), 0));
+        } else if (e.key === 'Enter' && selectedChar >= 0) {
+            window.open(PROJECT_DATA[selectedChar].link, '_blank');
+        } else if (e.key === 'Escape') {
+            selectCharacter(selectedChar); // toggle off
+        }
+    });
+
+    // ===== 14. PARALLAX LAYERS =====
+    const parallaxEls = document.querySelectorAll('.parallax-slow');
+    function updateParallax() {
+        const scrollY = window.scrollY;
+        parallaxEls.forEach(el => {
+            const speed = parseFloat(el.dataset.speed) || 0.03;
+            const rect = el.getBoundingClientRect();
+            const offset = (rect.top + rect.height / 2 - window.innerHeight / 2) * speed;
+            el.style.transform = `translateY(${offset}px)`;
+        });
+    }
+    window.addEventListener('scroll', updateParallax);
+
+    // ===== 15. MARQUEE SPEED REACT TO SCROLL =====
+    const marqueeTrack = document.getElementById('marqueeTrack');
+    let lastScroll = 0;
+    let scrollVelocity = 0;
+    function updateMarqueeSpeed() {
+        scrollVelocity = Math.abs(window.scrollY - lastScroll);
+        lastScroll = window.scrollY;
+        const baseSpeed = 30; // seconds
+        const boost = Math.min(scrollVelocity * 0.3, 20);
+        const newSpeed = Math.max(5, baseSpeed - boost);
+        if (marqueeTrack) {
+            marqueeTrack.style.animationDuration = newSpeed + 's';
+        }
+        requestAnimationFrame(updateMarqueeSpeed);
+    }
+    updateMarqueeSpeed();
+
+    // ===== HERO CANVAS - Interactive Floating Dots =====
+    const canvas = document.getElementById('hero-canvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let w, h, particles = [];
+        let mouse = { x: -9999, y: -9999 };
+        const PARTICLE_COUNT = 50;
+        const MAX_DIST = 160;
+        const MOUSE_RADIUS = 200;
+        const purple = { r: 124, g: 58, b: 237 };
+
+        function resize() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            w = canvas.width = rect.width;
+            h = canvas.height = rect.height;
+        }
+
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x: Math.random() * w, y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+                    baseR: Math.random() * 2 + 1, r: 0,
+                    baseOpacity: Math.random() * 0.15 + 0.04, opacity: 0,
+                });
+            }
+        }
+
+        canvas.parentElement.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        canvas.parentElement.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+            for (const p of particles) {
+                const dx = p.x - mouse.x, dy = p.y - mouse.y;
+                const mouseDist = Math.sqrt(dx * dx + dy * dy);
+                const mouseInfluence = Math.max(0, 1 - mouseDist / MOUSE_RADIUS);
+                p.r = p.baseR + mouseInfluence * 4;
+                p.opacity = p.baseOpacity + mouseInfluence * 0.35;
+                if (mouseDist < MOUSE_RADIUS && mouseDist > 0) {
+                    const force = mouseInfluence * 0.5;
+                    p.vx += (dx / mouseDist) * force;
+                    p.vy += (dy / mouseDist) * force;
+                }
+                p.vx *= 0.98; p.vy *= 0.98;
+                if (Math.abs(p.vx) < 0.1) p.vx += (Math.random() - 0.5) * 0.1;
+                if (Math.abs(p.vy) < 0.1) p.vy += (Math.random() - 0.5) * 0.1;
+            }
+            // Connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < MAX_DIST) {
+                        const midX = (particles[i].x + particles[j].x) / 2;
+                        const midY = (particles[i].y + particles[j].y) / 2;
+                        const mDist = Math.sqrt((midX - mouse.x) ** 2 + (midY - mouse.y) ** 2);
+                        const mBoost = Math.max(0, 1 - mDist / MOUSE_RADIUS);
+                        const alpha = (1 - dist / MAX_DIST) * (0.04 + mBoost * 0.15);
+                        ctx.strokeStyle = `rgba(${purple.r},${purple.g},${purple.b},${alpha})`;
+                        ctx.lineWidth = 0.5 + mBoost * 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
                 }
             }
-        }
-
-        // Draw particles
-        for (const p of particles) {
-            // Glow effect near mouse
-            if (p.opacity > 0.15) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${purple.r},${purple.g},${purple.b},${p.opacity * 0.15})`;
+            // Particles
+            for (const p of particles) {
+                if (p.opacity > 0.15) {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${purple.r},${purple.g},${purple.b},${p.opacity * 0.15})`;
+                    ctx.fill();
+                }
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${purple.r},${purple.g},${purple.b},${p.opacity})`;
                 ctx.fill();
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < -20) p.x = w + 20; if (p.x > w + 20) p.x = -20;
+                if (p.y < -20) p.y = h + 20; if (p.y > h + 20) p.y = -20;
             }
-
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${purple.r},${purple.g},${purple.b},${p.opacity})`;
-            ctx.fill();
-
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x < -20) p.x = w + 20;
-            if (p.x > w + 20) p.x = -20;
-            if (p.y < -20) p.y = h + 20;
-            if (p.y > h + 20) p.y = -20;
+            requestAnimationFrame(draw);
         }
 
-        requestAnimationFrame(draw);
+        resize(); createParticles(); draw();
+        window.addEventListener('resize', () => { resize(); createParticles(); });
     }
 
-    resize();
-    createParticles();
-    draw();
-    window.addEventListener('resize', () => { resize(); createParticles(); });
 })();
 </script>
 </body>

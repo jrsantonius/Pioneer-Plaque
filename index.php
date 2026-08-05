@@ -92,6 +92,12 @@ if ($requestUri === '/') {
     exit;
 }
 
+// GET /neosabang
+if ($requestUri === '/neosabang') {
+    require __DIR__ . '/pages/neosabang.php';
+    exit;
+}
+
 // GET /login
 if ($requestUri === '/login') {
     require __DIR__ . '/pages/login.php';

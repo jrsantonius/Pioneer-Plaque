@@ -1,4 +1,5 @@
 RewriteEngine On
+RewriteBase /
 
 # Redirect to HTTPS
 RewriteCond %{HTTPS} off
