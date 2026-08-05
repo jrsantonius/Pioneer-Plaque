@@ -52,26 +52,26 @@
             background: linear-gradient(180deg, rgba(var(--blueprint-rgb), 0.55) 0%, rgba(var(--blueprint-rgb), 0.8) 100%);
             z-index: 1;
         }
-        .intro-unmute-btn {
+        .intro-mute-btn {
             position: absolute;
-            bottom: 32px; right: 32px;
-            display: flex; align-items: center; gap: 8px;
-            background: rgba(255,255,255,0.1);
+            bottom: 20px; right: 20px;
+            display: flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px;
+            background: rgba(255,255,255,0.12);
             border: 1px solid rgba(255,255,255,0.3);
             color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px; font-weight: 500;
-            padding: 10px 18px;
-            border-radius: 999px;
+            border-radius: 50%;
             cursor: pointer;
             backdrop-filter: blur(6px);
             transition: background 0.3s ease;
             z-index: 2;
         }
-        .intro-unmute-btn:hover { background: rgba(255,255,255,0.2); }
-        .intro-unmute-btn.hidden { display: none; }
+        .intro-mute-btn:hover { background: rgba(255,255,255,0.22); }
+        .intro-mute-btn.hidden { display: none; }
+        .intro-mute-btn svg { width: 15px; height: 15px; }
         @media (max-width: 600px) {
-            .intro-unmute-btn { bottom: 20px; right: 20px; padding: 8px 14px; font-size: 12px; }
+            .intro-mute-btn { bottom: 14px; right: 14px; width: 30px; height: 30px; }
+            .intro-mute-btn svg { width: 13px; height: 13px; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -538,9 +538,9 @@
     <div class="hero-video-tint"></div>
     <div class="blueprint-grid"></div>
 
-    <button id="introUnmuteBtn" class="intro-unmute-btn hidden" type="button">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
-        Tap for sound
+    <button id="introMuteBtn" class="intro-mute-btn hidden" type="button" aria-label="Toggle sound">
+        <svg id="iconSoundOn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        <svg id="iconSoundOff" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
     </button>
 
     <div class="title-block">
@@ -780,11 +780,20 @@
 <script>
 (function() {
     var video = document.getElementById('introVideo');
-    var unmuteBtn = document.getElementById('introUnmuteBtn');
+    var muteBtn = document.getElementById('introMuteBtn');
+    var iconOn = document.getElementById('iconSoundOn');
+    var iconOff = document.getElementById('iconSoundOff');
     var hero = document.querySelector('.hero-title-card');
 
     function revealTitle() {
         if (hero) hero.classList.add('hero-revealed');
+    }
+
+    function updateIcon() {
+        if (!iconOn || !iconOff) return;
+        var isMuted = video.muted || video.volume === 0;
+        iconOn.style.display = isMuted ? 'none' : 'block';
+        iconOff.style.display = isMuted ? 'block' : 'none';
     }
 
     if (video) {
@@ -792,21 +801,24 @@
         video.addEventListener('error', revealTitle);
         setTimeout(revealTitle, 8000);
 
+        video.volume = 0.25;
         video.muted = false;
         var playPromise = video.play();
         if (playPromise && playPromise.catch) {
             playPromise.catch(function() {
                 video.muted = true;
                 video.play();
-                if (unmuteBtn) unmuteBtn.classList.remove('hidden');
+                updateIcon();
             });
         }
 
-        if (unmuteBtn) {
-            unmuteBtn.addEventListener('click', function() {
-                video.muted = false;
-                video.play();
-                unmuteBtn.classList.add('hidden');
+        if (muteBtn) {
+            muteBtn.classList.remove('hidden');
+            updateIcon();
+            muteBtn.addEventListener('click', function() {
+                video.muted = !video.muted;
+                if (!video.muted) video.volume = 0.25;
+                updateIcon();
             });
         }
     } else {
