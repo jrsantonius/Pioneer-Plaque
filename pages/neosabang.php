@@ -797,9 +797,8 @@
     }
 
     if (video) {
-        video.addEventListener('ended', revealTitle);
         video.addEventListener('error', revealTitle);
-        setTimeout(revealTitle, 8000);
+        setTimeout(revealTitle, 2500);
 
         video.volume = 0.25;
         video.muted = false;
