@@ -49,7 +49,7 @@
         }
         .hero-video-tint {
             position: absolute; inset: 0;
-            background: linear-gradient(180deg, rgba(var(--blueprint-rgb), 0.55) 0%, rgba(var(--blueprint-rgb), 0.8) 100%);
+            background: rgba(var(--blueprint-rgb), 0.88);
             z-index: 1;
         }
         .intro-mute-btn {
@@ -81,7 +81,7 @@
         /* ===== HERO / TITLE CARD ===== */
         .hero-title-card {
             min-height: 100vh;
-            background: rgba(var(--blueprint-rgb), 0.8);
+            background: var(--blueprint);
             display: flex; align-items: center; justify-content: center;
             flex-direction: column;
             position: relative;
@@ -330,9 +330,9 @@
             margin-bottom: 12px;
         }
         .pillar-desc {
-            font-size: 14px;
+            font-size: 16px;
             color: var(--text-dim);
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         .timeline-item {
@@ -423,11 +423,11 @@
             font-weight: 800;
             color: white;
             line-height: 1;
-            margin: 8px 0 4px;
+            margin: 16px 0 4px;
         }
         .price-current span { color: var(--gold); }
         .price-note {
-            font-size: 13px;
+            font-size: 15px;
             color: var(--text-dim);
             margin-bottom: 28px;
         }
@@ -455,7 +455,7 @@
         .price-guarantee {
             display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 16px;
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-dim);
         }
 
@@ -467,7 +467,7 @@
         .feature-list li {
             display: flex; align-items: flex-start; gap: 12px;
             padding: 10px 0;
-            font-size: 14px;
+            font-size: 16px;
             color: var(--text);
             border-bottom: 1px solid rgba(255,255,255,0.04);
         }
@@ -578,10 +578,10 @@
 
     <!-- ===== INTRO / SUBTITLE ===== -->
     <section style="padding: 100px 24px 60px;">
-        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
             <div class="reveal-up section-label">Reimagining Indonesia's Culinary Street</div>
-            <p class="reveal-up d1" style="color: var(--text-dim); margin-top: 24px; line-height: 1.9; font-size: 17px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                We had a crazy idea: what if one street in Jakarta could change the way the world sees Indonesian food? So we made the blueprint. And now you can have it.
+            <p class="reveal-up d1 big-quote" style="margin-top: 24px; font-size: clamp(22px, 3.5vw, 38px);">
+                One street. All of Indonesia. <em>One long table.</em>
             </p>
         </div>
     </section>
@@ -590,16 +590,16 @@
         <div class="line"></div><div class="diamond"></div><div class="line"></div>
     </div>
 
-    <!-- ===== THE BIG IDEA ===== -->
+    <!-- ===== THE TEAM ===== -->
     <section style="padding: 0 24px 80px;">
         <div style="max-width: 800px; margin: 0 auto;">
             <div class="reveal-up big-quote">
-                "<em>One Street.</em><br>
-                <em>Thousands of Stories.</em><br>
-                <em>One crazy idea.</em>"
+                "<em>IT. Business. Design.</em><br>
+                <em>Accounting. Brand CEOs. Politics.</em><br>
+                <em>One team, one blueprint.</em>"
             </div>
-            <p class="reveal-up d1" style="text-align: center; color: var(--text-dim); margin-top: 32px; line-height: 1.8; font-size: 15px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                Indonesia doesn't need another food court. What it needs is a culinary destination that actually tells the story of its food, its people, and its culture. That's exactly what Neo Sabang is about. And this blueprint is how we plan to build it.
+            <p class="reveal-up d1 section-heading" style="text-align: center; margin-top: 32px; font-size: clamp(20px, 3vw, 32px); max-width: 700px; margin-left: auto; margin-right: auto;">
+                Prepare Rp30.000. This wasn't built by one person guessing.
             </p>
         </div>
     </section>
@@ -619,11 +619,11 @@
             <div class="pillar-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                 <?php
                 $chapters = [
-                    ['num' => 'I', 'title' => 'The Big Idea', 'desc' => 'Why this is more than just another revitalisasi. This is a cultural movement, built from food, stories, and a vision that Indonesia deserves.'],
-                    ['num' => 'II', 'title' => 'The Framework', 'desc' => 'Five pillars that bring together culinary, experience, community, innovation, and sustainability into one living ecosystem.'],
-                    ['num' => 'III', 'title' => 'The Masterplan', 'desc' => 'Zonasi, desain ruang publik, visual blueprint. The kind of presentation you can walk into any room with and people will listen.'],
-                    ['num' => 'IV', 'title' => 'The Business Model', 'desc' => 'The numbers behind the vision. Revenue strategy, economic impact, and why this is something worth investing in.'],
-                    ['num' => 'V', 'title' => 'The Roadmap', 'desc' => 'From pilot to full scale. Every step laid out. Practical, measurable, and designed to actually get built.'],
+                    ['num' => 'I', 'title' => 'The Problem', 'desc' => 'Three layers keep Sabang from working: space, operations, experience.'],
+                    ['num' => 'II', 'title' => 'The Long Indonesian Table', 'desc' => 'One street. All of Indonesia. Sit down anywhere.'],
+                    ['num' => 'III', 'title' => 'Rhythm & Pause', 'desc' => 'Every step, every pause, designed on purpose.'],
+                    ['num' => 'IV', 'title' => 'Jagat Rasa', 'desc' => 'An annual culinary competition that keeps it alive, year after year.'],
+                    ['num' => 'V', 'title' => 'The Business Case', 'desc' => 'The math behind Neo Sabang, done honestly.'],
                 ];
                 foreach($chapters as $i => $c): ?>
                 <div class="reveal-up d<?= $i+1 ?> pillar-card">
@@ -640,27 +640,23 @@
         <div class="line"></div><div class="diamond"></div><div class="line"></div>
     </div>
 
-    <!-- ===== WHO IS THIS FOR ===== -->
+    <!-- ===== WHY YOU SHOULD BUY ===== -->
     <section style="padding: 80px 24px;">
-        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+        <div style="max-width: 750px; margin: 0 auto; text-align: center;">
             <div class="reveal-up">
-                <div class="section-label">Built For Builders</div>
-                <h2 class="section-heading" style="margin-bottom: 40px;">This is for you if you...</h2>
+                <div class="section-label">Why This Blueprint</div>
+                <h2 class="section-heading" style="margin-bottom: 56px;">Why you should buy it.</h2>
             </div>
 
             <?php
-            $personas = [
-                ['icon' => '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>', 'text' => 'Want to understand how a culinary destination gets designed from the ground up'],
-                ['icon' => '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', 'text' => 'Are putting together a proposal for urban revitalization or a food district'],
-                ['icon' => '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>', 'text' => 'Are genuinely obsessed with where food, culture, and urban design meet'],
-                ['icon' => '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>', 'text' => 'Work in F&B and want to see the bigger picture of where this industry is heading'],
+            $reasons = [
+                'Not a finished pitch deck. The real thinking, hypotheses and all.',
+                'Real research, real numbers. Not just theory.',
+                'First 81 buyers only. Then it\'s gone.',
             ];
-            foreach($personas as $i => $p): ?>
-            <div class="reveal-up d<?= $i+1 ?> timeline-item" style="text-align: left;">
-                <div style="flex-shrink: 0; color: var(--gold); margin-top: 2px;"><?= $p['icon'] ?></div>
-                <div class="timeline-content">
-                    <p style="color: var(--text); font-size: 15px; font-weight: 400;"><?= $p['text'] ?></p>
-                </div>
+            foreach($reasons as $i => $r): ?>
+            <div class="reveal-up d<?= $i+1 ?> big-quote" style="font-size: clamp(20px, 3vw, 30px); margin-bottom: 28px;">
+                <?= $r ?>
             </div>
             <?php endforeach; ?>
         </div>
@@ -688,18 +684,18 @@
                 </div>
             </div>
 
-            <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 32px; font-size: 14px; line-height: 1.8;">
-                This blueprint was built from real research, international benchmarks, and hands-on experience designing creative projects across Indonesia. It's not a collection of theories. It's a document that's ready to be executed.
+            <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 32px; font-size: 17px; line-height: 1.7;">
+                Built from real research. Ready to execute.
             </p>
 
             <div class="reveal-up d3" style="margin-top: 40px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
                 <div style="text-align: center;">
-                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">50+</div>
+                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">45+</div>
                     <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Pages</div>
                 </div>
                 <div style="text-align: center;">
-                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">5</div>
-                    <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Strategic Pillars</div>
+                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">13</div>
+                    <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Chapters</div>
                 </div>
                 <div style="text-align: center;">
                     <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">1</div>
@@ -733,29 +729,28 @@
                     <ul class="feature-list">
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            Full vision, concept & strategic framework
+                            The full vision: concept, framework & story
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            Presentation-ready visual masterplan
+                            A presentation-ready visual masterplan
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            Business model & economic impact analysis
+                            The business case, numbers and all
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            Step-by-step execution roadmap
+                            Honest hypotheses & open data, laid bare
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            50+ pages of high-quality research & design
+                            45+ pages of real research and design
                         </li>
                     </ul>
 
-                    <div class="price-original">Rp 100.000</div>
                     <div class="price-current"><span>Rp</span> 30.000</div>
-                    <div class="price-note">Early bird price, limited to first 100 buyers</div>
+                    <div class="price-note">Early bird price, limited to first 81 buyers</div>
 
                     <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" id="checkoutBtn" class="cta-btn" target="_blank">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
