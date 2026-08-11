@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neo Sabang — Reimagining Indonesia's Culinary Street</title>
-    <meta name="description" content="Neo Sabang: We're turning one street into Indonesia's culinary destination. The blueprint is here.">
-    <meta property="og:title" content="Neo Sabang — Blueprint E-Book">
-    <meta property="og:description" content="One Street. Thousands of Stories. One crazy idea worth building.">
+    <title>Neo Sabang Blueprint | The Innovators Studio</title>
+    <meta name="description" content="A 50+ page working blueprint exploring how Jalan Sabang could become Sabang–Merauke, Jakarta's pedestrian-first culinary destination shaped by food, movement, business, and the people already there.">
+    <meta property="og:title" content="Neo Sabang Blueprint | The Innovators Studio">
+    <meta property="og:description" content="One street. All of Indonesia. One long table. A working urban blueprint by The Innovators Studio.">
     <meta property="og:image" content="<?= BASE_URL ?>/public/images/neosabang-cover.jpg">
-    <link rel="icon" type="image/jpeg" href="/public/images/tis-logo-circle.jpeg">
+    <link rel="icon" type="image/png" href="/public/images/tis-logo-circle.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
             --text-dim: rgba(232,226,212,0.5);
         }
 
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
         body {
             background: #000;
             color: var(--text);
@@ -36,12 +36,86 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ===== NAV ===== */
+        .ns-nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 500;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 24px;
+            background: transparent;
+            transition: background 0.4s ease, padding 0.4s ease, border-color 0.4s ease;
+            border-bottom: 1px solid transparent;
+        }
+        .ns-nav.scrolled {
+            background: rgba(var(--blueprint-rgb), 0.92);
+            backdrop-filter: blur(10px);
+            padding: 14px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .ns-nav-brand {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            text-decoration: none;
+            line-height: 1.4;
+        }
+        .ns-nav-brand .line1 {
+            display: block;
+            font-size: 13px; font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .ns-nav-brand .line2 {
+            display: block;
+            font-size: 9px; font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.55);
+        }
+        .ns-nav-links {
+            display: flex; align-items: center; gap: 28px;
+        }
+        .ns-nav-links a:not(.ns-nav-cta) {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+            transition: color 0.3s ease;
+        }
+        .ns-nav-links a:not(.ns-nav-cta):hover { color: #fff; }
+        .ns-nav-cta {
+            font-family: 'Cinzel', serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: var(--gold);
+            padding: 9px 18px;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .ns-nav-cta:hover { background: var(--gold-light); }
+        @media (max-width: 700px) {
+            .ns-nav-links a:not(.ns-nav-cta) { display: none; }
+        }
+
         /* ===== INTRO VIDEO (hero background) ===== */
         .hero-video-bg {
             position: absolute; inset: 0;
             width: 100%; height: 100%;
             z-index: 0;
             overflow: hidden;
+            background: var(--blueprint);
         }
         .hero-video-bg video {
             width: 100%; height: 100%;
@@ -81,17 +155,22 @@
         /* ===== HERO / TITLE CARD ===== */
         .hero-title-card {
             min-height: 100vh;
+            min-height: 100svh;
             background: var(--blueprint);
             display: flex; align-items: center; justify-content: center;
             flex-direction: column;
             position: relative;
             z-index: 10;
-            padding: 60px 24px;
+            padding: 100px 24px 60px;
             overflow: hidden;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
         }
 
         .hero-title-card .title-block,
         .hero-title-card .title-extras,
+        .hero-title-card .hero-hook,
+        .hero-title-card .hero-cta-row,
         .hero-title-card .title-scroll {
             position: relative;
             z-index: 2;
@@ -101,12 +180,15 @@
         .hero-revealed .title-neo,
         .hero-revealed .title-neo::after,
         .hero-revealed .title-extras,
+        .hero-revealed .hero-hook,
+        .hero-revealed .hero-cta-row,
         .hero-revealed .title-scroll {
             animation-play-state: running;
         }
 
         .title-block {
             text-align: center;
+            margin-top: 32px;
         }
 
         .title-presents {
@@ -116,7 +198,7 @@
             letter-spacing: 0.02em;
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
+            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 1.0s forwards;
             animation-play-state: paused;
         }
         .title-presents strong { font-weight: 800; }
@@ -124,7 +206,7 @@
 
         .title-neo {
             font-family: 'Cinzel', serif;
-            font-size: clamp(70px, 18vw, 190px);
+            font-size: clamp(60px, 15vw, 160px);
             font-weight: 900;
             color: #fff;
             letter-spacing: 0.05em;
@@ -132,7 +214,7 @@
             margin-top: 12px;
             opacity: 0;
             transform: translateY(30px);
-            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 0.9s forwards;
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 1.6s forwards;
             animation-play-state: paused;
             position: relative;
             display: inline-block;
@@ -145,7 +227,7 @@
             background: var(--gold);
             transform: scaleX(0);
             transform-origin: left;
-            animation: lineGrow 0.8s cubic-bezier(0.22,1,0.36,1) 1.5s forwards;
+            animation: lineGrow 0.8s cubic-bezier(0.22,1,0.36,1) 2.2s forwards;
             animation-play-state: paused;
         }
 
@@ -158,50 +240,79 @@
 
         /* Elements that appear after title */
         .title-extras {
-            margin-top: 28px;
+            margin-top: 24px;
             text-align: center;
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 2.4s forwards;
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 2.6s forwards;
             animation-play-state: paused;
         }
         .title-badge {
             display: inline-block;
             font-family: 'Cinzel', serif;
-            font-size: clamp(18px, 3vw, 28px); font-weight: 700;
+            font-size: clamp(14px, 2.2vw, 20px); font-weight: 700;
             color: #fff;
             letter-spacing: 0.35em;
             text-transform: uppercase;
         }
-        .title-subtitle {
+
+        .hero-hook {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: center;
             font-family: 'Cinzel', serif;
-            font-size: clamp(14px, 2vw, 19px);
-            color: rgba(255,255,255,0.75);
+            font-size: clamp(19px, 2.8vw, 30px);
             font-weight: 600;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-top: 22px;
-        }
-        .title-tagline {
-            font-family: 'Inter', sans-serif;
-            font-size: clamp(17px, 2.4vw, 22px);
-            color: rgba(255,255,255,0.6);
-            line-height: 1.8;
-            margin-top: 24px;
-            max-width: 640px;
-            margin-left: auto; margin-right: auto;
-            font-weight: 400;
+            color: #fff;
+            line-height: 1.4;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
+            animation-play-state: paused;
         }
 
+        .hero-cta-row {
+            margin-top: 32px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 3.0s forwards;
+            animation-play-state: paused;
+        }
+        .hero-cta-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 30px;
+            background: var(--gold);
+            color: #0a0a0a;
+            font-family: 'Cinzel', serif;
+            font-size: 13px; font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.35s ease;
+        }
+        .hero-cta-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(201,168,76,0.3);
+        }
+        .hero-price-line {
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.03em;
+        }
+        .hero-price-line strong { color: var(--gold); font-weight: 700; }
+
         .title-scroll {
-            margin-top: 48px;
+            margin-top: 40px;
             display: flex; flex-direction: column; align-items: center; gap: 8px;
             color: #fff;
             font-family: 'Cinzel', serif;
             font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
             font-weight: 700;
             opacity: 0;
-            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 3.2s forwards;
+            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 3.9s forwards;
             animation-play-state: paused;
         }
         .title-scroll svg {
@@ -234,7 +345,33 @@
             z-index: 9999;
         }
 
-        section { position: relative; z-index: 5; }
+        section {
+            position: relative; z-index: 5;
+            scroll-snap-align: start; scroll-snap-stop: always;
+            scroll-margin-top: 90px;
+            min-height: calc(100vh - 90px);
+            min-height: calc(100svh - 90px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .scroll-next {
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            margin-top: 56px;
+            cursor: pointer;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+            font-weight: 700;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            width: fit-content;
+        }
+        .scroll-next:hover { opacity: 1; }
+        .scroll-next svg {
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
 
         .reveal-up {
             opacity: 0; transform: translateY(60px);
@@ -293,11 +430,76 @@
             letter-spacing: 0.03em;
         }
 
+        /* ===== CURIOSITY HOOKS (left-aligned list) ===== */
+        .hook-line {
+            font-family: 'Cinzel', serif;
+            font-style: italic;
+            font-size: clamp(17px, 2.4vw, 24px);
+            color: rgba(255,255,255,0.85);
+            text-align: left;
+            padding: 16px 0 16px 28px;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .hook-line::before {
+            content: '\2014';
+            position: absolute;
+            left: 0; top: 16px;
+            color: var(--gold);
+            font-style: normal;
+        }
+        .hook-line:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+
+        /* ===== BOOK PREVIEW MOCKUP ===== */
+        .book-stack {
+            position: relative;
+            max-width: 380px;
+            margin: 60px auto 0;
+            padding: 30px;
+        }
+        .book-stack img {
+            position: absolute;
+            top: 30px; left: 30px;
+            width: calc(100% - 60px);
+            border-radius: 3px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+        }
+        .book-stack .layer-3 { transform: rotate(-6deg) translate(-14px, 10px); opacity: 0.35; filter: brightness(0.5); }
+        .book-stack .layer-2 { transform: rotate(-3deg) translate(-6px, 4px); opacity: 0.6; filter: brightness(0.7); }
+        .book-stack .layer-1 { transform: rotate(0deg); position: relative; opacity: 1; }
+        .book-stack-wrap { position: relative; }
+
+        /* ===== HONESTY CARDS ===== */
+        .honesty-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .honesty-card {
+            background: var(--blueprint);
+            padding: 32px 28px;
+        }
+        .honesty-card .label {
+            font-family: 'Cinzel', serif;
+            font-size: 12px; font-weight: 700;
+            color: var(--gold);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .honesty-card p {
+            font-size: 15px;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
         .pillar-card {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 4px;
-            padding: 32px;
+            padding: 28px 26px;
             position: relative;
             overflow: hidden;
             transition: all 0.5s ease;
@@ -317,30 +519,19 @@
         }
         .pillar-num {
             font-family: 'Cinzel', serif;
-            font-size: 48px; font-weight: 800;
-            color: rgba(201,168,76,0.1);
+            font-size: 34px; font-weight: 800;
+            color: rgba(201,168,76,0.15);
             line-height: 1;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .pillar-title {
             font-family: 'Cinzel', serif;
-            font-size: 20px; font-weight: 700;
+            font-size: 16px; font-weight: 700;
             color: white;
-            letter-spacing: 0.05em;
-            margin-bottom: 12px;
+            letter-spacing: 0.03em;
+            margin-bottom: 8px;
         }
         .pillar-desc {
-            font-size: 16px;
-            color: var(--text-dim);
-            line-height: 1.6;
-        }
-
-        .timeline-item {
-            display: flex; gap: 24px;
-            padding: 24px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .timeline-content p {
             font-size: 14px;
             color: var(--text-dim);
             line-height: 1.6;
@@ -377,8 +568,8 @@
         }
 
         .pricing-card {
-            background: linear-gradient(135deg, rgba(201,168,76,0.05) 0%, rgba(255,255,255,0.02) 100%);
-            border: 1px solid rgba(201,168,76,0.2);
+            background: linear-gradient(155deg, var(--gold-light) 0%, var(--gold) 55%, #b3923f 100%);
+            border: 1px solid rgba(255,255,255,0.35);
             border-radius: 8px;
             padding: 48px 40px;
             text-align: center;
@@ -386,57 +577,63 @@
             overflow: hidden;
             max-width: 480px;
             margin: 0 auto;
+            box-shadow: 0 0 40px rgba(201,168,76,0.55), 0 0 90px rgba(201,168,76,0.3), 0 20px 60px rgba(0,0,0,0.35);
+            animation: goldPulse 3.5s ease-in-out infinite;
+        }
+        @keyframes goldPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(201,168,76,0.55), 0 0 90px rgba(201,168,76,0.3), 0 20px 60px rgba(0,0,0,0.35); }
+            50% { box-shadow: 0 0 55px rgba(201,168,76,0.75), 0 0 120px rgba(201,168,76,0.45), 0 20px 60px rgba(0,0,0,0.35); }
         }
         .pricing-card::before {
             content: '';
             position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
         }
         .pricing-card::after {
             content: '';
             position: absolute;
             top: -50%; right: -50%;
             width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(201,168,76,0.03) 0%, transparent 50%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 55%);
             pointer-events: none;
         }
         .price-badge {
             display: inline-block;
             font-family: 'Cinzel', serif;
             font-size: 11px; font-weight: 700;
-            color: #0a0a0a;
-            background: var(--gold);
+            color: #fff;
+            background: var(--blueprint);
             padding: 6px 20px;
             letter-spacing: 0.3em;
             text-transform: uppercase;
             margin-bottom: 24px;
-        }
-        .price-original {
-            font-size: 20px;
-            color: var(--text-dim);
-            text-decoration: line-through;
-            font-weight: 400;
+            position: relative;
+            z-index: 1;
         }
         .price-current {
             font-family: 'Cinzel', serif;
             font-size: clamp(40px, 8vw, 56px);
             font-weight: 800;
-            color: white;
+            color: var(--blueprint);
             line-height: 1;
             margin: 16px 0 4px;
+            position: relative;
+            z-index: 1;
         }
-        .price-current span { color: var(--gold); }
+        .price-current span { color: var(--blueprint); }
         .price-note {
             font-size: 15px;
-            color: var(--text-dim);
+            color: rgba(8,34,65,0.75);
             margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
         }
         .cta-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
             width: 100%;
             padding: 18px 32px;
-            background: var(--gold);
-            color: #0a0a0a;
+            background: var(--blueprint);
+            color: #fff;
             font-family: 'Cinzel', serif;
             font-size: 15px; font-weight: 700;
             letter-spacing: 0.15em;
@@ -445,18 +642,22 @@
             border: none; cursor: pointer;
             transition: all 0.4s ease;
             border-radius: 4px;
+            position: relative;
+            z-index: 1;
         }
         .cta-btn:hover {
-            background: var(--gold-light);
+            background: var(--blueprint-light);
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(201,168,76,0.3);
+            box-shadow: 0 8px 30px rgba(8,34,65,0.4);
         }
         .cta-btn:active { transform: translateY(0); }
         .price-guarantee {
             display: flex; align-items: center; justify-content: center; gap: 8px;
             margin-top: 16px;
             font-size: 13px;
-            color: var(--text-dim);
+            color: rgba(255,255,255,0.75);
+            position: relative;
+            z-index: 1;
         }
 
         .feature-list {
@@ -466,23 +667,71 @@
         }
         .feature-list li {
             display: flex; align-items: flex-start; gap: 12px;
-            padding: 10px 0;
-            font-size: 16px;
-            color: var(--text);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            padding: 9px 0;
+            font-size: 15px;
+            color: var(--blueprint);
+            font-weight: 500;
+            border-bottom: 1px solid rgba(8,34,65,0.12);
+            position: relative;
+            z-index: 1;
         }
         .feature-list li:last-child { border-bottom: none; }
         .feature-list .check {
             flex-shrink: 0;
             width: 20px; height: 20px;
             border-radius: 50%;
-            background: rgba(201,168,76,0.15);
+            background: var(--blueprint);
             display: flex; align-items: center; justify-content: center;
             margin-top: 1px;
         }
         .feature-list .check svg {
             width: 12px; height: 12px;
+            color: #fff;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .faq-q {
+            width: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px;
+            padding: 22px 4px;
+            background: none; border: none;
+            cursor: pointer;
+            text-align: left;
+            font-family: 'Cinzel', serif;
+            font-size: clamp(14px, 1.8vw, 17px);
+            font-weight: 600;
+            color: white;
+        }
+        .faq-q .plus {
+            flex-shrink: 0;
+            width: 20px; height: 20px;
+            position: relative;
             color: var(--gold);
+        }
+        .faq-q .plus::before, .faq-q .plus::after {
+            content: '';
+            position: absolute; background: currentColor;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .faq-q .plus::before { width: 14px; height: 2px; }
+        .faq-q .plus::after { width: 2px; height: 14px; transition: transform 0.3s ease; }
+        .faq-item.open .plus::after { transform: translate(-50%, -50%) rotate(90deg) scaleY(0); }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .faq-a p {
+            padding: 0 4px 22px;
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 640px;
         }
 
         .ns-footer {
@@ -503,16 +752,40 @@
             margin-top: 8px;
         }
 
-        .compass {
-            width: 60px; height: 60px;
-            border: 1px solid rgba(201,168,76,0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            animation: compassSpin 30s linear infinite;
-            margin: 0 auto;
+        /* ===== STICKY MOBILE CTA ===== */
+        .sticky-cta {
+            position: fixed; left: 0; right: 0; bottom: 0;
+            z-index: 400;
+            display: none;
+            align-items: center; justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            background: rgba(var(--blueprint-rgb), 0.97);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            transform: translateY(100%);
+            transition: transform 0.35s ease;
         }
-        @keyframes compassSpin { to { transform: rotate(360deg); } }
-        .compass svg { width: 28px; height: 28px; color: var(--gold); animation: compassSpin 30s linear infinite reverse; }
+        .sticky-cta.show { transform: translateY(0); }
+        .sticky-cta-info { display: flex; flex-direction: column; line-height: 1.3; }
+        .sticky-cta-info .name { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+        .sticky-cta-info .price { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 800; color: var(--gold); }
+        .sticky-cta-btn {
+            flex-shrink: 0;
+            font-family: 'Cinzel', serif;
+            font-size: 13px; font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #0a0a0a;
+            background: var(--gold);
+            padding: 12px 24px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .sticky-cta { display: flex; }
+        }
 
         @media (max-width: 768px) {
             .pillar-grid { grid-template-columns: 1fr !important; }
@@ -528,8 +801,20 @@
 </head>
 <body>
 
+<!-- ===== NAV ===== -->
+<nav class="ns-nav" id="nsNav">
+    <a href="#" class="ns-nav-brand"><span class="line1">Neo Sabang Blueprint</span><span class="line2">by The Innovators Studio</span></a>
+    <div class="ns-nav-links">
+        <a href="#concept">Concept</a>
+        <a href="#inside">Inside</a>
+        <a href="#preview">Preview</a>
+        <a href="#faq">FAQ</a>
+        <a href="#buy" class="ns-nav-cta">Get Blueprint</a>
+    </div>
+</nav>
+
 <!-- ===== HERO TITLE CARD (video background) ===== -->
-<div class="hero-title-card">
+<div class="hero-title-card" id="hero">
     <div class="hero-video-bg">
         <video id="introVideo" autoplay playsinline>
             <source src="/public/images/neosabang-intro.mp4" type="video/mp4">
@@ -543,6 +828,8 @@
         <svg id="iconSoundOff" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
     </button>
 
+    <p class="hero-hook">What if one street could bring all of Indonesia cuisine to the same table?</p>
+
     <div class="title-block">
         <div class="title-presents">
             <strong>The Innovators Studio</strong> <span>presents</span>
@@ -551,7 +838,12 @@
     </div>
 
     <div class="title-extras">
-        <div class="title-badge">Blueprint</div>
+        <div class="title-badge">Research Blueprint</div>
+    </div>
+
+    <div class="hero-cta-row">
+        <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="hero-cta-btn" target="_blank" data-cta="hero_get_blueprint">Get The Blueprint</a>
+        <div class="hero-price-line"><strong>Rp30.000</strong> &middot; Instant PDF Access</div>
     </div>
 
     <div class="title-scroll">
@@ -576,31 +868,20 @@
     "></div>
     <?php endfor; ?>
 
-    <!-- ===== INTRO / SUBTITLE ===== -->
-    <section style="padding: 100px 24px 60px;">
+    <!-- ===== THE PROBLEM ===== -->
+    <section id="concept" style="padding: 100px 24px 60px;">
         <div style="max-width: 800px; margin: 0 auto; text-align: center;">
-            <div class="reveal-up section-label">Reimagining Indonesia's Culinary Street</div>
-            <p class="reveal-up d1 big-quote" style="margin-top: 24px; font-size: clamp(22px, 3.5vw, 38px);">
-                One street. All of Indonesia. <em>One long table.</em>
+            <div class="reveal-up section-label">It Already Has The Traffic</div>
+            <p class="reveal-up d1 big-quote" style="margin-top: 24px;">
+                Jalan Sabang doesn't need to be invented. <em>It needs to be transformed.</em>
             </p>
-        </div>
-    </section>
-
-    <div class="section-divider">
-        <div class="line"></div><div class="diamond"></div><div class="line"></div>
-    </div>
-
-    <!-- ===== THE TEAM ===== -->
-    <section style="padding: 0 24px 80px;">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div class="reveal-up big-quote">
-                "<em>IT. Business. Design.</em><br>
-                <em>Accounting. Brand CEOs. Politics.</em><br>
-                <em>One team, one blueprint.</em>"
+            <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 24px; font-size: 16px; line-height: 1.8; max-width: 560px; margin-left: auto; margin-right: auto;">
+                Around 9,000 people already walk this street every day, with zero design behind it. The food is there. The crowd is there. What's missing is the system that turns that into a destination.
+            </p>
+            <div class="reveal-up d3 scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#hooks">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
             </div>
-            <p class="reveal-up d1 section-heading" style="text-align: center; margin-top: 32px; font-size: clamp(20px, 3vw, 32px); max-width: 700px; margin-left: auto; margin-right: auto;">
-                Prepare Rp30.000. This wasn't built by one person guessing.
-            </p>
         </div>
     </section>
 
@@ -608,99 +889,150 @@
         <div class="line"></div><div class="diamond"></div><div class="line"></div>
     </div>
 
-    <!-- ===== WHAT'S INSIDE ===== -->
-    <section style="padding: 80px 24px;">
+    <!-- ===== CURIOSITY HOOKS ===== -->
+    <section id="hooks" style="padding: 0 24px 80px;">
+        <div style="max-width: 700px; margin: 0 auto; text-align: left;">
+            <div class="reveal-up" style="margin-bottom: 40px;">
+                <div class="section-label">The Questions Behind The Blueprint</div>
+            </div>
+
+            <ul style="list-style: none; padding: 0; margin: 0;">
+            <?php
+            $hooks = [
+                'Why does Jalan Alor earn far more than Jalan Sabang, on roughly the same length of street?',
+                'Why isn\'t simply closing the road the answer?',
+                'What happens to the people already living there?',
+                'Who actually runs the street after opening day?',
+                'Can renaming a street really change what happens on it?',
+            ];
+            foreach($hooks as $i => $h): ?>
+            <li class="reveal-up d<?= min($i+1,5) ?> hook-line"><?= $h ?></li>
+            <?php endforeach; ?>
+            </ul>
+
+            <p class="reveal-up" style="color: var(--text-dim); margin-top: 36px; font-size: 15px;">
+                We didn't start with a masterplan. We started with better questions.
+            </p>
+            <div style="margin-top: 28px;">
+                <a href="#inside" class="reveal-up" style="display: inline-block; font-family: 'Cinzel', serif; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid var(--gold-dim); padding-bottom: 4px; text-decoration: none;">See What We Found</a>
+            </div>
+            <div class="reveal-up scroll-next" data-next="#preview">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+
+    <!-- ===== BOOK PREVIEW ===== -->
+    <section id="preview" style="padding: 0 24px 80px;">
+        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+            <div class="reveal-up section-label">The Manuscript</div>
+            <h2 class="reveal-up d1 section-heading">50+ pages of thinking you were never meant to see.</h2>
+            <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 20px; font-size: 15px; max-width: 480px; margin-left: auto; margin-right: auto;">
+                Not just the final idea. The questions, references, assumptions, and unfinished parts behind it.
+            </p>
+
+            <div class="reveal-scale book-stack-wrap">
+                <div class="book-stack">
+                    <img class="layer-3" src="/public/images/neosabang-cover.jpg" alt="" aria-hidden="true">
+                    <img class="layer-2" src="/public/images/neosabang-cover.jpg" alt="" aria-hidden="true">
+                    <img class="layer-1" src="/public/images/neosabang-cover.jpg" alt="Neo Sabang Blueprint cover">
+                </div>
+            </div>
+
+            <div style="margin-top: 36px;">
+                <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="hero-cta-btn" target="_blank" data-cta="preview_get_blueprint">Get The Full Blueprint</a>
+                <div class="hero-price-line" style="margin-top: 12px; color: var(--text-dim);"><strong style="color: var(--gold);">Rp30.000</strong></div>
+            </div>
+            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#honesty">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+
+    <!-- ===== NO FAKE CERTAINTY ===== -->
+    <section id="honesty" style="padding: 0 24px 80px;">
+        <div style="max-width: 1000px; margin: 0 auto;">
+            <div class="reveal-up" style="text-align: center; margin-bottom: 48px;">
+                <div class="section-label">No Fake Certainty</div>
+                <h2 class="section-heading">We left the uncertainty in.</h2>
+                <p style="color: var(--text-dim); margin-top: 16px; font-size: 15px;">Most proposals hide the questions. This one publishes them.</p>
+            </div>
+
+            <div class="reveal-up honesty-grid">
+                <div class="honesty-card">
+                    <div class="label">What We Know</div>
+                    <p>Sabang's real traffic patterns, its narrow trotoar, and its foot traffic. Measured from what's already there today.</p>
+                </div>
+                <div class="honesty-card">
+                    <div class="label">What We Believe</div>
+                    <p>A pedestrian-first core, rhythm-based rest zones, and an annual culinary system can turn friction into flow.</p>
+                </div>
+                <div class="honesty-card">
+                    <div class="label">What Still Needs Testing</div>
+                    <p>The exact economics, the crossing relocation, and the compensation housing model. Flagged as hypotheses, not facts.</p>
+                </div>
+                <div class="honesty-card">
+                    <div class="label">What We'll Measure</div>
+                    <p>Dwell time, transit mode share, resident satisfaction after relocation, and noise and air quality against today's baseline.</p>
+                </div>
+            </div>
+
+            <p class="reveal-up" style="text-align: center; color: var(--text-dim); margin-top: 32px; font-size: 14px;">
+                It's not a weakness. It's what honest work looks like.
+            </p>
+            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#inside">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+
+    <!-- ===== INSIDE THE BLUEPRINT (9 chapters) ===== -->
+    <section id="inside" style="padding: 80px 24px;">
         <div style="max-width: 1100px; margin: 0 auto;">
             <div class="reveal-up" style="text-align: center; margin-bottom: 56px;">
-                <div class="section-label">What's Inside</div>
-                <h2 class="section-heading">Not just ideas. A real blueprint.</h2>
+                <div class="section-label">9 Chapters</div>
+                <h2 class="section-heading">From one street to Sabang&ndash;Merauke.</h2>
             </div>
 
-            <div class="pillar-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div class="pillar-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
                 <?php
                 $chapters = [
-                    ['num' => 'I', 'title' => 'The Problem', 'desc' => 'Three layers keep Sabang from working: space, operations, experience.'],
-                    ['num' => 'II', 'title' => 'The Long Indonesian Table', 'desc' => 'One street. All of Indonesia. Sit down anywhere.'],
-                    ['num' => 'III', 'title' => 'Rhythm & Pause', 'desc' => 'Every step, every pause, designed on purpose.'],
-                    ['num' => 'IV', 'title' => 'Jagat Rasa', 'desc' => 'An annual culinary competition that keeps it alive, year after year.'],
-                    ['num' => 'V', 'title' => 'The Business Case', 'desc' => 'The math behind Neo Sabang, done honestly.'],
+                    ['num' => '01', 'title' => 'The Status Quo', 'desc' => 'Jalan Sabang today: full of life, empty of system.'],
+                    ['num' => '02', 'title' => 'The Vision', 'desc' => 'One name change. Sabang becomes Sabang–Merauke.'],
+                    ['num' => '03', 'title' => 'Sabang–Merauke Culinary Street', 'desc' => 'Curated by Kompetisi Jagatrasa, a national contest for a seat on the street.'],
+                    ['num' => '04', 'title' => 'Car Free Road', 'desc' => 'The core goes car-free. A new route opens for what\'s displaced.'],
+                    ['num' => '05', 'title' => 'Integrated Public Transportation', 'desc' => 'The last 500 meters from MRT Monas, solved.'],
+                    ['num' => '06', 'title' => 'The Math', 'desc' => 'What it costs, what it returns, laid out honestly.'],
+                    ['num' => '07', 'title' => 'The Challenges', 'desc' => 'Land, conflicting interests, and who runs it after opening day.'],
+                    ['num' => '08', 'title' => 'The Impact', 'desc' => 'Social, economic, ecological, mobility. Measured, not assumed.'],
+                    ['num' => '09', 'title' => 'Conclusion & Recommendations', 'desc' => 'A phased rollout: pilot, evaluate, expand.'],
                 ];
                 foreach($chapters as $i => $c): ?>
-                <div class="reveal-up d<?= $i+1 ?> pillar-card">
+                <div class="reveal-up d<?= ($i % 5) + 1 ?> pillar-card">
                     <div class="pillar-num"><?= $c['num'] ?></div>
                     <div class="pillar-title"><?= $c['title'] ?></div>
                     <div class="pillar-desc"><?= $c['desc'] ?></div>
                 </div>
                 <?php endforeach; ?>
             </div>
-        </div>
-    </section>
-
-    <div class="section-divider">
-        <div class="line"></div><div class="diamond"></div><div class="line"></div>
-    </div>
-
-    <!-- ===== WHY YOU SHOULD BUY ===== -->
-    <section style="padding: 80px 24px;">
-        <div style="max-width: 750px; margin: 0 auto; text-align: center;">
-            <div class="reveal-up">
-                <div class="section-label">Why This Blueprint</div>
-                <h2 class="section-heading" style="margin-bottom: 56px;">Why you should buy it.</h2>
-            </div>
-
-            <?php
-            $reasons = [
-                'Not a finished pitch deck. The real thinking, hypotheses and all.',
-                'Real research, real numbers. Not just theory.',
-                'First 81 buyers only. Then it\'s gone.',
-            ];
-            foreach($reasons as $i => $r): ?>
-            <div class="reveal-up d<?= $i+1 ?> big-quote" style="font-size: clamp(20px, 3vw, 30px); margin-bottom: 28px;">
-                <?= $r ?>
-            </div>
-            <?php endforeach; ?>
-        </div>
-    </section>
-
-    <div class="section-divider">
-        <div class="line"></div><div class="diamond"></div><div class="line"></div>
-    </div>
-
-    <!-- ===== CONVICTION ===== -->
-    <section style="padding: 80px 24px;">
-        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
-            <div class="reveal-up">
-                <div class="compass">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L15 9L22 12L15 15L12 22L9 15L2 12L9 9L12 2Z"/></svg>
-                </div>
-            </div>
-
-            <div class="reveal-up d1" style="margin-top: 40px;">
-                <div class="big-quote" style="font-size: clamp(20px, 3.5vw, 36px);">
-                    You're not buying an e-book.<br>
-                    You're buying <em>the thinking</em><br>
-                    that turns one street into<br>
-                    <em>a world-class destination.</em>
-                </div>
-            </div>
-
-            <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 32px; font-size: 17px; line-height: 1.7;">
-                Built from real research. Ready to execute.
-            </p>
-
-            <div class="reveal-up d3" style="margin-top: 40px; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
-                <div style="text-align: center;">
-                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">45+</div>
-                    <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Pages</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">13</div>
-                    <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Chapters</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-family: 'Cinzel', serif; font-size: 36px; font-weight: 800; color: var(--gold);">1</div>
-                    <div style="font-size: 12px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px;">Big Idea</div>
-                </div>
+            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#buy">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
             </div>
         </div>
     </section>
@@ -729,40 +1061,119 @@
                     <ul class="feature-list">
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            The full vision: concept, framework & story
+                            9 chapters, start to finish
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            A presentation-ready visual masterplan
+                            The vision: Sabang becomes Sabang&ndash;Merauke
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            The business case, numbers and all
+                            Three transformations: culinary street, car-free core, integrated transit
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            Honest hypotheses & open data, laid bare
+                            The Kompetisi Jagatrasa mechanism
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            45+ pages of real research and design
+                            The math: real costs, real returns
+                        </li>
+                        <li>
+                            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+                            Governance, financing & relocation plan
+                        </li>
+                        <li>
+                            <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
+                            Open hypotheses & research questions
                         </li>
                     </ul>
 
-                    <div class="price-current"><span>Rp</span> 30.000</div>
-                    <div class="price-note">Early bird price, limited to first 81 buyers</div>
+                    <div class="price-current" style="margin-bottom: 28px;"><span>Rp</span> 30.000</div>
 
-                    <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" id="checkoutBtn" class="cta-btn" target="_blank">
+                    <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" id="checkoutBtn" class="cta-btn" target="_blank" data-cta="pricing_get_blueprint">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                         Get The Blueprint
                     </a>
 
                     <div class="price-guarantee">
                         <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        Instant download · PDF format
+                        Instant download &middot; PDF format
                     </div>
                 </div>
             </div>
+            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#faq">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+
+    <!-- ===== FAQ ===== -->
+    <section id="faq" style="padding: 0 24px 100px;">
+        <div style="max-width: 700px; margin: 0 auto;">
+            <div class="reveal-up" style="text-align: center; margin-bottom: 40px;">
+                <div class="section-label">FAQ</div>
+                <h2 class="section-heading">Questions, answered honestly.</h2>
+            </div>
+
+            <div class="reveal-up" id="faqList">
+                <?php
+                $faqs = [
+                    ['q' => 'Is Neo Sabang an official government proposal?', 'a' => 'No. Neo Sabang is an independent working blueprint created by The Innovators Studio.'],
+                    ['q' => 'Is every number inside the blueprint final?', 'a' => 'No. Preliminary estimates are clearly labeled as working estimates. The manuscript also states which data and hypotheses still need verification.'],
+                    ['q' => 'What format will I receive?', 'a' => 'A digital PDF, available for instant download after your purchase.'],
+                    ['q' => 'Is this only for architects or urban designers?', 'a' => 'No. It\'s written for designers, builders, business thinkers, students, policymakers, culinary founders, and anyone curious about how cities work.'],
+                    ['q' => 'Is this a finished masterplan?', 'a' => 'No. It\'s a studio manuscript that explores a direction, the reasoning behind it, and the questions that still need to be tested.'],
+                    ['q' => 'Can I share or resell the PDF?', 'a' => 'No. The purchase is for personal use unless The Innovators Studio gives written permission.'],
+                    ['q' => 'How much does it cost?', 'a' => 'Rp30.000.'],
+                ];
+                foreach($faqs as $f): ?>
+                <div class="faq-item">
+                    <button class="faq-q" type="button">
+                        <span><?= $f['q'] ?></span>
+                        <span class="plus"></span>
+                    </button>
+                    <div class="faq-a">
+                        <p><?= $f['a'] ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#final">
+                <span>Scroll to Explore</span>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="line"></div><div class="diamond"></div><div class="line"></div>
+    </div>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section id="final" style="padding: 0 24px 100px;">
+        <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+            <div class="reveal-up big-quote">
+                The same street.<br>
+                <em>A different way to live.</em>
+            </div>
+            <p class="reveal-up d1" style="color: var(--text-dim); margin-top: 24px; font-size: 16px; line-height: 1.8; max-width: 520px; margin-left: auto; margin-right: auto;">
+                Neo Sabang doesn't turn Jakarta into a different city. It just gives Jakarta room to become the best version of itself.
+            </p>
+
+            <div class="reveal-up d2" style="margin-top: 36px;">
+                <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="hero-cta-btn" target="_blank" data-cta="final_get_blueprint">Read The Blueprint</a>
+                <div class="hero-price-line" style="margin-top: 14px; color: var(--text-dim);"><strong style="color: var(--gold);">Rp30.000</strong> &middot; Instant PDF Access</div>
+            </div>
+
+            <p class="reveal-up d3" style="color: rgba(255,255,255,0.3); margin-top: 32px; font-size: 12px; letter-spacing: 0.05em;">
+                A working manuscript by The Innovators Studio.
+            </p>
         </div>
     </section>
 
@@ -770,6 +1181,15 @@
         <a href="/">← The Innovators Studio</a>
         <p>&copy; <?= date('Y') ?> The Innovators Studio. All rights reserved.</p>
     </div>
+</div>
+
+<!-- ===== STICKY MOBILE CTA ===== -->
+<div class="sticky-cta" id="stickyCta">
+    <div class="sticky-cta-info">
+        <span class="name">Neo Sabang</span>
+        <span class="price">Rp30.000</span>
+    </div>
+    <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get It</a>
 </div>
 
 <script>
@@ -838,9 +1258,74 @@
         a.addEventListener('click', function(e) {
             e.preventDefault();
             var t = document.querySelector(this.getAttribute('href'));
-            if (t) window.scrollTo({ top: t.offsetTop - 40, behavior: 'smooth' });
+            if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
+
+    document.querySelectorAll('.scroll-next').forEach(function(el) {
+        el.addEventListener('click', function() {
+            var t = document.querySelector(el.getAttribute('data-next'));
+            if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+})();
+
+(function() {
+    var nav = document.getElementById('nsNav');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 80) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+    });
+})();
+
+(function() {
+    document.querySelectorAll('.faq-item').forEach(function(item) {
+        var btn = item.querySelector('.faq-q');
+        var answer = item.querySelector('.faq-a');
+        btn.addEventListener('click', function() {
+            var isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(function(other) {
+                if (other !== item) {
+                    other.classList.remove('open');
+                    other.querySelector('.faq-a').style.maxHeight = null;
+                }
+            });
+            if (isOpen) {
+                item.classList.remove('open');
+                answer.style.maxHeight = null;
+            } else {
+                item.classList.add('open');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            }
+        });
+    });
+})();
+
+(function() {
+    var stickyCta = document.getElementById('stickyCta');
+    var hero = document.getElementById('hero');
+    var buySection = document.getElementById('buy');
+    if (!stickyCta || !hero || !buySection) return;
+
+    var pastHero = false;
+    var inBuySection = false;
+
+    function updateSticky() {
+        if (pastHero && !inBuySection) stickyCta.classList.add('show');
+        else stickyCta.classList.remove('show');
+    }
+
+    var heroObs = new IntersectionObserver(function(entries) {
+        pastHero = !entries[0].isIntersecting;
+        updateSticky();
+    }, { threshold: 0 });
+    heroObs.observe(hero);
+
+    var buyObs = new IntersectionObserver(function(entries) {
+        inBuySection = entries[0].isIntersecting;
+        updateSticky();
+    }, { threshold: 0.15 });
+    buyObs.observe(buySection);
 })();
 </script>
 </body>

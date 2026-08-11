@@ -9,7 +9,7 @@
     <meta property="og:description" content="Designers. Makers. Storytellers. Obsessed with turning crazy ideas into things people actually want.">
     <meta property="og:image" content="<?= BASE_URL ?>/public/images/hero-team.png">
     <meta property="og:url" content="<?= BASE_URL ?>">
-    <link rel="icon" type="image/jpeg" href="/public/images/tis-logo-circle.jpeg">
+    <link rel="icon" type="image/png" href="/public/images/tis-logo-circle.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -583,6 +583,37 @@
                     </div>
                     <?php endfor; ?>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ NEO SABANG PROMO ============ -->
+<section class="py-20 lg:py-28 bg-neutral-50 relative overflow-hidden" data-section="light">
+    <div class="blob w-[350px] h-[350px] -top-20 -left-20 parallax-slow" data-speed="0.03" style="opacity:0.05"></div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center bg-white rounded-[2rem] p-8 sm:p-10 lg:p-14 shadow-xl shadow-neutral-900/5 border border-neutral-100">
+            <div class="reveal space-y-6 order-2 lg:order-1">
+                <span class="pill inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-purple-700 tracking-wide">
+                    <span class="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></span>
+                    NEW &amp; IN THE WORKS
+                </span>
+                <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 leading-[1.1]">
+                    Something new is brewing.
+                    <span class="gradient-text">Neo Sabang.</span>
+                </h2>
+                <p class="text-lg text-neutral-600 leading-relaxed font-light max-w-md">
+                    A working research blueprint reimagining Jalan Sabang as Sabang&ndash;Merauke &mdash; Jakarta's pedestrian-first culinary destination. 50+ pages of real thinking, hypotheses and all.
+                </p>
+                <a href="/neosabang" class="magnetic-btn group inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 text-white font-semibold rounded-full hover:bg-neutral-800 transition-all hover:shadow-xl hover:shadow-neutral-900/15 active:scale-95">
+                    Explore Neo Sabang
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+            <div class="reveal-left relative order-1 lg:order-2">
+                <a href="/neosabang" class="block rounded-2xl overflow-hidden shadow-2xl shadow-neutral-900/10 hover:-translate-y-1 transition-transform duration-300">
+                    <img src="/public/images/neosabang-cover.jpg" alt="Neo Sabang Blueprint cover" class="w-full h-auto">
+                </a>
             </div>
         </div>
     </div>
