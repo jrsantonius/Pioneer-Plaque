@@ -98,6 +98,12 @@ if ($requestUri === '/neosabang') {
     exit;
 }
 
+// GET /creativebusiness
+if ($requestUri === '/creativebusiness') {
+    require __DIR__ . '/pages/creativebusiness.php';
+    exit;
+}
+
 // GET /login
 if ($requestUri === '/login') {
     require __DIR__ . '/pages/login.php';
