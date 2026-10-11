@@ -61,9 +61,10 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             display: flex; align-items: center; justify-content: space-between;
             padding: 20px 24px;
             background: transparent;
-            transition: background 0.4s ease, padding 0.4s ease, border-color 0.4s ease;
+            transition: background 0.4s ease, padding 0.4s ease, border-color 0.4s ease, opacity 1s ease;
             border-bottom: 1px solid transparent;
         }
+        html.intro-nav-hide .cb-nav { opacity: 0; }
         .cb-nav.scrolled {
             background: rgba(var(--peach-rgb), 0.92);
             backdrop-filter: blur(10px);
@@ -159,7 +160,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             line-height: 1.6;
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 0.2s forwards;
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 1.5s forwards;
         }
 
         .title-block {
@@ -172,7 +173,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             letter-spacing: 0.02em;
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 0.6s forwards;
+            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 1.0s forwards;
         }
         .title-presents strong { font-weight: 800; }
         .title-presents span { font-weight: 400; color: var(--text-dim); }
@@ -189,8 +190,8 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             transform: translateY(30px);
             animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) forwards;
         }
-        .title-word.w1 { margin-top: 14px; animation-delay: 0.9s; position: relative; }
-        .title-word.w2 { animation-delay: 1.2s; }
+        .title-word.w1 { margin-top: 14px; animation-delay: 0s; position: relative; }
+        .title-word.w2 { animation-delay: 0.3s; }
         .title-word .copy {
             position: absolute;
             font-family: 'Inter', sans-serif;
@@ -209,7 +210,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             background: var(--orange);
             transform: scaleX(0);
             transform-origin: left;
-            animation: lineGrow 0.8s cubic-bezier(0.22,1,0.36,1) 1.8s forwards;
+            animation: lineGrow 0.8s cubic-bezier(0.22,1,0.36,1) 0.9s forwards;
         }
 
         @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
@@ -243,7 +244,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             display: flex; flex-direction: column; align-items: center; gap: 10px;
             opacity: 0;
             transform: translateY(20px);
-            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 2.2s forwards;
+            animation: slideUp 1s cubic-bezier(0.22,1,0.36,1) 2.3s forwards;
         }
         .hero-cta-btn {
             display: inline-flex; align-items: center; gap: 10px;
@@ -276,7 +277,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
             font-weight: 700;
             opacity: 0;
-            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 2.7s forwards;
+            animation: slideUp 0.8s cubic-bezier(0.22,1,0.36,1) 2.8s forwards;
         }
         .title-scroll svg {
             animation: scrollBounce 2s ease-in-out infinite;
@@ -1035,12 +1036,74 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
 
         @media (hover: none) { .cursor-ring { display: none; } }
         @media (prefers-reduced-motion: reduce) { .cursor-ring, .hero-glow { display: none; } }
+
+        /* ===== INTRO VIDEO OVERLAY ===== */
+        html.intro-lock, html.intro-lock body { overflow: hidden; }
+        .cb-intro {
+            position: fixed; inset: 0;
+            z-index: 20000;
+            background: #1c1511;
+        }
+        .cb-intro.done { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.8s ease, visibility 0.8s ease; }
+        .cb-intro video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .cb-intro-tint {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(28,21,17,0.35) 0%, transparent 30%, transparent 70%, rgba(28,21,17,0.5) 100%);
+            pointer-events: none;
+        }
+        .cb-intro-btn {
+            position: absolute; bottom: 22px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            height: 36px;
+            background: rgba(255,245,238,0.12);
+            border: 1px solid rgba(255,245,238,0.3);
+            color: #fff5ee;
+            border-radius: 999px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            font-family: 'Inter', sans-serif;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            transition: background 0.3s ease;
+        }
+        .cb-intro-btn:hover { background: rgba(255,245,238,0.24); }
+        .cb-intro-skip { left: 22px; padding: 0 18px; }
+        .cb-intro-mute { right: 22px; width: 36px; }
+        .cb-intro-mute.hidden { display: none; }
+        .cb-intro-mute svg { width: 15px; height: 15px; }
+        @media (max-width: 600px) {
+            .cb-intro-btn { bottom: 16px; }
+            .cb-intro-skip { left: 16px; } .cb-intro-mute { right: 16px; }
+        }
+
+        /* hero animations wait for the intro to finish */
+        .hero-title-card:not(.hero-revealed) .hero-hook,
+        .hero-title-card:not(.hero-revealed) .title-presents,
+        .hero-title-card:not(.hero-revealed) .title-word,
+        .hero-title-card:not(.hero-revealed) .title-word.w2::after,
+        .hero-title-card:not(.hero-revealed) .title-extras,
+        .hero-title-card:not(.hero-revealed) .hero-cta-row,
+        .hero-title-card:not(.hero-revealed) .title-scroll { animation-play-state: paused; }
     </style>
 </head>
 <body>
 
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- ===== INTRO VIDEO ===== -->
+<div class="cb-intro" id="cbIntro">
+    <video id="cbIntroVideo" autoplay playsinline preload="auto">
+        <source src="/public/images/creativebusiness-intro.mp4" type="video/mp4">
+    </video>
+    <div class="cb-intro-tint"></div>
+    <button id="cbIntroSkip" class="cb-intro-btn cb-intro-skip" type="button">Skip</button>
+    <button id="cbIntroMute" class="cb-intro-btn cb-intro-mute hidden" type="button" aria-label="Toggle sound">
+        <svg id="cbIconOn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+        <svg id="cbIconOff" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+    </button>
+</div>
+<noscript><style>.cb-intro { display: none; } .hero-title-card .hero-hook, .hero-title-card .title-presents, .hero-title-card .title-word, .hero-title-card .title-extras, .hero-title-card .hero-cta-row, .hero-title-card .title-scroll { animation-play-state: running !important; }</style></noscript>
 
 <!-- ===== NAV ===== -->
 <nav class="cb-nav" id="cbNav">
@@ -1449,6 +1512,78 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
     <a href="<?= $cbCheckout ?>" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get It</a>
 </div>
 
+<script>
+(function() {
+    var intro = document.getElementById('cbIntro');
+    var video = document.getElementById('cbIntroVideo');
+    var skip = document.getElementById('cbIntroSkip');
+    var mute = document.getElementById('cbIntroMute');
+    var iconOn = document.getElementById('cbIconOn');
+    var iconOff = document.getElementById('cbIconOff');
+    var hero = document.getElementById('hero');
+    var root = document.documentElement;
+    var finished = false;
+
+    var FADE_START = 0.4, FADE_END = 4.6, REVEAL_AT = 1.0;
+    var revealed = false;
+
+    function reveal() {
+        if (revealed) return;
+        revealed = true;
+        root.classList.remove('intro-nav-hide');
+        hero.classList.add('hero-revealed');
+    }
+
+    function finish() {
+        if (finished) return;
+        finished = true;
+        if (typeof timer !== 'undefined') clearInterval(timer);
+        reveal();
+        root.classList.remove('intro-lock');
+        intro.style.opacity = '';
+        intro.classList.add('done');
+        setTimeout(function() { if (video) { video.pause(); } intro.style.display = 'none'; }, 900);
+    }
+
+    /* while the video plays, its overlay slowly dissolves into the hero underneath */
+    function tick() {
+        if (finished) return;
+        var t = video.currentTime;
+        var p = Math.min(1, Math.max(0, (t - FADE_START) / (FADE_END - FADE_START)));
+        var eased = p * p * (3 - 2 * p);
+        intro.style.opacity = (1 - eased).toFixed(3);
+        if (t >= REVEAL_AT) reveal();
+    }
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!video || reduce) { finish(); return; }
+
+    root.classList.add('intro-lock', 'intro-nav-hide');
+    video.addEventListener('ended', finish);
+    video.addEventListener('error', finish);
+    var timer = setInterval(tick, 33);
+    video.addEventListener('timeupdate', tick);
+    setTimeout(finish, 9000);
+    if (skip) skip.addEventListener('click', finish);
+
+    function updateIcon() {
+        var m = video.muted || video.volume === 0;
+        iconOn.style.display = m ? 'none' : 'block';
+        iconOff.style.display = m ? 'block' : 'none';
+    }
+    video.volume = 0.4;
+    video.muted = false;
+    var pp = video.play();
+    if (pp && pp.catch) pp.catch(function() { video.muted = true; video.play().catch(finish); updateIcon(); });
+    mute.classList.remove('hidden');
+    updateIcon();
+    mute.addEventListener('click', function() {
+        video.muted = !video.muted;
+        if (!video.muted) video.volume = 0.4;
+        updateIcon();
+    });
+})();
+</script>
 <script>
 (function() {
     var scrollLine = document.getElementById('scrollLine');
