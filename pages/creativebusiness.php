@@ -1,6 +1,6 @@
 <?php
-$cbPrice = 'Rp30.000';
-$cbPriceNum = '30.000';
+$cbPrice = 'Rp89.000';
+$cbPriceNum = '89.000';
 $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
 ?>
 <!DOCTYPE html>
