@@ -40,3 +40,6 @@ Thumbs.db
 npm-debug.log*
 .vercel
 .env*.local
+
+# Demoreto reader secrets & pages
+storage/

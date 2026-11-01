@@ -16,6 +16,7 @@ RewriteRule ^includes/ - [F,L]
 RewriteRule ^api/ - [F,L]
 RewriteRule ^pages/ - [F,L]
 RewriteRule \.db$ - [F,L]
+RewriteRule ^storage/ - [F,L]
 RewriteRule ^\.claude/ - [F,L]
 
 # Route everything else through index.php

@@ -29,7 +29,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 // Serve static files on built-in server
 if (php_sapi_name() === 'cli-server') {
     $filePath = __DIR__ . $requestUri;
-    if ($requestUri !== '/' && is_file($filePath)) {
+    if ($requestUri !== '/' && !str_starts_with($requestUri, '/storage/') && is_file($filePath)) {
         return false; // let built-in server handle static files
     }
 }
@@ -101,6 +101,26 @@ if ($requestUri === '/neosabang') {
 // GET /creativebusiness
 if ($requestUri === '/creativebusiness') {
     require __DIR__ . '/pages/creativebusiness.php';
+    exit;
+}
+
+// GET /baca/demoreto/{token} -> protected book reader
+if (preg_match('#^/baca/demoreto/([a-f0-9]{24})$#', $requestUri, $m)) {
+    $readerToken = $m[1];
+    require __DIR__ . '/pages/demoreto-reader.php';
+    exit;
+}
+
+// GET /baca/demoreto/unduh?e=&s= -> signed PDF download
+if ($requestUri === '/baca/demoreto/unduh') {
+    $readerDownload = true;
+    require __DIR__ . '/pages/demoreto-reader.php';
+    exit;
+}
+
+// GET /baca/demoreto/page/{n}?e=&s= -> signed page image
+if (preg_match('#^/baca/demoreto/page/(\d{1,2})$#', $requestUri, $m)) {
+    require __DIR__ . '/pages/demoreto-reader.php';
     exit;
 }
 
