@@ -1,0 +1,19 @@
+{
+  "name": "imazine-prototype",
+  "version": "7.0.0",
+  "private": true,
+  "description": "Prototipe front-end Imazine (album cetak A4, 40 halaman): situs satu file + sampul perangko + alat uji.",
+  "scripts": {
+    "build": "python3 covers/build.py && python3 site/build.py",
+    "serve": "python3 -m http.server 8765 --directory site",
+    "test": "node tools/v7.js all",
+    "test:ui": "node tools/drive.js desktop && node tools/drive.js tablet && node tools/drive.js mobile && node tools/drive.js small",
+    "test:shelf": "node tools/shelf-audit.js",
+    "test:upload": "node tools/upload.js",
+    "test:layouts": "node tools/alltpl.js",
+    "test:covers": "node tools/audit-covers.js && node tools/covers.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

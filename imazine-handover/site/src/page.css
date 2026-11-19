@@ -1,0 +1,23 @@
+/* ---------- template page ---------- */
+.pg{position:relative;aspect-ratio:1000/1416;container-type:inline-size;overflow:hidden;background:#fff;isolation:isolate}
+.pg-l{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.slot{position:absolute;overflow:hidden;padding:0;border:0;margin:0;background:none;display:block;font:inherit;color:inherit}
+.slot img{position:absolute;max-width:none;display:block;user-select:none;-webkit-user-drag:none}
+.slot.is-empty{box-shadow:inset 0 0 0 .18cqw rgba(25,27,10,.34)}
+.slot-lb{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2em;font-family:var(--font-ui);font-weight:700;letter-spacing:.04em;color:rgba(25,27,10,.62);line-height:1.1;text-transform:uppercase}
+.slot-plus{font-size:1.5em;font-weight:500;line-height:.8}
+.tx{position:absolute;white-space:pre;line-height:1;padding:0;margin:0;border:0;background:none;text-align:left;transform-origin:0 84.7%;font-kerning:normal}
+.tx-c{transform:translateX(-50%)}
+.tx-r{transform:translateX(-100%)}
+.tx-sp .tx-v{letter-spacing:.28em}
+.tx-up .tx-v{text-transform:uppercase}
+.cp{overflow:hidden;text-overflow:clip}
+.pa{position:absolute;padding:0;margin:0;border:0;background:none;display:block;text-align:left;overflow:hidden}
+.pa-bar,.pa-rule{position:absolute;display:block}
+.pa-rule{left:0;right:0;height:0}
+.pa-t{position:absolute;inset:0;white-space:pre-wrap;overflow-wrap:break-word;color:#2b2b2b;overflow:hidden}
+.cp-bar{position:absolute;display:block}
+
+/* Mode pembayaran: tanpa kelas .pay di <html> (bawaan) pembayaran disembunyikan; /api/imazine/config payment:true menambahkan .pay */
+html:not(.pay) [data-pay]{display:none!important}
+html.pay [data-nopay]{display:none!important}

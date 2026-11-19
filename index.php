@@ -81,6 +81,13 @@ if (str_starts_with($requestUri, '/api/')) {
         exit;
     }
 
+    // /api/imazine/* -> pesanan album Imazine (Mayar, unggah foto, webhook)
+    if (str_starts_with($requestUri, '/api/imazine/')) {
+        require __DIR__ . '/api/imazine.php';
+        imazineApi($requestUri, $method);
+        exit;
+    }
+
     jsonResponse(['error' => 'Not found'], 404);
 }
 
@@ -95,6 +102,49 @@ if ($requestUri === '/') {
 // GET /neosabang
 if ($requestUri === '/neosabang') {
     require __DIR__ . '/pages/neosabang.php';
+    exit;
+}
+
+// GET /imazine -> Imazine album prototype (single static file)
+if ($requestUri === '/imazine' || $requestUri === '/imazine/') {
+    // Kunjungan ulang cukup bertanya "masih sama?" (304, tanpa isi) alih-alih mengunduh ulang ~330 KB.
+    $imzFile = __DIR__ . '/public/imazine/index.html';
+    $imzTag = '"' . filemtime($imzFile) . '-' . filesize($imzFile) . '"';
+    header('Content-Type: text/html; charset=utf-8');
+    header('Cache-Control: no-cache');
+    header('ETag: ' . $imzTag);
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($imzFile)) . ' GMT');
+    header('Vary: Accept-Encoding');
+    if (trim($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $imzTag) { http_response_code(304); exit; }
+    // Versi brotli tingkat maksimal (dibuat saat build, ~155 KB vs ~330 KB kompresi bawaan server). Dipakai hanya bila
+    // lebih baru dari index.html, supaya tidak pernah menyajikan versi lama.
+    $imzBr = $imzFile . '.br';
+    if (str_contains($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'br') && is_file($imzBr) && filemtime($imzBr) >= filemtime($imzFile)) {
+        header('Content-Encoding: br');
+        header('Content-Length: ' . filesize($imzBr));
+        readfile($imzBr);
+        exit;
+    }
+    readfile($imzFile);
+    exit;
+}
+
+// GET /imazine/terima-kasih -> tujuan redirect Mayar setelah bayar
+if ($requestUri === '/imazine/terima-kasih') {
+    require __DIR__ . '/pages/imazine-thanks.php';
+    exit;
+}
+
+// GET /imazine/pesanan/{no}?t= -> status pesanan untuk pembeli
+if (preg_match('#^/imazine/pesanan/(IMZ-[A-Z0-9]{6})$#', $requestUri, $m)) {
+    $imzOrderNo = $m[1];
+    require __DIR__ . '/pages/imazine-status.php';
+    exit;
+}
+
+// /imazine/admin... -> daftar dan detail pesanan untuk tim
+if ($requestUri === '/imazine/admin' || str_starts_with($requestUri, '/imazine/admin/')) {
+    require __DIR__ . '/pages/imazine-admin.php';
     exit;
 }
 

@@ -1,0 +1,193 @@
+<title>Sampul Perangko Imazine</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400..800&display=swap">
+<style>
+/* Layout: a stamp collector's stock book. Rules on top, then sheets of stamp covers grouped by theme. */
+:root {
+  --desk: #ebedd5; --sheet: #f5f5e8; --ink: #191b0a; --ink-2: #4a4b36; --ink-3: #62634c; --line: rgba(25,27,10,.16);
+  --tangerine: #e4883a; --accent: #2b5658; --warm-deep: #a5521f;
+  --display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --ui: "Manrope", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  --mono: "DM Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { font-kerning: normal; text-rendering: optimizeLegibility; scroll-padding-top: 76px; }
+body { margin: 0; background: var(--desk); color: var(--ink); font: 400 15px/1.5 var(--ui); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--desk); }
+h1, h2, h3, p, ul, ol { margin: 0; } ul, ol { padding: 0; list-style: none; }
+p, li { text-wrap: pretty; } h1, h2, h3 { text-wrap: balance; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 3px; }
+.wrap { max-width: 1240px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.head { padding-block: clamp(28px, 5vw, 56px) 8px; display: grid; gap: 14px; }
+.eyebrow { font-size: 12px; line-height: 1.4; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--warm-deep); }
+h1 { font: 400 clamp(2.4rem, 6vw, 4.2rem)/1.03 var(--display); letter-spacing: -.025em; max-width: 16ch; }
+.lede { font-size: 17px; line-height: 1.5; color: var(--ink-2); max-width: 62ch; }
+.tally { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 6px; font-size: 14px; line-height: 1.4; color: var(--ink-2); }
+.tally b { font: 500 22px/1.1 var(--mono); font-variant-numeric: tabular-nums; color: var(--ink); margin-right: 6px; }
+.rules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding-block: 26px 8px; }
+.rules li { display: grid; gap: 6px; align-content: start; padding-top: 12px; border-top: 2px solid var(--ink); }
+.rules b { font: 400 22px/1.15 var(--display); letter-spacing: -.01em; }
+.rules span { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); text-wrap: balance; }
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(235,237,213,.95); border-bottom: 1px solid var(--line); margin-top: 18px; }
+.bar-in { display: flex; gap: 8px; padding-block: 8px; overflow-x: auto; }
+.tab { flex: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 999px; background: none; color: var(--ink-2); font: 700 14px/1.2 var(--ui); transition: background-color .12s, color .12s, border-color .12s; }
+.tab:hover { border-color: var(--ink); color: var(--ink); }
+.tab[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--desk); }
+.tab i { font: 500 12px/1 var(--mono); font-style: normal; font-variant-numeric: tabular-nums; opacity: .8; }
+.cat { padding-block: 34px 10px; display: grid; gap: 8px; }
+.cat h2 { font: 400 clamp(1.9rem, 4vw, 2.7rem)/1.08 var(--display); letter-spacing: -.02em; }
+.cat > p { color: var(--ink-2); max-width: 60ch; }
+.grp { display: grid; gap: 12px; padding-top: 20px; }
+.grp h3 { display: flex; align-items: baseline; gap: 10px; font-size: 12px; line-height: 1.4; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.grp h3 i { font: 500 12px/1 var(--mono); font-style: normal; letter-spacing: .04em; text-transform: none; font-variant-numeric: tabular-nums; }
+.sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 22px 18px; }
+.cell { display: grid; gap: 8px; align-content: start; }
+.open { display: block; width: 100%; aspect-ratio: 200 / 283; content-visibility: auto; padding: 0; border: 0; background: none; border-radius: 2px; box-shadow: 0 8px 18px rgba(25,27,10,.18); transition: transform .24s cubic-bezier(.4,0,.2,1), box-shadow .24s cubic-bezier(.4,0,.2,1); }
+.open:hover { transform: translateY(-3px) rotate(-.6deg); box-shadow: 0 16px 28px rgba(25,27,10,.22); }
+.open:active { transform: scale(.985); }
+.cv, .open img { display: block; width: 100%; height: auto; aspect-ratio: 200 / 283; }
+.open img { object-fit: cover; }
+.st-d { font-family: "Bowlby One", "Arial Black", Impact, sans-serif; }
+.st-s { font-family: "Manrope", "Segoe UI", Arial, sans-serif; font-weight: 800; letter-spacing: .2em; }
+.cap b { display: block; font: 400 19px/1.2 var(--display); letter-spacing: -.005em; color: var(--ink); }
+.cap { font-size: 13px; line-height: 1.4; color: var(--ink-2); }
+.status { display: flex; align-items: center; gap: 6px; font-size: 12.5px; line-height: 1.4; font-weight: 700; color: var(--warm-deep); }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+.cell.done .status { color: var(--accent); }
+.cell.done .status::before { background: currentColor; }
+.foot { padding-block: 40px 56px; margin-top: 30px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; line-height: 1.5; }
+/* large view */
+.lb { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) max(12px, env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.lb-scrim { position: absolute; inset: 0; background: rgba(17,18,10,.92); animation: fade .2s both; }
+@keyframes fade { from { opacity: 0; } }
+.lb-box { position: relative; display: grid; grid-template-columns: minmax(0, auto) minmax(0, 300px); gap: 24px; align-items: center; max-width: min(100%, 860px); margin-bottom: 3vh; animation: pop .24s cubic-bezier(.22,1,.36,1) both; }
+@keyframes pop { from { opacity: 0; transform: scale(.94); } }
+.lb-art { height: min(78dvh, 720px); aspect-ratio: 200 / 283; max-width: 100%; box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+.lb-art .cv, .lb-art img { width: 100%; height: 100%; object-fit: cover; }
+.lb-side { display: grid; gap: 10px; align-content: center; color: #ebedd5; }
+.lb-side h2 { font: 400 34px/1.08 var(--display); letter-spacing: -.02em; outline: none; }
+.lb-side p { font-size: 15px; line-height: 1.5; color: #c9ccb0; }
+.lb-meta { font-size: 12px; line-height: 1.4; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--tangerine); }
+.lb-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 1.5px solid rgba(235,237,213,.4); border-radius: 999px; background: none; color: #ebedd5; font: 700 14px/1.2 var(--ui); transition: border-color .12s, background-color .12s; }
+.btn:hover { border-color: #ebedd5; }
+.btn-solid { background: #ebedd5; border-color: #ebedd5; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .open, .lb-box, .lb-scrim { transition: none; animation: none; } }
+@media (max-width: 860px) { .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); } .lb-box { grid-template-columns: minmax(0, 1fr); gap: 14px; justify-items: center; } .lb-art { height: min(58dvh, 560px); } .lb-side { text-align: center; justify-items: center; } .lb-side h2 { font-size: 28px; } .lb-nav { justify-content: center; } }
+@media (max-width: 520px) { .rules { grid-template-columns: minmax(0, 1fr); } .sheet { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; } }
+</style>
+
+<header class="head wrap">
+  <p class="eyebrow">Imazine · papan kerja sampul</p>
+  <h1>Satu sampul, satu perangko.</h1>
+  <p class="lede">Ini draf ketiga, hasil audit semua sampul. Tidak ada lagi benda yang melayang, benda yang menutupi nama, atau label yang susah dibaca, dan detail kecil seperti cincin, bunga, dan pita sudah dirapikan. Gaya draf kedua tetap: sudut kamera, satu arah cahaya, bayangan tegas, awan, dan tekstur butiran. Pilih sampul untuk melihatnya lebih besar.</p>
+  <p class="tally"><span><b id="t-all"></b>sampul</span><span><b id="t-draft"></b>draf ketiga</span><span><b id="t-done"></b>sudah final</span></p>
+</header>
+
+<section class="wrap" aria-labelledby="rules-h">
+  <h2 id="rules-h" class="eyebrow" style="padding-top:22px">Aturan gambar yang dipakai</h2>
+  <ol class="rules">
+    <li><b>Satu motif khas</b><span>Satu objek utama yang langsung menyebut tempat atau momennya.</span></li>
+    <li><b>Sudut kamera</b><span>Menara dari bawah, benda dari sudut tiga perempat, dan isi meja dari atas.</span></li>
+    <li><b>Satu arah cahaya</b><span>Matahari atau bulan di kiri atas. Tiap bidang hanya terang atau bayangan, tanpa gradasi.</span></li>
+    <li><b>Bayangan tegas</b><span>Setiap benda menjatuhkan bayangan ke tanah, ke arah kanan belakang.</span></li>
+    <li><b>Awan dan butiran</b><span>Awan dua nada di langit, lalu tekstur butiran halus di seluruh gambar.</span></li>
+    <li><b>Bingkai perangko</b><span>Tepi bergerigi, nominal 40, nama berhuruf kapital tebal, dan satu keluarga warna per sampul.</span></li>
+  </ol>
+</section>
+
+<nav class="bar" aria-label="Saring tema"><div class="bar-in wrap" id="tabs"></div></nav>
+<main class="wrap" id="board"></main>
+<footer class="foot wrap">Semua sampul digambar sebagai vektor pada bidang 200 × 283 (rasio A4), jadi bisa dicetak sebesar apa pun tanpa pecah. Tekstur butirannya berupa pola kecil yang diulang; untuk cetak final, pola itu perlu diganti versi resolusi tinggi.</footer>
+
+<div class="lb" id="lb" hidden>
+  <div class="lb-scrim" data-x></div>
+  <div class="lb-box" role="dialog" aria-modal="true" aria-labelledby="lb-h">
+    <div class="lb-art" id="lb-art"></div>
+    <div class="lb-side">
+      <p class="lb-meta" id="lb-meta"></p>
+      <h2 id="lb-h" tabindex="-1"></h2>
+      <p id="lb-p"></p>
+      <div class="lb-nav">
+        <button class="btn" type="button" id="lb-prev">Sebelumnya</button>
+        <button class="btn" type="button" id="lb-next">Berikutnya</button>
+        <button class="btn btn-solid" type="button" data-x>Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /*__JS__*/
+  var board = document.getElementById('board'), tabs = document.getElementById('tabs'), list = [];
+  function el(t, c, s) { var e = document.createElement(t); if (c) e.className = c; if (s != null) e.textContent = s; return e; }
+  document.body.insertAdjacentHTML('afterbegin', stampDefs());
+  function tab(id, label, n) {
+    var b = el('button', 'tab'); b.type = 'button'; b.dataset.f = id; b.setAttribute('aria-pressed', id === 'all' ? 'true' : 'false');
+    b.appendChild(document.createTextNode(label)); b.appendChild(el('i', null, n)); tabs.appendChild(b);
+  }
+  var counts = DATA.map(function (c) { return c.groups.reduce(function (n, g) { return n + g.items.length; }, 0); }), done = 0;
+  tab('all', 'Semua', counts.reduce(function (a, b) { return a + b; }, 0));
+  function artNode(it, sub) {
+    var box = document.createElement('div');
+    if (it[2]) { var im = new Image(); im.src = IMG[it[2]]; im.alt = 'Sampul ' + it[0]; im.width = 360; im.height = 509; return im; }
+    box.innerHTML = stampCover(it[0], sub, ART[it[0]]);
+    return box.firstChild;
+  }
+  DATA.forEach(function (c, ci) {
+    tab(c.id, c.name, counts[ci]);
+    var sec = el('section', 'cat'); sec.dataset.cat = c.id; sec.id = c.id;
+    sec.appendChild(el('h2', null, c.name)); sec.appendChild(el('p', null, c.note));
+    c.groups.forEach(function (g) {
+      var gr = el('div', 'grp'), h = el('h3', null, g.g); h.appendChild(el('i', null, g.items.length)); gr.appendChild(h);
+      var sheet = el('ul', 'sheet'), sub = c.id === 'travel' ? g.g + ' · 2026' : c.name + ' · 2026';
+      g.items.forEach(function (it) {
+        var idx = list.length; list.push({ it: it, sub: sub, cat: c.name, grp: g.g });
+        var li = el('li', 'cell' + (it[2] ? ' done' : '')), b = el('button', 'open'); b.type = 'button'; b.dataset.i = idx;
+        b.setAttribute('aria-label', 'Lihat sampul ' + it[0] + ' lebih besar');
+        if (it[2]) done++;
+        b.appendChild(artNode(it, sub)); li.appendChild(b);
+        var cap = el('p', 'cap'); cap.appendChild(el('b', null, it[0])); cap.appendChild(document.createTextNode(it[1])); li.appendChild(cap);
+        li.appendChild(el('p', 'status', it[2] ? 'Sudah final' : 'Draf ketiga'));
+        sheet.appendChild(li);
+      });
+      gr.appendChild(sheet); sec.appendChild(gr);
+    });
+    board.appendChild(sec);
+  });
+  document.getElementById('t-all').textContent = list.length; document.getElementById('t-done').textContent = done; document.getElementById('t-draft').textContent = list.length - done;
+  tabs.addEventListener('click', function (e) {
+    var b = e.target.closest('.tab'); if (!b) return;
+    [].forEach.call(tabs.children, function (t) { t.setAttribute('aria-pressed', t === b ? 'true' : 'false'); });
+    [].forEach.call(board.children, function (s) { s.hidden = b.dataset.f !== 'all' && s.dataset.cat !== b.dataset.f; });
+  });
+  /* large view */
+  var lb = document.getElementById('lb'), cur = 0, back = null;
+  function show(i) {
+    cur = (i + list.length) % list.length;
+    var d = list[cur], art = document.getElementById('lb-art');
+    art.textContent = ''; art.appendChild(artNode(d.it, d.sub));
+    document.getElementById('lb-meta').textContent = d.cat + ' · ' + d.grp + ' · ' + (cur + 1) + ' dari ' + list.length;
+    document.getElementById('lb-h').textContent = d.it[0];
+    document.getElementById('lb-p').textContent = 'Motif: ' + d.it[1] + '.' + (d.it[2] ? ' Sampul ini sudah final.' : '');
+  }
+  board.addEventListener('click', function (e) {
+    var b = e.target.closest('.open'); if (!b) return;
+    back = b; show(+b.dataset.i); lb.hidden = false; document.getElementById('lb-h').focus();
+  });
+  function close() { lb.hidden = true; if (back) back.focus(); }
+  lb.addEventListener('click', function (e) { if (e.target.hasAttribute('data-x')) close(); });
+  document.getElementById('lb-prev').addEventListener('click', function () { show(cur - 1); });
+  document.getElementById('lb-next').addEventListener('click', function () { show(cur + 1); });
+  document.addEventListener('keydown', function (e) {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft') show(cur - 1); else if (e.key === 'ArrowRight') show(cur + 1);
+    else if (e.key === 'Tab') { var f = lb.querySelectorAll('button'), first = f[0], last = f[f.length - 1]; if (e.shiftKey && (document.activeElement === first || document.activeElement.id === 'lb-h')) { e.preventDefault(); last.focus(); } else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); } }
+  });
+})();
+</script>

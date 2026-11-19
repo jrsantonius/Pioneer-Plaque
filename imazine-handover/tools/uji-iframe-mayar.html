@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uji: apakah checkout Mayar bisa di-embed?</title>
+<style>
+  body { font: 16px/1.5 -apple-system, Segoe UI, Roboto, sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+  h1 { font-size: 20px; } code { background: #eee; padding: 1px 5px; border-radius: 4px; }
+  .box { border: 2px solid #999; border-radius: 8px; overflow: hidden; margin: 12px 0 24px; }
+  iframe { display: block; width: 100%; height: 640px; border: 0; }
+  .ok { color: #0a7a2f; } .no { color: #b00020; }
+</style>
+</head>
+<body>
+<h1>Uji: apakah checkout Mayar bisa tampil di dalam website kita?</h1>
+<p>Buka halaman ini di Chrome atau Safari biasa (bukan di browser dalam aplikasi Claude). Lihat kotak di bawah:</p>
+<ul>
+  <li class="ok"><strong>Halaman checkout Mayar tampil</strong> dan bisa diklik: Mayar mengizinkan embed.</li>
+  <li class="no"><strong>Kotak kosong, ikon sedih, atau tulisan "refused to connect"</strong>: Mayar memblokir embed.</li>
+</ul>
+<p>Kalau tampil, coba juga: isi alamat (apakah JNE dan ongkir muncul?) dan pilih e-wallet. <strong>Jangan selesaikan pembayaran.</strong></p>
+
+<div class="box">
+  <iframe src="https://theinnovatorsstudio.myr.id/checkout/imazine-photo-album" title="Checkout Mayar"></iframe>
+</div>
+
+<p>Catatan: halaman ini hanya untuk uji. Hapus file ini setelah selesai.</p>
+</body>
+</html>

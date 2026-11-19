@@ -13,6 +13,8 @@ RewriteRule ^config\.php$ - [F,L]
 RewriteRule ^database\.php$ - [F,L]
 RewriteRule ^seed\.php$ - [F,L]
 RewriteRule ^includes/ - [F,L]
+# API Imazine lewat router index.php (webhook Mayar, unggah foto). File di api/ tetap tidak bisa diakses langsung.
+RewriteRule ^api/imazine/ index.php [QSA,L]
 RewriteRule ^api/ - [F,L]
 RewriteRule ^pages/ - [F,L]
 RewriteRule \.db$ - [F,L]
