@@ -72,7 +72,7 @@ print('site bytes', len(site.encode()))
 # Admin: album cetak. Menyusun ulang album pesanan dengan renderer yang sama (render.js), satu halaman A4 per lembar,
 # lalu disimpan sebagai PDF lewat dialog cetak. Disalin ke pages/imazine-album.html dan disajikan di
 # /imazine/admin/pesanan/{no}/album (wajib login admin; datanya diambil dari data.json dan foto dari /cetak/{idx}).
-ALBUM_CSS = FALLBACK + rd('src/page.css') + '''
+ALBUM_CSS = FALLBACK + SITE_FONTS + '\n' + rd('src/page.css') + '''
 :root{--font-ui:"Manrope","Manrope Fallback",Arial,sans-serif;color-scheme:light}
 *{box-sizing:border-box}
 html,body{margin:0}

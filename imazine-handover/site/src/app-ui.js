@@ -923,6 +923,7 @@ function placePhoto(p, si, photoIdx, advance) {
 function selSlot() { return S.sel && S.sel.t === 'slot' ? S.album.pages[S.sel.p].slots[S.sel.i] : null; }
 function capOfSlot(p, si) { var cps = S.album.tpl.pages[p].cp; for (var i = 0; i < cps.length; i++) if (cps[i].p === si) return i; return -1; }
 function drawSlotTool() {
+  drawTxBar();
   var tool = $('#slot-tool'), s = selSlot();
   tool.hidden = !s;
   $('.studio').classList.toggle('has-sel', !!s);
@@ -1091,8 +1092,19 @@ function editText(p, t, i) {
   editing = { p: p, t: t, i: i, node: node, nav: 0 };
   node.focus({ preventScroll: true }); caretEnd(node);
 }
+/* Teks apa adanya dari elemen yang diketik. Bukan innerText: innerText mengikuti CSS (text-transform: uppercase),
+   sehingga teks yang tampil kapital tersimpan kapital dan tidak bisa dikembalikan lewat tombol AA. */
+function nodeText(n) {
+  var out = '';
+  n.childNodes.forEach(function (c, k) {
+    if (c.nodeType === 3) out += c.data;
+    else if (c.nodeName === 'BR') out += '\n';
+    else if (c.nodeType === 1) { if (k > 0 && /^(DIV|P)$/.test(c.nodeName)) out += '\n'; out += nodeText(c); }
+  });
+  return out;
+}
 function readEdit() {
-  var e = editing, v = e.node.innerText.replace(/\u00a0/g, ' ');
+  var e = editing, v = nodeText(e.node).replace(/\u00a0/g, ' ');
   if (e.t !== 'pa') v = v.replace(/\n+/g, ' ');
   else v = v.replace(/\n$/, '');
   var st = S.album.pages[e.p];
@@ -1105,7 +1117,7 @@ function endEdit() {
   var e = editing; if (!e) return;
   editing = null; clearTimeout(e.nav);
   e.node.removeAttribute('contenteditable');
-  redrawTexts(e.p); refreshNavFor(e.p);
+  redrawTexts(e.p); refreshNavFor(e.p); drawTxBar();
 }
 $('#spread').addEventListener('input', function (e) { if (editing && e.target === editing.node) readEdit(); });
 $('#spread').addEventListener('keydown', function (e) {
@@ -1237,10 +1249,10 @@ $('#slot-size').addEventListener('click', function () {
 /* Teks di halaman bisa digeser bebas dengan mouse/jari (24 Nov 2026). Ketuk tanpa menggeser = mengetik. */
 var tmove = null, tmoved = false;
 function textBase(p, t, i) {
-  var P = S.album.tpl.pages[p];
-  if (t === 'tx') return [P.tx[i].x, P.tx[i].y - 0.847 * P.tx[i].z];
+  var P = S.album.tpl.pages[p], sz = t === 'pa' ? 0 : textStyle(S.album, p, t, i).s;   /* garis dasar ikut ukuran huruf yang dipilih */
+  if (t === 'tx') return [P.tx[i].x, P.tx[i].y - 0.847 * sz];
   if (t === 'pa') return [P.pa[i].x, P.pa[i].y];
-  return [P.cp[i].x, P.cp[i].y - 0.847 * P.cp[i].z];
+  return [P.cp[i].x, P.cp[i].y - 0.847 * sz];
 }
 function unselectAll() {
   $$('#spread .is-sel').forEach(function (n) { n.classList.toggle('is-sel', false); });
@@ -1281,7 +1293,7 @@ function endTextMove(e) {
   if (Math.abs(m.now[0]) < 0.5 && Math.abs(m.now[1]) < 0.5) delete st.mv[m.key]; else st.mv[m.key] = m.now;
   S.dirty = true; redrawTexts(m.p); refreshNavFor(m.p);
   var el = $('[data-' + m.t + '="' + m.i + '"]', pageNode(m.p)); if (el) el.classList.add('is-sel');
-  S.sel = { t: m.t, p: m.p, i: m.i };
+  S.sel = { t: m.t, p: m.p, i: m.i }; drawTxBar();
   toast('Text moved.', { label: 'Undo', fn: function () { if (prev) st.mv[m.key] = prev; else delete st.mv[m.key]; redrawTexts(m.p); refreshNavFor(m.p); } });
 }
 $('#spread').addEventListener('pointerup', endTextMove, true);
@@ -1297,9 +1309,9 @@ $('#spread').addEventListener('pointerdown', function (e) {
   panned = false;
   if (S.swap || S.armed != null) return;
   var g = slotGeo(S.album, p, i), crop = s.photo != null && isCrop(p, i), b = s.photo != null ? imgBox(S.photos[s.photo], g[2], g[3], s) : { W: 100, H: 100 };
-  var pg = el.closest('.pg'), ci = capOfSlot(p, i), st = S.album.pages[p], ti = ci > -1 ? numOfCap(p, ci) : -1;
+  var pg = el.closest('.pg');
   pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy, mode: crop ? 'crop' : 'move',
-    g0: g.slice(), prev: s.g ? s.g.slice() : null, pw: pg.offsetWidth, ph: pg.offsetHeight, ci: ci, cm0: ci > -1 ? textMove(st, 'cp' + ci) : null, cprev: ci > -1 && st.mv && st.mv['cp' + ci] ? st.mv['cp' + ci].slice() : null, ti: ti, tm0: ti > -1 ? textMove(st, 'tx' + ti) : null, tprev: ti > -1 && st.mv && st.mv['tx' + ti] ? st.mv['tx' + ti].slice() : null,
+    g0: g.slice(), prev: s.g ? s.g.slice() : null, pw: pg.offsetWidth, ph: pg.offsetHeight,
     ox: (b.W - 100) / 100 * el.offsetWidth, oy: (b.H - 100) / 100 * el.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, id: e.pointerId, cx: e.clientX, cy: e.clientY };
   try { el.setPointerCapture(e.pointerId); } catch (err) {}
 });
@@ -1327,47 +1339,99 @@ function endPan(e) {
   if (e && pan.f2 && e.pointerId === pan.f2.id) { pan.f2 = null; pan.x = pan.cx; pan.y = pan.cy; pan.fx = pan.s.fx; pan.fy = pan.s.fy; recalcPan(); return; }
   if (e && e.pointerId !== pan.id) return;
   var m = pan; pan = null;
-  if (panned && m.mode === 'move' && m.moved) { endMoveFrame(m); return; }
-  if (panned) { S.dirty = true; refreshNavFor(m.p); }
+  var did = panned;
+  if (did) { panned = false; dragEnd = Date.now(); }   /* klik yang ikut sesudah menggeser diabaikan lewat dragEnd; flag tidak boleh tertinggal */
+  if (did && m.mode === 'move' && m.moved) { endMoveFrame(m); return; }
+  if (did) { S.dirty = true; refreshNavFor(m.p); }
   drawPhBar();
 }
-/* Nomor foto ("01", "No. 04") di baris yang sama dengan caption-nya: ikut pindah bersama foto. */
-function numOfCap(p, ci) {
-  var P = S.album.tpl.pages[p], cp = P.cp[ci], best = -1, bd = 160;
-  P.tx.forEach(function (t, i) { if (t.k === 'e' || Math.abs(t.y - cp.y) > 8) return; var d = Math.abs(cp.x - t.x); if (d < bd) { bd = d; best = i; } });
-  return best;
-}
-/* Memindahkan bingkai: posisi baru di slots[k].g (ukuran tetap). Caption foto dan nomornya ikut berpindah sejauh yang sama. */
+/* Memindahkan bingkai: posisi baru di slots[k].g (ukuran tetap). Hanya foto itu yang pindah; teks dan foto lain tetap di tempatnya
+   (permintaan user 24 Nov 2026, sebelumnya caption dan nomor foto ikut). */
 function moveFrame(m, dx, dy) {
   var g0 = m.g0, nx = clamp(g0[0] + dx / m.pw * 1000, -g0[2] / 2, 1000 - g0[2] / 2), ny = clamp(g0[1] + dy / m.ph * PAGE_H, -g0[3] / 2, PAGE_H - g0[3] / 2);
   nx = Math.round(nx * 10) / 10; ny = Math.round(ny * 10) / 10;
   m.s.g = [nx, ny, g0[2], g0[3]]; m.moved = true;
   var full = m.s.g.concat([g0[4] || 0]), pgEl = pageNode(m.p), fr = $('.sel-frame', pgEl);
   frameCss(m.el, full); if (fr) frameCss(fr, full);
-  if (m.ci > -1) {
-    var st = S.album.pages[m.p], mv = [Math.round((m.cm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.cm0[1] + ny - g0[1]) * 10) / 10], b = textBase(m.p, 'cp', m.ci);
-    (st.mv = st.mv || {})['cp' + m.ci] = mv;
-    var ce = $('[data-cp="' + m.ci + '"]', pgEl); if (ce) { ce.style.left = pct(b[0] + mv[0], 1000); ce.style.top = pct(b[1] + mv[1], PAGE_H); }
-    $$('.cp-bar', pgEl).forEach(function (n) { n.style.visibility = 'hidden'; });   /* garis bantu caption kosong digambar ulang saat dilepas */
-  }
-  if (m.ti > -1) {
-    var st2 = S.album.pages[m.p], mt = [Math.round((m.tm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.tm0[1] + ny - g0[1]) * 10) / 10], bt = textBase(m.p, 'tx', m.ti);
-    (st2.mv = st2.mv || {})['tx' + m.ti] = mt;
-    var te = $('[data-tx="' + m.ti + '"]', pgEl); if (te) { te.style.left = pct(bt[0] + mt[0], 1000); te.style.top = pct(bt[1] + mt[1], PAGE_H); }
-  }
 }
 function endMoveFrame(m) {
-  var s = m.s, t0 = S.album.tpl.pages[m.p].ph[m.i], st = S.album.pages[m.p];
+  var s = m.s, t0 = S.album.tpl.pages[m.p].ph[m.i];
   if (s.g && Math.abs(s.g[0] - t0[0]) < 0.5 && Math.abs(s.g[1] - t0[1]) < 0.5 && Math.abs(s.g[2] - t0[2]) < 0.5 && Math.abs(s.g[3] - t0[3]) < 0.5) delete s.g;
-  ['cp' + m.ci, 'tx' + m.ti].forEach(function (k) { var v = st.mv && st.mv[k]; if (v && Math.abs(v[0]) < 0.5 && Math.abs(v[1]) < 0.5) delete st.mv[k]; });
   S.dirty = true; redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
   toast('Photo moved.', { label: 'Undo', fn: function () {
     if (m.prev) s.g = m.prev; else delete s.g;
-    if (m.ci > -1) { if (m.cprev) (st.mv = st.mv || {})['cp' + m.ci] = m.cprev; else if (st.mv) delete st.mv['cp' + m.ci]; }
-    if (m.ti > -1) { if (m.tprev) (st.mv = st.mv || {})['tx' + m.ti] = m.tprev; else if (st.mv) delete st.mv['tx' + m.ti]; }
     redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
   } });
 }
+/* Urutan tumpukan: foto dan teks bisa saling menimpa; "Ke depan" / "Ke belakang" memindahkan elemen terpilih ke
+   paling atas / paling bawah tumpukan di halamannya. Disimpan di album.pages[p].z. */
+function selKey() { return !S.sel ? null : S.sel.t === 'slot' ? 's' + S.sel.i : S.sel.t + S.sel.i; }
+function layerTo(front) {
+  var key = selKey(); if (!key) return;
+  endEdit();
+  var p = S.sel.p, st = S.album.pages[p], zs = $$('.pg > *', pageNode(p)).map(function (n) { return parseInt(n.style.zIndex, 10); }).filter(function (v) { return !isNaN(v); });
+  if (!zs.length) return;
+  var prev = st.z && st.z[key] != null ? st.z[key] : null, hi = Math.max.apply(null, zs), lo = Math.min.apply(null, zs);
+  st.z = st.z || {}; st.z[key] = front ? hi + 1 : lo - 1;
+  S.dirty = true; redrawPage(p); refreshNavFor(p); drawPhBar(); drawTxBar();
+  toast(front ? 'Brought to front.' : 'Sent to back.', { label: 'Undo', fn: function () { if (prev != null) st.z[key] = prev; else delete st.z[key]; redrawPage(p); refreshNavFor(p); drawPhBar(); drawTxBar(); } });
+}
+/* bilah kecil di atas teks terpilih: urutan tumpukan */
+function drawTxBar() {
+  var bar = $('#tx-bar'), s = S.sel, el = s && s.t !== 'slot' && pageNode(s.p) ? $('[data-' + s.t + '="' + s.i + '"]', pageNode(s.p)) : null;
+  if (!el || tmove && tmove.on) { bar.hidden = true; $('#tx-pal').hidden = true; return; }
+  bar.hidden = false;
+  var TS = textStyle(S.album, s.p, s.t, s.i), fmt0 = S.album.pages[s.p].fmt && S.album.pages[s.p].fmt[s.t + s.i];
+  $('#tx-font').value = TS.f; $('#tx-size').textContent = Math.round(TS.s * 0.595);   /* 1000 satuan = 210 mm: satuan x 0,595 = pt */
+  $('#tx-sw').style.background = TS.c; $('#tx-cc').value = /^#[0-9a-f]{6}$/i.test(TS.c) ? TS.c : '#000000';
+  [['tx-b', TS.b], ['tx-i', TS.i], ['tx-u', TS.u], ['tx-up', TS.up]].forEach(function (x) { $('#' + x[0]).setAttribute('aria-pressed', x[1] ? 'true' : 'false'); });
+  $('#tx-al').hidden = s.t !== 'pa';
+  $$('#tx-al button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.a === TS.a ? 'true' : 'false'); });
+  $('#tx-reset').hidden = !(fmt0 && Object.keys(fmt0).length);
+  var st = $('#st-stage').getBoundingClientRect(), r = el.getBoundingClientRect(), bw = bar.offsetWidth, bh = bar.offsetHeight;
+  var top = r.top - st.top - bh - 12; if (top < 4) top = r.bottom - st.top + 12;
+  bar.style.left = clamp(r.left - st.left + r.width / 2 - bw / 2, 4, st.width - bw - 4) + 'px'; bar.style.top = top + 'px';
+}
+/* gaya teks dari bilah teks: font, ukuran, warna, tebal/miring/garis bawah, kapital, rata */
+function setFmt(prop, val) {
+  var key = selKey(); if (!key || S.sel.t === 'slot') return;
+  endEdit();
+  var p = S.sel.p, st = S.album.pages[p];
+  st.fmt = st.fmt || {}; var f = st.fmt[key] = st.fmt[key] || {};
+  if (val == null) delete f[prop]; else f[prop] = val;
+  if (!Object.keys(f).length) delete st.fmt[key];
+  S.dirty = true; redrawTexts(p); drawTxBar();
+  clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); }, 300);
+}
+function curStyle() { return textStyle(S.album, S.sel.p, S.sel.t, S.sel.i); }
+(function () {
+  var sel = $('#tx-font');
+  FONT_NAMES.forEach(function (f) { var o = h('option', null, f[1]); o.value = f[0]; o.style.fontFamily = FONT[f[0]]; sel.appendChild(o); });
+  sel.addEventListener('change', function () { setFmt('f', sel.value); });
+  $('#tx-sm').addEventListener('click', function () { setFmt('s', Math.max(8, Math.round(curStyle().s / 1.12 * 2) / 2)); });
+  $('#tx-lg').addEventListener('click', function () { setFmt('s', Math.min(400, Math.round(curStyle().s * 1.12 * 2) / 2)); });
+  ['b', 'i', 'u', 'up'].forEach(function (k) { $('#tx-' + k).addEventListener('click', function () { setFmt(k, !curStyle()[k]); }); });
+  $$('#tx-al button').forEach(function (b) { b.addEventListener('click', function () { setFmt('a', b.dataset.a); }); });
+  $('#tx-color').addEventListener('click', function () { var pal = $('#tx-pal'); pal.hidden = !pal.hidden; $('#tx-color').setAttribute('aria-expanded', pal.hidden ? 'false' : 'true'); drawTxBar(); });
+  ['#111111', '#ffffff', '#6b6b6b', '#b23a2e', '#cf7a3c', '#e2b13c', '#2e7d4f', '#2f5d8a', '#7a3e9d', '#d96c94'].forEach(function (c) {
+    var b = h('button', 'tx-c'); b.type = 'button'; b.style.background = c; b.setAttribute('aria-label', t('Color {c}', { c: c })); b.dataset.c = c;
+    b.addEventListener('click', function () { setFmt('c', c); });
+    $('#tx-pal-sw').appendChild(b);
+  });
+  $('#tx-cc').addEventListener('input', function (e) { setFmt('c', e.target.value); });
+  $('#tx-reset').addEventListener('click', function () {
+    var key = selKey(); if (!key) return; endEdit();
+    var p = S.sel.p, st = S.album.pages[p], prev = st.fmt && st.fmt[key]; if (!prev) return;
+    delete st.fmt[key]; S.dirty = true; redrawTexts(p); refreshNavFor(p); drawTxBar();
+    toast('Back to the original text style.', { label: 'Undo', fn: function () { st.fmt[key] = prev; redrawTexts(p); refreshNavFor(p); drawTxBar(); } });
+  });
+})();
+['lay-front', 'tx-front'].forEach(function (id) { $('#' + id).addEventListener('click', function () { layerTo(true); }); });
+['lay-back', 'tx-back'].forEach(function (id) { $('#' + id).addEventListener('click', function () { layerTo(false); }); });
+/* tombol di bilah teks tidak boleh mengambil fokus dari teks yang sedang diketik */
+$('#tx-bar').addEventListener('mousedown', function (e) { if (!e.target.closest('select, input')) e.preventDefault(); });
+window.addEventListener('resize', function () { if (S.view === 'studio') drawTxBar(); });
+
 /* klik dua kali pada foto = masuk/keluar mode atur isi foto */
 $('#spread').addEventListener('dblclick', function (e) {
   var el = e.target.closest('.slot'); if (!el) return;
@@ -1390,7 +1454,7 @@ $('#spread').addEventListener('pointerup', endPan);
 $('#spread').addEventListener('pointercancel', endPan);
 $('#spread').addEventListener('click', function (e) {
   if (panned) { panned = false; return; }
-  if (Date.now() - dragEnd < 400) return;   /* klik yang ikut sesudah menggeser teks atau me-resize foto */
+  if (Date.now() - dragEnd < 400) return;   /* klik yang ikut sesudah menggeser foto/teks atau me-resize */   /* klik yang ikut sesudah menggeser teks atau me-resize foto */
   if (editing && editing.node.contains(e.target)) return;
   var pg = e.target.closest('.pg'); if (!pg) { deselect(); return; }
   var p = +pg.dataset.p, slot = e.target.closest('.slot'), txt = e.target.closest('[data-tx],[data-pa],[data-cp]');
@@ -1774,7 +1838,7 @@ $('#co-form').addEventListener('submit', function (e) {
     pages: S.album.pages.map(function (pg, pi) {
       var P = S.album.tpl.pages[pi], cps = {};
       P.cp.forEach(function (c, i) { var v = captionValue(S.album, pi, i); if (v) cps[i] = v; });
-      return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo != null ? remap[s.photo] : null, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {} };
+      return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo != null ? remap[s.photo] : null, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {}, layers: pg.z || {}, styles: pg.fmt || {} };
     })
   };
   sendOrder(order, used);

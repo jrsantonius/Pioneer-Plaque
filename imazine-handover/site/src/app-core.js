@@ -314,7 +314,7 @@ function samplePhotos(n) {
 function newAlbum(tplId, photos) {
   var tpl = IMZ_TPL[tplId];
   return { tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
-    return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {} };
+    return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {}, z: {}, fmt: {} };
   }) };
 }
 function defaultFocus(photo, g) { return { fx: 0.5, fy: photo.w / photo.h < g[2] / g[3] ? 0.38 : 0.5, z: 1 }; }

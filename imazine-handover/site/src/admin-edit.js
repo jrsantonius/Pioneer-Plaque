@@ -74,7 +74,7 @@ async function adminBoot() {
         s.photo = ok ? o.photo : null; s.fx = o.focusX != null ? +o.focusX : 0.5; s.fy = o.focusY != null ? +o.focusY : 0.5; s.z = o.zoom ? +o.zoom : 1;
         if (Array.isArray(o.box) && o.box.length === 4) s.g = o.box.map(Number);
       });
-      pg.tx = adminObj(src.texts); pg.pa = adminObj(src.paragraphs); pg.cp = adminObj(src.captions); pg.mv = adminObj(src.moves);
+      pg.tx = adminObj(src.texts); pg.pa = adminObj(src.paragraphs); pg.cp = adminObj(src.captions); pg.mv = adminObj(src.moves); pg.z = adminObj(src.layers); pg.fmt = adminObj(src.styles);
     });
     album.cat = cat.id; album.cover = order.cover;
     S.album = album; S.page = 0; S.sel = null; S.dirty = false; S.tab = 'foto';
@@ -114,7 +114,7 @@ async function adminSave() {
       pages: S.album.pages.map(function (pg, pi) {
         var P = S.album.tpl.pages[pi], cps = {};
         P.cp.forEach(function (c, i) { var v = captionValue(S.album, pi, i); if (v) cps[i] = v; });
-        return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {} };
+        return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {}, layers: pg.z || {}, styles: pg.fmt || {} };
       })
     };
     title.textContent = 'Saving the album…'; busy(true, 0, 0);

@@ -4,7 +4,28 @@
 --------------------------------------------------------------------------- */
 var PAGE_H = 1416;
 var SVGNS = 'http://www.w3.org/2000/svg';
-var FONT = { a: 'Arial, "Helvetica Neue", Helvetica, "Liberation Sans", sans-serif', s: 'Georgia, "Times New Roman", "Liberation Serif", serif' };
+var FONT = { a: 'Arial, "Helvetica Neue", Helvetica, "Liberation Sans", sans-serif', s: 'Georgia, "Times New Roman", "Liberation Serif", serif',
+  /* pilihan font pembeli (24 Nov 2026): semuanya disajikan sendiri dari /public/imazine/fonts, juga di halaman PDF admin */
+  m: '"Manrope", "Manrope Fallback", Arial, sans-serif', is: '"Instrument Serif", "Instrument Serif Fallback", Georgia, serif', mono: '"DM Mono", Menlo, Consolas, monospace',
+  bw: '"Bowlby One", "Arial Black", Impact, sans-serif', cv: '"Caveat Brush", "Marker Felt", "Segoe Print", cursive' };
+var FONT_NAMES = [['a', 'Arial'], ['s', 'Georgia'], ['m', 'Manrope'], ['is', 'Instrument Serif'], ['mono', 'DM Mono'], ['bw', 'Bowlby One'], ['cv', 'Caveat Brush']];
+/* Gaya teks (24 Nov 2026, "font, ukuran, warna, tebal..."): album.pages[pi].fmt['tx3'|'pa0'|'cp2'] menimpa gaya template.
+   f = kunci FONT, s = ukuran (satuan halaman, 1000 = lebar), c = warna, b/i/u/up = tebal/miring/garis bawah/kapital, a = rata (paragraf). */
+function textStyle(album, pi, kind, i) {
+  var tpl = album.tpl, P = tpl.pages[pi], st = album.pages[pi], d;
+  if (kind === 'tx') { var t = P.tx[i]; d = { f: t.f, s: t.z, c: t.c, b: !!t.b, i: !!t.i, u: false, up: !!t.up }; }
+  else if (kind === 'pa') { var pa = P.pa[i]; d = { f: tpl.body, s: Math.min(pa.lh * 0.52, 46), c: '#2b2b2b', b: false, i: false, u: false, up: false, a: pa.a || 'l' }; }
+  else { var cp = P.cp[i]; d = { f: cp.f, s: cp.z, c: cp.c, b: false, i: false, u: false, up: false }; }
+  var o = st.fmt && st.fmt[kind + i];
+  if (o) Object.keys(o).forEach(function (k) { if (o[k] != null) d[k] = o[k]; });
+  if (!FONT[d.f]) d.f = 'a';
+  d.s = +d.s;
+  return d;
+}
+function styleCss(S) {
+  return 'font-family:' + FONT[S.f] + ';font-size:' + (S.s / 10).toFixed(3) + 'cqw;color:' + S.c + ';font-weight:' + (S.b ? 700 : 400) + ';font-style:' + (S.i ? 'italic' : 'normal') +
+    (S.u ? ';text-decoration:underline;text-underline-offset:.14em;text-decoration-thickness:.06em' : '');
+}
 
 function h(tag, cls, text) {
   var e = document.createElement(tag);
@@ -56,6 +77,10 @@ function renderPage(album, pi, mode) {
   pg.dataset.p = pi;
   pg.dataset.tnum = '';
   var bodyFont = FONT[tpl.body];
+  /* Urutan tumpukan (24 Nov 2026, "bisa ditumpuk kayak Canva"): tiap elemen mendapat z-index sesuai urutan gambarnya,
+     kecuali yang diatur pembeli di album.pages[pi].z['s0'|'tx3'|'pa0'|'cp2'] (Ke depan / Ke belakang). */
+  var zc = 0;
+  function put(el, key) { zc++; var v = key && st.z ? st.z[key] : null; el.style.zIndex = v != null ? +v : zc; pg.appendChild(el); }
 
   P.ly.forEach(function (layer) {
     if (typeof layer === 'number') {
@@ -80,7 +105,7 @@ function renderPage(album, pi, mode) {
         d.appendChild(lb);
       }
       if (edit) d.setAttribute('aria-label', t(photo ? 'Photo {n}, filled. Pick to adjust' : 'Photo {n}, empty. Pick to fill', { n: k + 1 }));
-      pg.appendChild(d);
+      put(d, 's' + k);
     } else {
       var svg = document.createElementNS(SVGNS, 'svg');
       svg.setAttribute('viewBox', '0 0 1000 ' + PAGE_H);
@@ -101,16 +126,16 @@ function renderPage(album, pi, mode) {
         }
         svg.appendChild(p);
       });
-      pg.appendChild(svg);
+      put(svg, null);
     }
   });
   if (thumb) {
-    P.pa.forEach(function (pa) {
+    P.pa.forEach(function (pa, pi2) {
       if (pa.rule) return;
       pa.bars.forEach(function (b) {
         var bar = h('span', 'cp-bar');
         bar.style.cssText = 'left:' + pct(b[0], 1000) + ';top:' + pct(b[1], PAGE_H) + ';width:' + pct(b[2], 1000) + ';height:' + pct(pa.bh, PAGE_H) + ';background:' + pa.c;
-        pg.appendChild(bar);
+        put(bar, 'pa' + pi2);
       });
     });
     return pg;
@@ -139,11 +164,11 @@ function renderPage(album, pi, mode) {
     }
     if (val || edit) {   /* in edit mode an empty paragraph still gets its text node, so it can be typed into on the page */
       var t = h('span', 'pa-t', val);
-      var fs = Math.min(pa.lh * 0.52, 46);
-      t.style.cssText = 'font-family:' + bodyFont + ';font-size:' + (fs / 10).toFixed(3) + 'cqw;line-height:' + (pa.lh / fs).toFixed(3) + ';text-align:' + (pa.a === 'r' ? 'right' : pa.a === 'c' ? 'center' : 'left') + (pa.rule ? ';padding-top:' + pct(pa.lh * 0.16, pa.w) : '');
+      var fs = Math.min(pa.lh * 0.52, 46), SP = textStyle(album, pi, 'pa', i);
+      t.style.cssText = styleCss(SP) + ';line-height:' + (pa.lh / fs).toFixed(3) + ';text-align:' + (SP.a === 'r' ? 'right' : SP.a === 'c' ? 'center' : 'left') + ';text-transform:' + (SP.up ? 'uppercase' : 'none') + (pa.rule ? ';padding-top:' + pct(pa.lh * 0.16, pa.w) : '');
       box.appendChild(t);
     }
-    pg.appendChild(box);
+    put(box, 'pa' + i);
   });
 
   /* captions beside photo numbers: written by the buyer (a date or a short note); empty ones show a hint while editing */
@@ -153,15 +178,16 @@ function renderPage(album, pi, mode) {
     if (cp.bar && !val && edit) {
       var bar = h('span', 'cp-bar');
       bar.style.cssText = 'left:' + pct(cp.bar[0] + mc[0], 1000) + ';top:' + pct(cp.bar[1] + mc[1], PAGE_H) + ';width:' + pct(cp.bar[2], 1000) + ';height:' + pct(cp.bar[3], PAGE_H) + ';background:' + cp.bar[4];
-      pg.appendChild(bar);
+      put(bar, 'cp' + i);
     }
     var hint = !val && edit && (cp.bar || hasPhoto);
     if (!val && !hint) return;
     var c = h('div', 'tx cp' + (val ? '' : ' is-empty') + (cp.a === 'r' ? ' tx-r' : ''));
     c.appendChild(h('span', 'tx-v', val || t(CAP_HINT)));
     if (edit) c.dataset.cp = i;
-    c.style.cssText = 'left:' + pct(cp.x + mc[0], 1000) + ';top:' + pct(cp.y - 0.847 * cp.z + mc[1], PAGE_H) + ';font-size:' + (cp.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[cp.f] + ';color:' + cp.c + (val || !cp.bar ? '' : ';width:' + pct(cp.bar[2], 1000));   /* tanpa max-width: caption panjang tidak terpotong */
-    pg.appendChild(c);
+    var SC = textStyle(album, pi, 'cp', i);
+    c.style.cssText = 'left:' + pct(cp.x + mc[0], 1000) + ';top:' + pct(cp.y - 0.847 * SC.s + mc[1], PAGE_H) + ';' + styleCss(SC) + ';text-transform:' + (SC.up ? 'uppercase' : 'none') + (val || !cp.bar ? '' : ';width:' + pct(cp.bar[2], 1000));   /* tanpa max-width: caption panjang tidak terpotong */
+    put(c, 'cp' + i);
   });
 
   /* template texts */
@@ -171,18 +197,17 @@ function renderPage(album, pi, mode) {
     var shown = val != null ? val : (isToken ? '' : t.t);
     if (!edit && !shown && !(isToken && t.post && !t.pre)) return;
     if (!edit && !shown && !t.post) return;
-    var e = h('div', 'tx' + (t.a === 'c' ? ' tx-c' : t.a === 'r' ? ' tx-r' : '') + (t.sp ? ' tx-sp' : '') + (t.up ? ' tx-up' : '') + (shown ? '' : ' is-empty'));
+    var ST = textStyle(album, pi, 'tx', i);
+    var e = h('div', 'tx' + (t.a === 'c' ? ' tx-c' : t.a === 'r' ? ' tx-r' : '') + (t.sp ? ' tx-sp' : '') + (ST.up ? ' tx-up' : '') + (shown ? '' : ' is-empty'));
     if (edit) e.dataset.tx = i;
     var mt = textMove(st, 'tx' + i);
-    var css = 'left:' + pct(t.x + mt[0], 1000) + ';top:' + pct(t.y - 0.847 * t.z + mt[1], PAGE_H) + ';font-size:' + (t.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[t.f] + ';color:' + t.c;
-    if (t.b) css += ';font-weight:700';
-    if (t.i) css += ';font-style:italic';
+    var css = 'left:' + pct(t.x + mt[0], 1000) + ';top:' + pct(t.y - 0.847 * ST.s + mt[1], PAGE_H) + ';' + styleCss(ST);
     if (t.r) css += ';transform:rotate(' + t.r + 'deg)';
     e.style.cssText = css;
     if (t.pre && (shown || edit)) e.appendChild(h('span', 'tx-fix', t.pre));
     e.appendChild(h('span', 'tx-v', shown || (edit ? tokenHint(t) : '')));
     if (t.post) e.appendChild(h('span', 'tx-fix', t.post));
-    pg.appendChild(e);
+    put(e, 'tx' + i);
   });
   return pg;
 }

@@ -34,7 +34,7 @@ function buildAlbum(order) {
         var ok = s.photo != null && photos[s.photo];
         return { photo: ok ? s.photo : null, fx: s.focusX != null ? +s.focusX : 0.5, fy: s.focusY != null ? +s.focusY : 0.5, z: s.zoom ? +s.zoom : 1, g: Array.isArray(s.box) && s.box.length === 4 ? s.box.map(Number) : undefined };
       }),
-      tx: asObj(pg.texts), pa: asObj(pg.paragraphs), cp: cp, mv: asObj(pg.moves)
+      tx: asObj(pg.texts), pa: asObj(pg.paragraphs), cp: cp, mv: asObj(pg.moves), z: asObj(pg.layers), fmt: asObj(pg.styles)
     };
   });
   return { tpl: tpl, photos: photos, pages: pages };
