@@ -55,7 +55,7 @@ var I18N_ID = {
 "Can I change the text in the album?": "Teks di dalam album bisa diganti?",
 "Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.": "Bisa, semuanya. Pilih teks di halaman, lalu tulis punyamu. Teks yang dibiarkan kosong tidak ikut dicetak.",
 "Can I choose which part of a photo shows?": "Bagian foto yang terpotong bisa diatur?",
-"Yes. Drag the photo inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Geser foto di dalam bingkainya sampai bagian yang kamu mau terlihat, atau perbesar kalau perlu.",
+"Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Klik dua kali fotonya (atau tekan Atur isi foto), lalu geser foto di dalam bingkainya sampai bagian yang kamu mau terlihat, atau perbesar kalau perlu.",
 "What happens after I send my album?": "Setelah albumnya dikirim, lalu apa?",
 "Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Kami akan menghubungimu lewat WhatsApp untuk konfirmasi, alamat, dan pengiriman.",
 "How do I pay?": "Bayarnya bagaimana?",
@@ -417,5 +417,12 @@ var I18N_ID = {
 "Photo resized.": "Ukuran foto diubah.",
 "Back to the original size.": "Kembali ke ukuran awal.",
 "Drag the handles on a selected photo’s corners or sides to resize it.": "Tarik pegangan di sudut atau sisi foto yang dipilih untuk mengubah ukurannya.",
-"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut foto untuk ubah ukuran · cubit untuk zoom · ketuk teks untuk mengetik."
+"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut foto untuk ubah ukuran · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Adjust photo": "Atur isi foto",
+"Done adjusting": "Selesai atur",
+"Photo moved.": "Foto dipindah.",
+"Drag a photo to move it anywhere on the page.": "Geser foto untuk memindahkannya ke mana saja di halaman.",
+"Double-click a photo (or press Adjust photo) to choose which part shows in its frame.": "Klik dua kali foto (atau tekan Atur isi foto) untuk memilih bagian foto yang tampil di bingkainya.",
+"Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut untuk ubah ukuran · ketuk dua kali foto untuk atur isinya · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.": "Edit langsung di halaman: geser foto untuk memindahkannya, tarik sudutnya untuk mengubah ukuran, dan klik dua kali untuk memilih bagian foto yang tampil."
 };

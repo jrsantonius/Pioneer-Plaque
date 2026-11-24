@@ -8,6 +8,7 @@
     <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 17l4.5-4 3.5 3 2.5-2 3.5 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.500 6.500l4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.400-5.700M4 4v4.500h4.500" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-pages" viewBox="0 0 24 24"><path d="M12 6c-2-1.3-4.6-1.6-8-1v13c3.4-.6 6-.3 8 1 2-1.300 4.600-1.600 8-1V5c-3.400-.600-6-.300-8 1zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -123,7 +124,7 @@
       <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. If you’re short, empty frames can be filled with photos you’ve already added.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
-      <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Drag the photo inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
+      <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
       <details data-nopay><summary>What happens after I send my album?</summary><p>Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.</p></details>
       <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full through Mayar, with no deposit. You fill in your name, phone, address, and JNE shipping there. Use the same email you entered on Imazine so your payment is matched automatically.</p></details>
       <details><summary>What are the paper and cover like?</summary><p>The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).</p></details>
@@ -182,6 +183,7 @@
       <output class="num ph-zv" id="zoom-o">100%</output>
       <button class="btn btn-icon btn-icon-s" type="button" id="ph-zin" aria-label="Zoom in"><svg class="ic"><use href="#i-plus"/></svg></button>
       <span class="ph-sep" aria-hidden="true"></span>
+      <button class="btn btn-sm btn-quiet" type="button" id="slot-crop" aria-label="Adjust photo" aria-pressed="false"><svg class="ic"><use href="#i-crop"/></svg><span>Adjust photo</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-swap" aria-label="Swap"><svg class="ic"><use href="#i-swap"/></svg><span>Swap</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-size" aria-label="Original size" hidden><svg class="ic"><use href="#i-reset"/></svg><span>Original size</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-clear" aria-label="Remove"><svg class="ic"><use href="#i-trash"/></svg><span>Remove</span></button>
@@ -192,12 +194,13 @@
       <button class="btn btn-icon" type="button" id="pg-next" aria-label="Next page"><svg class="ic"><use href="#i-right"/></svg></button>
     </div>
     <ul class="howto howto-st" aria-label="How to edit">
-      <li class="howto-photo">Drag a photo to move it inside its frame.</li>
+      <li class="howto-photo">Drag a photo to move it anywhere on the page.</li>
+      <li class="howto-crop">Double-click a photo (or press Adjust photo) to choose which part shows in its frame.</li>
       <li class="howto-zoom">Pinch, Ctrl + scroll, or − and + to zoom.</li>
       <li class="howto-size">Drag the handles on a selected photo’s corners or sides to resize it.</li>
       <li class="howto-move">Drag any text to move it anywhere on the page.</li>
       <li class="howto-text">Click a text to type in it.</li>
-      <li class="howto-short">Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.</li>
+      <li class="howto-short">Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.</li>
     </ul>
   </div>
 
@@ -212,7 +215,7 @@
       <div class="tool" id="slot-tool" hidden>
         <p class="tool-h" id="slot-tool-h"></p>
         <div id="slot-tool-filled">
-          <p class="tip">Edit right on the page: drag the photo to move it, pinch or use − and + above it to zoom.</p>
+          <p class="tip">Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.</p>
         </div>
         <p class="tip" id="slot-tool-empty">Pick a photo below to fill this frame.</p>
         <div id="slot-cap" hidden>

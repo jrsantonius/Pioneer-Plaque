@@ -332,8 +332,13 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 /* interactive page pieces (edit mode) */
 .pg-edit .slot { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .pg-edit .slot:not(.is-empty) { touch-action: none; }
-.pg-edit .slot img { cursor: grab; } /* (16) the button selects, the picture inside it drags */
-.pg-edit .slot:active img { cursor: grabbing; }
+.pg-edit .slot, .pg-edit .slot img { cursor: move; } /* geser = pindahkan bingkai */
+.pg-edit .slot.is-empty { touch-action: none; }
+.pg-edit .slot.is-crop img { cursor: grab; }
+.sel-frame.is-crop { outline-style: dashed; }
+.sel-frame.is-crop .rs-h { display: none; }
+#slot-crop[aria-pressed="true"] { background: var(--tangerine); color: #fff; }
+.pg-edit .slot.is-crop:active img { cursor: grabbing; }
 .pg-edit .slot.is-empty { background-color: var(--empty) !important; box-shadow: none; outline: .4cqw dashed var(--empty-ink); outline-offset: -.4cqw; }
 .pg-edit .slot.is-empty .slot-lb { color: var(--empty-ink); }
 .pg-edit .slot:hover { filter: brightness(.96); }

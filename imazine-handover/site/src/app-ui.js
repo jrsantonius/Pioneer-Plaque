@@ -828,7 +828,7 @@ function drawStage() {
 /* post-process an edit page: small slots, selection frame, selected text */
 function decorate(pg, p) {
   var P = S.album.tpl.pages[p];
-  $$('.slot', pg).forEach(function (el) { var g = slotGeo(S.album, p, +el.dataset.s); if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); });
+  $$('.slot', pg).forEach(function (el) { var g = slotGeo(S.album, p, +el.dataset.s); if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); if (isCrop(p, +el.dataset.s)) el.classList.add('is-crop'); });
   var s = S.sel;
   if (s && s.p === p) {
     if (s.t === 'slot') {
@@ -849,7 +849,7 @@ function redrawTexts(p) {
 }
 function gotoPage(p, keepSel) {
   S.page = clamp(p, 0, S.album.pages.length - 1);
-  if (!keepSel) S.sel = null;
+  if (!keepSel) { S.sel = null; S.crop = null; }
   drawStage(); drawSlotTool(); drawTextFields();
   var cur = $('.pt[aria-current="true"]');
   if (cur && cur.offsetParent) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -952,6 +952,8 @@ function drawPhBar() {
   $('#zoom-o').textContent = Math.round(s.z * 100) + '%';
   $('#ph-zout').disabled = s.z <= 1.001; $('#ph-zin').disabled = s.z >= 2.999;
   $('#slot-size').hidden = !s.g;
+  var cb = $('#slot-crop'), on = isCrop(S.sel.p, S.sel.i); cb.setAttribute('aria-pressed', on ? 'true' : 'false');
+  $('span', cb).textContent = on ? 'Done adjusting' : 'Adjust photo'; cb.setAttribute('aria-label', on ? 'Done adjusting' : 'Adjust photo');
   var st = $('#st-stage').getBoundingClientRect(), r = fr.getBoundingClientRect(), bw = bar.offsetWidth, bh = bar.offsetHeight;
   var top = r.top - st.top - bh - 10;
   if (top < 4) top = r.bottom - st.top + 10;
@@ -975,6 +977,7 @@ function zoomSlot(p, i, z, px, py) {
   drawPhBar();
   clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); }, 300);
 }
+$('#slot-crop').addEventListener('click', function () { if (!S.sel || S.sel.t !== 'slot') return; setCrop(isCrop(S.sel.p, S.sel.i) ? null : S.sel.p, S.sel.i); });
 $('#ph-zout').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z - 0.15); });
 $('#ph-zin').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z + 0.15); });
 $('#slot-clear').addEventListener('click', function () {
@@ -1126,6 +1129,7 @@ $('#spread').addEventListener('paste', function (e) {   /* tempel sebagai teks b
 });
 function selectSlot(p, i) {
   endEdit();
+  if (S.crop && !isCrop(p, i)) S.crop = null;
   S.sel = { t: 'slot', p: p, i: i };
   if (S.tab !== 'foto') setTab('foto');
   viewPages(S.page).forEach(function (q) { if (q != null) { var pg = pageNode(q); $$('.sel-frame', pg).forEach(function (n) { n.remove(); }); $$('.is-sel', pg).forEach(function (n) { n.classList.remove('is-sel'); }); } });
@@ -1133,7 +1137,7 @@ function selectSlot(p, i) {
   drawSlotTool(); drawTray();
 }
 function deselect() {
-  endEdit();
+  endEdit(); S.crop = null;
   if (!S.sel) return;
   S.sel = null;
   $$('#spread .sel-frame').forEach(function (n) { n.remove(); }); $$('#spread .is-sel').forEach(function (n) { n.classList.remove('is-sel'); });
@@ -1141,8 +1145,17 @@ function deselect() {
   drawSlotTool(); drawTray();
 }
 
-/* pointer work on the page: tap to select, drag a photo to choose what stays in frame */
+/* pointer work on the page (24 Nov 2026, seperti Canva): geser foto = memindahkan bingkainya di halaman.
+   Mode "atur isi foto" (klik dua kali, atau tombol di bilah foto): geser = memilih bagian foto yang tampil di bingkai. */
 var pan = null, panned = false;
+function isCrop(p, i) { return !!(S.crop && S.crop.p === p && S.crop.i === i); }
+function setCrop(p, i) {
+  S.crop = p == null ? null : { p: p, i: i };
+  $$('#spread .slot.is-crop').forEach(function (n) { n.classList.toggle('is-crop', false); });
+  $$('#spread .sel-frame').forEach(function (n) { n.classList.toggle('is-crop', !!S.crop); });
+  if (S.crop) { var el = $('.slot[data-s="' + i + '"]', pageNode(p)); if (el) el.classList.add('is-crop'); }
+  drawPhBar();
+}
 function slotClick(p, i) {
   var s = S.album.pages[p].slots[i];
   if (S.swap) {
@@ -1167,7 +1180,7 @@ function frameCss(el, g) {
   el.style.transform = g[4] ? 'rotate(' + g[4] + 'deg)' : '';
 }
 function selFrame(p, i) {
-  var fr = h('div', 'sel-frame'); frameCss(fr, slotGeo(S.album, p, i));
+  var fr = h('div', 'sel-frame' + (isCrop(p, i) ? ' is-crop' : '')); frameCss(fr, slotGeo(S.album, p, i));
   RS_H.forEach(function (k) { var b = h('span', 'rs-h rs-' + k); b.dataset.h = k; b.setAttribute('aria-hidden', 'true'); fr.appendChild(b); });
   return fr;
 }
@@ -1274,7 +1287,7 @@ function endTextMove(e) {
 $('#spread').addEventListener('pointerup', endTextMove, true);
 $('#spread').addEventListener('pointercancel', endTextMove, true);
 $('#spread').addEventListener('pointerdown', function (e) {
-  if (pan && e.pointerId !== pan.id && e.pointerType === 'touch') {   /* jari kedua di foto yang sedang digeser: cubit untuk zoom */
+  if (pan && e.pointerId !== pan.id && e.pointerType === 'touch' && pan.s.photo != null) {   /* jari kedua di foto yang sedang digeser: cubit untuk zoom */
     pan.f2 = { id: e.pointerId, x: e.clientX, y: e.clientY }; pan.d0 = Math.hypot(e.clientX - pan.cx, e.clientY - pan.cy) || 1; pan.z0 = pan.s.z;
     if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); }
     return;
@@ -1282,9 +1295,11 @@ $('#spread').addEventListener('pointerdown', function (e) {
   var el = e.target.closest('.slot'); if (!el || e.button > 0) return;
   var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i];
   panned = false;
-  if (s.photo == null || S.swap || S.armed != null) return;
-  var g = slotGeo(S.album, p, i), b = imgBox(S.photos[s.photo], g[2], g[3], s);
-  pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy,
+  if (S.swap || S.armed != null) return;
+  var g = slotGeo(S.album, p, i), crop = s.photo != null && isCrop(p, i), b = s.photo != null ? imgBox(S.photos[s.photo], g[2], g[3], s) : { W: 100, H: 100 };
+  var pg = el.closest('.pg'), ci = capOfSlot(p, i), st = S.album.pages[p], ti = ci > -1 ? numOfCap(p, ci) : -1;
+  pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy, mode: crop ? 'crop' : 'move',
+    g0: g.slice(), prev: s.g ? s.g.slice() : null, pw: pg.offsetWidth, ph: pg.offsetHeight, ci: ci, cm0: ci > -1 ? textMove(st, 'cp' + ci) : null, cprev: ci > -1 && st.mv && st.mv['cp' + ci] ? st.mv['cp' + ci].slice() : null, ti: ti, tm0: ti > -1 ? textMove(st, 'tx' + ti) : null, tprev: ti > -1 && st.mv && st.mv['tx' + ti] ? st.mv['tx' + ti].slice() : null,
     ox: (b.W - 100) / 100 * el.offsetWidth, oy: (b.H - 100) / 100 * el.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, id: e.pointerId, cx: e.clientX, cy: e.clientY };
   try { el.setPointerCapture(e.pointerId); } catch (err) {}
 });
@@ -1300,6 +1315,7 @@ $('#spread').addEventListener('pointermove', function (e) {
   var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
   if (!panned && Math.hypot(dx, dy) < 5) return;
   if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); $('#ph-bar').hidden = true; }
+  if (pan.mode === 'move') { moveFrame(pan, dx, dy); return; }
   var c = Math.cos(-pan.rot), sn = Math.sin(-pan.rot), rx = dx * c - dy * sn, ry = dx * sn + dy * c;
   pan.cx = e.clientX; pan.cy = e.clientY;
   if (pan.ox > 0.5) pan.s.fx = clamp(pan.fx - rx / pan.ox, 0, 1);
@@ -1310,9 +1326,56 @@ function endPan(e) {
   if (!pan) return;
   if (e && pan.f2 && e.pointerId === pan.f2.id) { pan.f2 = null; pan.x = pan.cx; pan.y = pan.cy; pan.fx = pan.s.fx; pan.fy = pan.s.fy; recalcPan(); return; }
   if (e && e.pointerId !== pan.id) return;
-  if (panned) { S.dirty = true; refreshNavFor(pan.p); }
-  pan = null; drawPhBar();
+  var m = pan; pan = null;
+  if (panned && m.mode === 'move' && m.moved) { endMoveFrame(m); return; }
+  if (panned) { S.dirty = true; refreshNavFor(m.p); }
+  drawPhBar();
 }
+/* Nomor foto ("01", "No. 04") di baris yang sama dengan caption-nya: ikut pindah bersama foto. */
+function numOfCap(p, ci) {
+  var P = S.album.tpl.pages[p], cp = P.cp[ci], best = -1, bd = 160;
+  P.tx.forEach(function (t, i) { if (t.k === 'e' || Math.abs(t.y - cp.y) > 8) return; var d = Math.abs(cp.x - t.x); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+/* Memindahkan bingkai: posisi baru di slots[k].g (ukuran tetap). Caption foto dan nomornya ikut berpindah sejauh yang sama. */
+function moveFrame(m, dx, dy) {
+  var g0 = m.g0, nx = clamp(g0[0] + dx / m.pw * 1000, -g0[2] / 2, 1000 - g0[2] / 2), ny = clamp(g0[1] + dy / m.ph * PAGE_H, -g0[3] / 2, PAGE_H - g0[3] / 2);
+  nx = Math.round(nx * 10) / 10; ny = Math.round(ny * 10) / 10;
+  m.s.g = [nx, ny, g0[2], g0[3]]; m.moved = true;
+  var full = m.s.g.concat([g0[4] || 0]), pgEl = pageNode(m.p), fr = $('.sel-frame', pgEl);
+  frameCss(m.el, full); if (fr) frameCss(fr, full);
+  if (m.ci > -1) {
+    var st = S.album.pages[m.p], mv = [Math.round((m.cm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.cm0[1] + ny - g0[1]) * 10) / 10], b = textBase(m.p, 'cp', m.ci);
+    (st.mv = st.mv || {})['cp' + m.ci] = mv;
+    var ce = $('[data-cp="' + m.ci + '"]', pgEl); if (ce) { ce.style.left = pct(b[0] + mv[0], 1000); ce.style.top = pct(b[1] + mv[1], PAGE_H); }
+    $$('.cp-bar', pgEl).forEach(function (n) { n.style.visibility = 'hidden'; });   /* garis bantu caption kosong digambar ulang saat dilepas */
+  }
+  if (m.ti > -1) {
+    var st2 = S.album.pages[m.p], mt = [Math.round((m.tm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.tm0[1] + ny - g0[1]) * 10) / 10], bt = textBase(m.p, 'tx', m.ti);
+    (st2.mv = st2.mv || {})['tx' + m.ti] = mt;
+    var te = $('[data-tx="' + m.ti + '"]', pgEl); if (te) { te.style.left = pct(bt[0] + mt[0], 1000); te.style.top = pct(bt[1] + mt[1], PAGE_H); }
+  }
+}
+function endMoveFrame(m) {
+  var s = m.s, t0 = S.album.tpl.pages[m.p].ph[m.i], st = S.album.pages[m.p];
+  if (s.g && Math.abs(s.g[0] - t0[0]) < 0.5 && Math.abs(s.g[1] - t0[1]) < 0.5 && Math.abs(s.g[2] - t0[2]) < 0.5 && Math.abs(s.g[3] - t0[3]) < 0.5) delete s.g;
+  ['cp' + m.ci, 'tx' + m.ti].forEach(function (k) { var v = st.mv && st.mv[k]; if (v && Math.abs(v[0]) < 0.5 && Math.abs(v[1]) < 0.5) delete st.mv[k]; });
+  S.dirty = true; redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
+  toast('Photo moved.', { label: 'Undo', fn: function () {
+    if (m.prev) s.g = m.prev; else delete s.g;
+    if (m.ci > -1) { if (m.cprev) (st.mv = st.mv || {})['cp' + m.ci] = m.cprev; else if (st.mv) delete st.mv['cp' + m.ci]; }
+    if (m.ti > -1) { if (m.tprev) (st.mv = st.mv || {})['tx' + m.ti] = m.tprev; else if (st.mv) delete st.mv['tx' + m.ti]; }
+    redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
+  } });
+}
+/* klik dua kali pada foto = masuk/keluar mode atur isi foto */
+$('#spread').addEventListener('dblclick', function (e) {
+  var el = e.target.closest('.slot'); if (!el) return;
+  var p = +el.closest('.pg').dataset.p, i = +el.dataset.s; if (S.album.pages[p].slots[i].photo == null) return;
+  e.preventDefault();
+  if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== p || S.sel.i !== i) selectSlot(p, i);
+  setCrop(isCrop(p, i) ? null : p, i);
+});
 function recalcPan() { var b = imgBox(S.photos[pan.s.photo], pan.g[2], pan.g[3], pan.s); pan.ox = (b.W - 100) / 100 * pan.el.offsetWidth; pan.oy = (b.H - 100) / 100 * pan.el.offsetHeight; }
 $('#spread').addEventListener('wheel', function (e) {   /* cubit di trackpad (ctrlKey) atau ctrl + scroll di atas foto */
   if (!e.ctrlKey) return;
@@ -1357,6 +1420,14 @@ $('#spread').addEventListener('keydown', function (e) {
   var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i];
   if (s.photo == null) return;
   var k = e.key, step = e.shiftKey ? 0.12 : 0.04, hit = true;
+  if (/^Arrow/.test(k) && !isCrop(p, i)) {   /* di luar mode atur isi: panah memindahkan bingkai */
+    e.preventDefault();
+    var g = slotGeo(S.album, p, i), d = e.shiftKey ? 20 : 5;
+    s.g = [clamp(g[0] + (k === 'ArrowLeft' ? -d : k === 'ArrowRight' ? d : 0), -g[2] / 2, 1000 - g[2] / 2), clamp(g[1] + (k === 'ArrowUp' ? -d : k === 'ArrowDown' ? d : 0), -g[3] / 2, PAGE_H - g[3] / 2), g[2], g[3]];
+    S.dirty = true; frameCss(el, s.g.concat([g[4] || 0])); var fr = $('.sel-frame', pageNode(p)); if (fr) frameCss(fr, s.g.concat([g[4] || 0]));
+    clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); drawPhBar(); }, 300);
+    return;
+  }
   if (k === 'ArrowLeft') s.fx = clamp(s.fx - step, 0, 1); else if (k === 'ArrowRight') s.fx = clamp(s.fx + step, 0, 1);
   else if (k === 'ArrowUp') s.fy = clamp(s.fy - step, 0, 1); else if (k === 'ArrowDown') s.fy = clamp(s.fy + step, 0, 1);
   else if (k === '+' || k === '=') s.z = clamp(s.z + 0.1, 1, 3); else if (k === '-') s.z = clamp(s.z - 0.1, 1, 3);

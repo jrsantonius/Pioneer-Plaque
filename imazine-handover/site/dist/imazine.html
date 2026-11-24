@@ -340,8 +340,13 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 /* interactive page pieces (edit mode) */
 .pg-edit .slot { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .pg-edit .slot:not(.is-empty) { touch-action: none; }
-.pg-edit .slot img { cursor: grab; } /* (16) the button selects, the picture inside it drags */
-.pg-edit .slot:active img { cursor: grabbing; }
+.pg-edit .slot, .pg-edit .slot img { cursor: move; } /* geser = pindahkan bingkai */
+.pg-edit .slot.is-empty { touch-action: none; }
+.pg-edit .slot.is-crop img { cursor: grab; }
+.sel-frame.is-crop { outline-style: dashed; }
+.sel-frame.is-crop .rs-h { display: none; }
+#slot-crop[aria-pressed="true"] { background: var(--tangerine); color: #fff; }
+.pg-edit .slot.is-crop:active img { cursor: grabbing; }
 .pg-edit .slot.is-empty { background-color: var(--empty) !important; box-shadow: none; outline: .4cqw dashed var(--empty-ink); outline-offset: -.4cqw; }
 .pg-edit .slot.is-empty .slot-lb { color: var(--empty-ink); }
 .pg-edit .slot:hover { filter: brightness(.96); }
@@ -720,6 +725,7 @@ html.pay [data-nopay]{display:none!important}
     <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M5 17l4.5-4 3.5 3 2.5-2 3.5 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.500 6.500l4 4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.400-5.700M4 4v4.500h4.500" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-pages" viewBox="0 0 24 24"><path d="M12 6c-2-1.3-4.6-1.6-8-1v13c3.4-.6 6-.3 8 1 2-1.300 4.600-1.600 8-1V5c-3.400-.600-6-.300-8 1zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -835,7 +841,7 @@ html.pay [data-nopay]{display:none!important}
       <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. If you’re short, empty frames can be filled with photos you’ve already added.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
-      <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Drag the photo inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
+      <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
       <details data-nopay><summary>What happens after I send my album?</summary><p>Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.</p></details>
       <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full through Mayar, with no deposit. You fill in your name, phone, address, and JNE shipping there. Use the same email you entered on Imazine so your payment is matched automatically.</p></details>
       <details><summary>What are the paper and cover like?</summary><p>The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).</p></details>
@@ -894,6 +900,7 @@ html.pay [data-nopay]{display:none!important}
       <output class="num ph-zv" id="zoom-o">100%</output>
       <button class="btn btn-icon btn-icon-s" type="button" id="ph-zin" aria-label="Zoom in"><svg class="ic"><use href="#i-plus"/></svg></button>
       <span class="ph-sep" aria-hidden="true"></span>
+      <button class="btn btn-sm btn-quiet" type="button" id="slot-crop" aria-label="Adjust photo" aria-pressed="false"><svg class="ic"><use href="#i-crop"/></svg><span>Adjust photo</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-swap" aria-label="Swap"><svg class="ic"><use href="#i-swap"/></svg><span>Swap</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-size" aria-label="Original size" hidden><svg class="ic"><use href="#i-reset"/></svg><span>Original size</span></button>
       <button class="btn btn-sm btn-quiet" type="button" id="slot-clear" aria-label="Remove"><svg class="ic"><use href="#i-trash"/></svg><span>Remove</span></button>
@@ -904,12 +911,13 @@ html.pay [data-nopay]{display:none!important}
       <button class="btn btn-icon" type="button" id="pg-next" aria-label="Next page"><svg class="ic"><use href="#i-right"/></svg></button>
     </div>
     <ul class="howto howto-st" aria-label="How to edit">
-      <li class="howto-photo">Drag a photo to move it inside its frame.</li>
+      <li class="howto-photo">Drag a photo to move it anywhere on the page.</li>
+      <li class="howto-crop">Double-click a photo (or press Adjust photo) to choose which part shows in its frame.</li>
       <li class="howto-zoom">Pinch, Ctrl + scroll, or − and + to zoom.</li>
       <li class="howto-size">Drag the handles on a selected photo’s corners or sides to resize it.</li>
       <li class="howto-move">Drag any text to move it anywhere on the page.</li>
       <li class="howto-text">Click a text to type in it.</li>
-      <li class="howto-short">Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.</li>
+      <li class="howto-short">Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.</li>
     </ul>
   </div>
 
@@ -924,7 +932,7 @@ html.pay [data-nopay]{display:none!important}
       <div class="tool" id="slot-tool" hidden>
         <p class="tool-h" id="slot-tool-h"></p>
         <div id="slot-tool-filled">
-          <p class="tip">Edit right on the page: drag the photo to move it, pinch or use − and + above it to zoom.</p>
+          <p class="tip">Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.</p>
         </div>
         <p class="tip" id="slot-tool-empty">Pick a photo below to fill this frame.</p>
         <div id="slot-cap" hidden>
@@ -1117,7 +1125,7 @@ var I18N_ID = {
 "Can I change the text in the album?": "Teks di dalam album bisa diganti?",
 "Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.": "Bisa, semuanya. Pilih teks di halaman, lalu tulis punyamu. Teks yang dibiarkan kosong tidak ikut dicetak.",
 "Can I choose which part of a photo shows?": "Bagian foto yang terpotong bisa diatur?",
-"Yes. Drag the photo inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Geser foto di dalam bingkainya sampai bagian yang kamu mau terlihat, atau perbesar kalau perlu.",
+"Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Klik dua kali fotonya (atau tekan Atur isi foto), lalu geser foto di dalam bingkainya sampai bagian yang kamu mau terlihat, atau perbesar kalau perlu.",
 "What happens after I send my album?": "Setelah albumnya dikirim, lalu apa?",
 "Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Kami akan menghubungimu lewat WhatsApp untuk konfirmasi, alamat, dan pengiriman.",
 "How do I pay?": "Bayarnya bagaimana?",
@@ -1479,7 +1487,14 @@ var I18N_ID = {
 "Photo resized.": "Ukuran foto diubah.",
 "Back to the original size.": "Kembali ke ukuran awal.",
 "Drag the handles on a selected photo’s corners or sides to resize it.": "Tarik pegangan di sudut atau sisi foto yang dipilih untuk mengubah ukurannya.",
-"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut foto untuk ubah ukuran · cubit untuk zoom · ketuk teks untuk mengetik."
+"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut foto untuk ubah ukuran · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Adjust photo": "Atur isi foto",
+"Done adjusting": "Selesai atur",
+"Photo moved.": "Foto dipindah.",
+"Drag a photo to move it anywhere on the page.": "Geser foto untuk memindahkannya ke mana saja di halaman.",
+"Double-click a photo (or press Adjust photo) to choose which part shows in its frame.": "Klik dua kali foto (atau tekan Atur isi foto) untuk memilih bagian foto yang tampil di bingkainya.",
+"Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut untuk ubah ukuran · ketuk dua kali foto untuk atur isinya · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.": "Edit langsung di halaman: geser foto untuk memindahkannya, tarik sudutnya untuk mengubah ukuran, dan klik dua kali untuk memilih bagian foto yang tampil."
 };
 
 /* ---------- language (DNA TIS, 20 Nov 2026): English is the core copy, Indonesian is the second language ----------
@@ -3617,7 +3632,7 @@ function drawStage() {
 /* post-process an edit page: small slots, selection frame, selected text */
 function decorate(pg, p) {
   var P = S.album.tpl.pages[p];
-  $$('.slot', pg).forEach(function (el) { var g = slotGeo(S.album, p, +el.dataset.s); if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); });
+  $$('.slot', pg).forEach(function (el) { var g = slotGeo(S.album, p, +el.dataset.s); if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); if (isCrop(p, +el.dataset.s)) el.classList.add('is-crop'); });
   var s = S.sel;
   if (s && s.p === p) {
     if (s.t === 'slot') {
@@ -3638,7 +3653,7 @@ function redrawTexts(p) {
 }
 function gotoPage(p, keepSel) {
   S.page = clamp(p, 0, S.album.pages.length - 1);
-  if (!keepSel) S.sel = null;
+  if (!keepSel) { S.sel = null; S.crop = null; }
   drawStage(); drawSlotTool(); drawTextFields();
   var cur = $('.pt[aria-current="true"]');
   if (cur && cur.offsetParent) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -3741,6 +3756,8 @@ function drawPhBar() {
   $('#zoom-o').textContent = Math.round(s.z * 100) + '%';
   $('#ph-zout').disabled = s.z <= 1.001; $('#ph-zin').disabled = s.z >= 2.999;
   $('#slot-size').hidden = !s.g;
+  var cb = $('#slot-crop'), on = isCrop(S.sel.p, S.sel.i); cb.setAttribute('aria-pressed', on ? 'true' : 'false');
+  $('span', cb).textContent = on ? 'Done adjusting' : 'Adjust photo'; cb.setAttribute('aria-label', on ? 'Done adjusting' : 'Adjust photo');
   var st = $('#st-stage').getBoundingClientRect(), r = fr.getBoundingClientRect(), bw = bar.offsetWidth, bh = bar.offsetHeight;
   var top = r.top - st.top - bh - 10;
   if (top < 4) top = r.bottom - st.top + 10;
@@ -3764,6 +3781,7 @@ function zoomSlot(p, i, z, px, py) {
   drawPhBar();
   clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); }, 300);
 }
+$('#slot-crop').addEventListener('click', function () { if (!S.sel || S.sel.t !== 'slot') return; setCrop(isCrop(S.sel.p, S.sel.i) ? null : S.sel.p, S.sel.i); });
 $('#ph-zout').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z - 0.15); });
 $('#ph-zin').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z + 0.15); });
 $('#slot-clear').addEventListener('click', function () {
@@ -3915,6 +3933,7 @@ $('#spread').addEventListener('paste', function (e) {   /* tempel sebagai teks b
 });
 function selectSlot(p, i) {
   endEdit();
+  if (S.crop && !isCrop(p, i)) S.crop = null;
   S.sel = { t: 'slot', p: p, i: i };
   if (S.tab !== 'foto') setTab('foto');
   viewPages(S.page).forEach(function (q) { if (q != null) { var pg = pageNode(q); $$('.sel-frame', pg).forEach(function (n) { n.remove(); }); $$('.is-sel', pg).forEach(function (n) { n.classList.remove('is-sel'); }); } });
@@ -3922,7 +3941,7 @@ function selectSlot(p, i) {
   drawSlotTool(); drawTray();
 }
 function deselect() {
-  endEdit();
+  endEdit(); S.crop = null;
   if (!S.sel) return;
   S.sel = null;
   $$('#spread .sel-frame').forEach(function (n) { n.remove(); }); $$('#spread .is-sel').forEach(function (n) { n.classList.remove('is-sel'); });
@@ -3930,8 +3949,17 @@ function deselect() {
   drawSlotTool(); drawTray();
 }
 
-/* pointer work on the page: tap to select, drag a photo to choose what stays in frame */
+/* pointer work on the page (24 Nov 2026, seperti Canva): geser foto = memindahkan bingkainya di halaman.
+   Mode "atur isi foto" (klik dua kali, atau tombol di bilah foto): geser = memilih bagian foto yang tampil di bingkai. */
 var pan = null, panned = false;
+function isCrop(p, i) { return !!(S.crop && S.crop.p === p && S.crop.i === i); }
+function setCrop(p, i) {
+  S.crop = p == null ? null : { p: p, i: i };
+  $$('#spread .slot.is-crop').forEach(function (n) { n.classList.toggle('is-crop', false); });
+  $$('#spread .sel-frame').forEach(function (n) { n.classList.toggle('is-crop', !!S.crop); });
+  if (S.crop) { var el = $('.slot[data-s="' + i + '"]', pageNode(p)); if (el) el.classList.add('is-crop'); }
+  drawPhBar();
+}
 function slotClick(p, i) {
   var s = S.album.pages[p].slots[i];
   if (S.swap) {
@@ -3956,7 +3984,7 @@ function frameCss(el, g) {
   el.style.transform = g[4] ? 'rotate(' + g[4] + 'deg)' : '';
 }
 function selFrame(p, i) {
-  var fr = h('div', 'sel-frame'); frameCss(fr, slotGeo(S.album, p, i));
+  var fr = h('div', 'sel-frame' + (isCrop(p, i) ? ' is-crop' : '')); frameCss(fr, slotGeo(S.album, p, i));
   RS_H.forEach(function (k) { var b = h('span', 'rs-h rs-' + k); b.dataset.h = k; b.setAttribute('aria-hidden', 'true'); fr.appendChild(b); });
   return fr;
 }
@@ -4063,7 +4091,7 @@ function endTextMove(e) {
 $('#spread').addEventListener('pointerup', endTextMove, true);
 $('#spread').addEventListener('pointercancel', endTextMove, true);
 $('#spread').addEventListener('pointerdown', function (e) {
-  if (pan && e.pointerId !== pan.id && e.pointerType === 'touch') {   /* jari kedua di foto yang sedang digeser: cubit untuk zoom */
+  if (pan && e.pointerId !== pan.id && e.pointerType === 'touch' && pan.s.photo != null) {   /* jari kedua di foto yang sedang digeser: cubit untuk zoom */
     pan.f2 = { id: e.pointerId, x: e.clientX, y: e.clientY }; pan.d0 = Math.hypot(e.clientX - pan.cx, e.clientY - pan.cy) || 1; pan.z0 = pan.s.z;
     if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); }
     return;
@@ -4071,9 +4099,11 @@ $('#spread').addEventListener('pointerdown', function (e) {
   var el = e.target.closest('.slot'); if (!el || e.button > 0) return;
   var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i];
   panned = false;
-  if (s.photo == null || S.swap || S.armed != null) return;
-  var g = slotGeo(S.album, p, i), b = imgBox(S.photos[s.photo], g[2], g[3], s);
-  pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy,
+  if (S.swap || S.armed != null) return;
+  var g = slotGeo(S.album, p, i), crop = s.photo != null && isCrop(p, i), b = s.photo != null ? imgBox(S.photos[s.photo], g[2], g[3], s) : { W: 100, H: 100 };
+  var pg = el.closest('.pg'), ci = capOfSlot(p, i), st = S.album.pages[p], ti = ci > -1 ? numOfCap(p, ci) : -1;
+  pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy, mode: crop ? 'crop' : 'move',
+    g0: g.slice(), prev: s.g ? s.g.slice() : null, pw: pg.offsetWidth, ph: pg.offsetHeight, ci: ci, cm0: ci > -1 ? textMove(st, 'cp' + ci) : null, cprev: ci > -1 && st.mv && st.mv['cp' + ci] ? st.mv['cp' + ci].slice() : null, ti: ti, tm0: ti > -1 ? textMove(st, 'tx' + ti) : null, tprev: ti > -1 && st.mv && st.mv['tx' + ti] ? st.mv['tx' + ti].slice() : null,
     ox: (b.W - 100) / 100 * el.offsetWidth, oy: (b.H - 100) / 100 * el.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, id: e.pointerId, cx: e.clientX, cy: e.clientY };
   try { el.setPointerCapture(e.pointerId); } catch (err) {}
 });
@@ -4089,6 +4119,7 @@ $('#spread').addEventListener('pointermove', function (e) {
   var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
   if (!panned && Math.hypot(dx, dy) < 5) return;
   if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); $('#ph-bar').hidden = true; }
+  if (pan.mode === 'move') { moveFrame(pan, dx, dy); return; }
   var c = Math.cos(-pan.rot), sn = Math.sin(-pan.rot), rx = dx * c - dy * sn, ry = dx * sn + dy * c;
   pan.cx = e.clientX; pan.cy = e.clientY;
   if (pan.ox > 0.5) pan.s.fx = clamp(pan.fx - rx / pan.ox, 0, 1);
@@ -4099,9 +4130,56 @@ function endPan(e) {
   if (!pan) return;
   if (e && pan.f2 && e.pointerId === pan.f2.id) { pan.f2 = null; pan.x = pan.cx; pan.y = pan.cy; pan.fx = pan.s.fx; pan.fy = pan.s.fy; recalcPan(); return; }
   if (e && e.pointerId !== pan.id) return;
-  if (panned) { S.dirty = true; refreshNavFor(pan.p); }
-  pan = null; drawPhBar();
+  var m = pan; pan = null;
+  if (panned && m.mode === 'move' && m.moved) { endMoveFrame(m); return; }
+  if (panned) { S.dirty = true; refreshNavFor(m.p); }
+  drawPhBar();
 }
+/* Nomor foto ("01", "No. 04") di baris yang sama dengan caption-nya: ikut pindah bersama foto. */
+function numOfCap(p, ci) {
+  var P = S.album.tpl.pages[p], cp = P.cp[ci], best = -1, bd = 160;
+  P.tx.forEach(function (t, i) { if (t.k === 'e' || Math.abs(t.y - cp.y) > 8) return; var d = Math.abs(cp.x - t.x); if (d < bd) { bd = d; best = i; } });
+  return best;
+}
+/* Memindahkan bingkai: posisi baru di slots[k].g (ukuran tetap). Caption foto dan nomornya ikut berpindah sejauh yang sama. */
+function moveFrame(m, dx, dy) {
+  var g0 = m.g0, nx = clamp(g0[0] + dx / m.pw * 1000, -g0[2] / 2, 1000 - g0[2] / 2), ny = clamp(g0[1] + dy / m.ph * PAGE_H, -g0[3] / 2, PAGE_H - g0[3] / 2);
+  nx = Math.round(nx * 10) / 10; ny = Math.round(ny * 10) / 10;
+  m.s.g = [nx, ny, g0[2], g0[3]]; m.moved = true;
+  var full = m.s.g.concat([g0[4] || 0]), pgEl = pageNode(m.p), fr = $('.sel-frame', pgEl);
+  frameCss(m.el, full); if (fr) frameCss(fr, full);
+  if (m.ci > -1) {
+    var st = S.album.pages[m.p], mv = [Math.round((m.cm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.cm0[1] + ny - g0[1]) * 10) / 10], b = textBase(m.p, 'cp', m.ci);
+    (st.mv = st.mv || {})['cp' + m.ci] = mv;
+    var ce = $('[data-cp="' + m.ci + '"]', pgEl); if (ce) { ce.style.left = pct(b[0] + mv[0], 1000); ce.style.top = pct(b[1] + mv[1], PAGE_H); }
+    $$('.cp-bar', pgEl).forEach(function (n) { n.style.visibility = 'hidden'; });   /* garis bantu caption kosong digambar ulang saat dilepas */
+  }
+  if (m.ti > -1) {
+    var st2 = S.album.pages[m.p], mt = [Math.round((m.tm0[0] + nx - g0[0]) * 10) / 10, Math.round((m.tm0[1] + ny - g0[1]) * 10) / 10], bt = textBase(m.p, 'tx', m.ti);
+    (st2.mv = st2.mv || {})['tx' + m.ti] = mt;
+    var te = $('[data-tx="' + m.ti + '"]', pgEl); if (te) { te.style.left = pct(bt[0] + mt[0], 1000); te.style.top = pct(bt[1] + mt[1], PAGE_H); }
+  }
+}
+function endMoveFrame(m) {
+  var s = m.s, t0 = S.album.tpl.pages[m.p].ph[m.i], st = S.album.pages[m.p];
+  if (s.g && Math.abs(s.g[0] - t0[0]) < 0.5 && Math.abs(s.g[1] - t0[1]) < 0.5 && Math.abs(s.g[2] - t0[2]) < 0.5 && Math.abs(s.g[3] - t0[3]) < 0.5) delete s.g;
+  ['cp' + m.ci, 'tx' + m.ti].forEach(function (k) { var v = st.mv && st.mv[k]; if (v && Math.abs(v[0]) < 0.5 && Math.abs(v[1]) < 0.5) delete st.mv[k]; });
+  S.dirty = true; redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
+  toast('Photo moved.', { label: 'Undo', fn: function () {
+    if (m.prev) s.g = m.prev; else delete s.g;
+    if (m.ci > -1) { if (m.cprev) (st.mv = st.mv || {})['cp' + m.ci] = m.cprev; else if (st.mv) delete st.mv['cp' + m.ci]; }
+    if (m.ti > -1) { if (m.tprev) (st.mv = st.mv || {})['tx' + m.ti] = m.tprev; else if (st.mv) delete st.mv['tx' + m.ti]; }
+    redrawPage(m.p); refreshNavFor(m.p); drawPhBar();
+  } });
+}
+/* klik dua kali pada foto = masuk/keluar mode atur isi foto */
+$('#spread').addEventListener('dblclick', function (e) {
+  var el = e.target.closest('.slot'); if (!el) return;
+  var p = +el.closest('.pg').dataset.p, i = +el.dataset.s; if (S.album.pages[p].slots[i].photo == null) return;
+  e.preventDefault();
+  if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== p || S.sel.i !== i) selectSlot(p, i);
+  setCrop(isCrop(p, i) ? null : p, i);
+});
 function recalcPan() { var b = imgBox(S.photos[pan.s.photo], pan.g[2], pan.g[3], pan.s); pan.ox = (b.W - 100) / 100 * pan.el.offsetWidth; pan.oy = (b.H - 100) / 100 * pan.el.offsetHeight; }
 $('#spread').addEventListener('wheel', function (e) {   /* cubit di trackpad (ctrlKey) atau ctrl + scroll di atas foto */
   if (!e.ctrlKey) return;
@@ -4146,6 +4224,14 @@ $('#spread').addEventListener('keydown', function (e) {
   var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i];
   if (s.photo == null) return;
   var k = e.key, step = e.shiftKey ? 0.12 : 0.04, hit = true;
+  if (/^Arrow/.test(k) && !isCrop(p, i)) {   /* di luar mode atur isi: panah memindahkan bingkai */
+    e.preventDefault();
+    var g = slotGeo(S.album, p, i), d = e.shiftKey ? 20 : 5;
+    s.g = [clamp(g[0] + (k === 'ArrowLeft' ? -d : k === 'ArrowRight' ? d : 0), -g[2] / 2, 1000 - g[2] / 2), clamp(g[1] + (k === 'ArrowUp' ? -d : k === 'ArrowDown' ? d : 0), -g[3] / 2, PAGE_H - g[3] / 2), g[2], g[3]];
+    S.dirty = true; frameCss(el, s.g.concat([g[4] || 0])); var fr = $('.sel-frame', pageNode(p)); if (fr) frameCss(fr, s.g.concat([g[4] || 0]));
+    clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); drawPhBar(); }, 300);
+    return;
+  }
   if (k === 'ArrowLeft') s.fx = clamp(s.fx - step, 0, 1); else if (k === 'ArrowRight') s.fx = clamp(s.fx + step, 0, 1);
   else if (k === 'ArrowUp') s.fy = clamp(s.fy - step, 0, 1); else if (k === 'ArrowDown') s.fy = clamp(s.fy + step, 0, 1);
   else if (k === '+' || k === '=') s.z = clamp(s.z + 0.1, 1, 3); else if (k === '-') s.z = clamp(s.z - 0.1, 1, 3);
