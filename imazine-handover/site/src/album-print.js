@@ -163,14 +163,34 @@ function setupHow() {
   var ua = navigator.userAgent, how = $('#how'), t = $('#how-t');
   var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
   var android = /Android/.test(ua);
+  /* Safari di Mac: halaman dan foto tampil benar di layar, tapi "Simpan sebagai PDF" di Safari membuat sebagian halaman
+     kosong secara acak (IMZ-BL39KY, 24 Nov 2026; Chrome mencetak data yang sama lengkap). Arahkan ke Chrome/Edge. */
+  SAFARI_MAC = !ios && /Safari\//.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR|Firefox/.test(ua);
   var heavy = ' Album ini berisi banyak foto ukuran cetak, jadi HP atau tablet bisa kehabisan memori saat membuat PDF. Kalau gagal atau ada halaman kosong, buat PDF-nya dari komputer.';
   if (ios) t.innerHTML = 'Ketuk <b>Simpan sebagai PDF</b>. Di layar <b>Opsi Cetak</b>, ketuk ikon <b>Bagikan</b> (kotak dengan panah ke atas) lalu pilih <b>Simpan ke File</b>. Kalau ada pilihan ukuran kertas, pilih <b>A4</b>.' + heavy;
   else if (android) t.innerHTML = 'Ketuk <b>Simpan sebagai PDF</b>. Di layar cetak, pilih printer <b>Simpan sebagai PDF</b> di bagian atas, ukuran kertas <b>A4</b>, lalu ketuk tombol <b>PDF</b>.' + heavy;
   /* di layar lebar petunjuknya langsung terbuka; di layar kecil dilipat supaya halaman album cepat terlihat */
   how.open = !ios && !android && matchMedia('(min-width: 1025px) and (min-height: 601px)').matches;
+  if (SAFARI_MAC) {
+    var w = document.createElement('div'); w.className = 'safari';
+    w.innerHTML = '<p><b>Jangan simpan PDF dari Safari.</b> Safari sering membuat sebagian halaman album ini kosong di PDF, walaupun di layar terlihat lengkap. Buka halaman ini di <b>Google Chrome</b> atau <b>Microsoft Edge</b>, lalu simpan PDF dari sana.</p>';
+    var cp = document.createElement('button'); cp.type = 'button'; cp.className = 'btn btn-line'; cp.textContent = 'Salin link halaman ini';
+    cp.addEventListener('click', function () {
+      var done = function () { cp.textContent = 'Link tersalin. Tempel di Chrome atau Edge.'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(done, function () { prompt('Salin link ini:', location.href); });
+      else prompt('Salin link ini:', location.href);
+    });
+    w.appendChild(cp);
+    $('#bar').appendChild(w);
+    ui.save.textContent = 'Simpan PDF di Safari (tidak disarankan)';
+  }
 }
+var SAFARI_MAC = false;
 
 setupHow();
-ui.save.addEventListener('click', function () { window.print(); });
+ui.save.addEventListener('click', function () {
+  if (SAFARI_MAC && !confirm('Di Safari, sebagian halaman PDF bisa kosong. Sebaiknya simpan dari Chrome atau Edge. Tetap lanjut di Safari?')) return;
+  window.print();
+});
 document.body.insertAdjacentHTML('beforeend', stampDefs());
 boot();

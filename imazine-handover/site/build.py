@@ -93,6 +93,9 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
 .how summary{cursor:pointer;color:#d8cfc5;width:max-content;max-width:100%}
 .how p{margin:4px 0 0}
 .warn{max-width:1000px;margin:8px auto 0;color:#ffb09f;font-size:13px}
+.safari{max-width:1000px;margin:10px auto 0;padding:12px 14px;border-radius:10px;background:#4a1f14;border:1px solid #a8452c;color:#ffe3d8;font-size:14px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.safari p{margin:0;flex:1 1 420px}
+.btn-line{background:none;border:1.5px solid #ffb09f;color:#ffe3d8}
 .book{display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 16px 80px}
 .leaf{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px}
 .lb{margin:0;color:#b9ada0;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
