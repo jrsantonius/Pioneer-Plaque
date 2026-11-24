@@ -32,9 +32,9 @@ function buildAlbum(order) {
       slots: P.ph.map(function (g, k) {
         var s = (pg.slots || [])[k] || {};
         var ok = s.photo != null && photos[s.photo];
-        return { photo: ok ? s.photo : null, fx: s.focusX != null ? +s.focusX : 0.5, fy: s.focusY != null ? +s.focusY : 0.5, z: s.zoom ? +s.zoom : 1 };
+        return { photo: ok ? s.photo : null, fx: s.focusX != null ? +s.focusX : 0.5, fy: s.focusY != null ? +s.focusY : 0.5, z: s.zoom ? +s.zoom : 1, g: Array.isArray(s.box) && s.box.length === 4 ? s.box.map(Number) : undefined };
       }),
-      tx: asObj(pg.texts), pa: asObj(pg.paragraphs), cp: cp
+      tx: asObj(pg.texts), pa: asObj(pg.paragraphs), cp: cp, mv: asObj(pg.moves)
     };
   });
   return { tpl: tpl, photos: photos, pages: pages };

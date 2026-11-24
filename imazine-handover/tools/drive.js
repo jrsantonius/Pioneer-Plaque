@@ -45,7 +45,7 @@ const SHOTS = process.argv.includes('--shots');
   // select a filled slot, zoom, pan
   const slot = pg.locator('#spread .slot:not(.is-empty)').first();
   await slot.click(); await state('07-slot-selected');
-  await pg.fill('#zoom', '160'); await pg.dispatchEvent('#zoom', 'input');
+  for (let i = 0; i < 4; i++) await pg.click('#ph-zin');   // zoom from the floating bar on the page
   const box = await slot.boundingBox();
   await pg.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await pg.mouse.down(); await pg.mouse.move(box.x + box.width / 2 + 40, box.y + box.height / 2 + 30, { steps: 5 }); await pg.mouse.up();
   const sAfter = await pg.evaluate(() => JSON.stringify(Array.from(document.querySelectorAll('#spread .slot img')).slice(0, 1).map(i => [i.style.width, i.style.left, i.style.top])));
@@ -55,7 +55,7 @@ const SHOTS = process.argv.includes('--shots');
   await pg.click('#pg-next'); await state('08-next-page');
   if (arg === 'mobile') { await pg.click('#tab-teks'); await state('08b-tab-teks'); await pg.click('#tab-hal'); await state('08c-tab-hal'); await pg.click('#tab-teks'); }
   const tx = pg.locator('#spread [data-tx]').first();
-  if (await tx.count()) { await tx.click({ force: true }); await state('09-text-selected'); const f = pg.locator('#text-fields .tf.is-sel .in'); if (await f.count()) { await f.fill('Hari pertama di Ubud'); await state('09b-text-typed'); } }
+  if (await tx.count()) { await tx.click({ force: true }); await state('09-text-selected'); await pg.keyboard.type('Hari pertama di Ubud'); await pg.keyboard.press('Enter'); await state('09b-text-typed'); }
   // empty-slot gate
   await pg.click('#st-preview'); await state('10-dialog-empty');
   await pg.click('#dlg-a .btn >> nth=0'); await state('11-filled-toast');

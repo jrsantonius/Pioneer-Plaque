@@ -1,28 +1,28 @@
 /* ---------- catalogue ---------- */
 var PRICE = 350000;   /* nilai asli dari server: /api/imazine/config */
 var CATS = [
-  { id: 'travel', name: 'Travel', desc: 'Liburan, road trip, dan kota yang ingin kamu ingat lagi.',
+  { id: 'travel', name: 'Travel', desc: 'Holidays, road trips, and cities you want to remember.',
     cover: { id: 'bali-2026', name: 'Bali 2026', img: 'bali', back: 'bali_back', bg: '#8ad1cd', g: 'Indonesia', note: 'Pantai dan kaki di pasir' },
     layouts: ['travel-1-scattered-street-notes', 'travel-2-staircase-frames', 'travel-3-postage-doodles', 'travel-4-chapter-index'],
     groups: [
-      { g: 'Cover Majalah', mag: true, items: [] },
+      { g: 'Magazine Cover', mag: true, items: [] },
       { g: 'Indonesia', items: ['Yogyakarta', 'Bandung', 'Lombok', 'Labuan Bajo', 'Bromo', 'Raja Ampat', 'Danau Toba', 'Malang', 'Belitung', 'Jakarta', 'Sumba', 'Dieng'] },
       { g: 'Mancanegara', items: ['Jepang', 'Korea Selatan', 'Singapura', 'Thailand', 'Malaysia', 'Vietnam', 'Hong Kong', 'Tiongkok', 'Umrah & Haji', 'Turki', 'Dubai', 'Paris', 'London', 'Swiss', 'Belanda', 'Italia', 'Australia', 'Selandia Baru'] }
     ] },
-  { id: 'event', name: 'Event', desc: 'Hari besar yang cuma datang sekali: ulang tahun, pernikahan, wisuda.',
+  { id: 'event', name: 'Event', desc: 'Big days that only come once: birthdays, weddings, graduations.',
     cover: { id: 'journey-to-one', name: 'Journey to One', img: 'journey', back: null, bg: '#f7c8b8', g: 'Keluarga', note: 'Kue dengan lilin angka satu' },
     layouts: ['event-1-classic-frame', 'event-2-gallery-story', 'event-3-monochrome-story', 'event-4-chapter-spread'],
     groups: [
-      { g: 'Cover Majalah', mag: true, items: [] },
+      { g: 'Magazine Cover', mag: true, items: [] },
       { g: 'Keluarga', items: ['Ulang tahun anak', 'Sweet seventeen', 'Kelahiran & aqiqah', 'Maternity', 'Tedak siten', 'Khitanan', 'Ulang tahun orang tua'] },
       { g: 'Pasangan', items: ['Pernikahan', 'Lamaran', 'Prewedding', 'Anniversary', 'Bridal shower'] },
       { g: 'Perayaan', items: ['Wisuda', 'Lebaran', 'Natal & tahun baru', 'Imlek', 'Reuni', 'Perpisahan sekolah', 'Gathering kantor', 'Konser & festival'] }
     ] },
-  { id: 'sol', name: 'Slice of Life', desc: 'Hari-hari biasa yang ternyata paling sering dikangenin.',
+  { id: 'sol', name: 'Slice of Life', desc: 'Ordinary days that turn out to be the ones you miss most.',
     cover: { id: 'slice-of-life', name: 'Slice of Life', img: 'sol', back: null, bg: '#fef9e6', g: 'Keseharian', note: 'Dua kuntum bunga' },
     layouts: ['sol-1-postcard-notes', 'sol-2-editorial-magazine', 'sol-3-pressed-taped', 'sol-4-quiet-letters'],
     groups: [
-      { g: 'Cover Majalah', mag: true, items: [] },
+      { g: 'Magazine Cover', mag: true, items: [] },
       { g: 'Orang terdekat', items: ['Keluarga', 'Tumbuh kembang anak', 'Sahabat', 'Pasangan', 'Kakek & nenek', 'Anabul'] },
       { g: 'Keseharian', items: ['Rumah', 'Kuliner & ngopi', 'Kampus & kost', 'Kantor', 'Akhir pekan', 'Rekap setahun'] },
       { g: 'Hobi', items: ['Lari & sepeda', 'Mendaki', 'Berkebun', 'Masak', 'Musik', 'Jurnal diri'] }
@@ -36,13 +36,13 @@ function slug(t) { return fold(t).replace(/&/g, ' dan ').replace(/[^a-z0-9]+/g, 
    (the print album page only needs this data, so the order of a magazine cover can still be found by id). */
 var MAG_ORDER = ['noir', 'biru', 'krem', 'lukis', 'segar'];
 var MAG_STYLES = {
-  noir:  { name: 'Majalah Noir',   note: 'Hitam putih, judul krayon', bg: '#ebebe7', ink: '#111111' },
-  biru:  { name: 'Majalah Biru',   note: 'Biru dengan judul tebal', bg: '#5c7aa6', ink: '#ffffff' },
-  krem:  { name: 'Majalah Krem',   note: 'Kertas krem, foto berbingkai', bg: '#ece7dc', ink: '#141414' },
-  lukis: { name: 'Majalah Lukis',  note: 'Efek lukisan di atas hijau', bg: '#128037', ink: '#ffffff' },
-  segar: { name: 'Majalah Segar',  note: 'Hijau cerah, judul di belakang kepala', bg: '#9ede45', ink: '#ffffff' }
+  noir:  { name: 'Noir Magazine',   note: 'Black and white, crayon title', bg: '#ebebe7', ink: '#111111' },
+  biru:  { name: 'Blue Magazine',   note: 'Blue with a bold title', bg: '#5c7aa6', ink: '#ffffff' },
+  krem:  { name: 'Cream Magazine',   note: 'Cream paper, framed photo', bg: '#ece7dc', ink: '#141414' },
+  lukis: { name: 'Painted Magazine',  note: 'Painted look on green', bg: '#128037', ink: '#ffffff' },
+  segar: { name: 'Fresh Magazine',  note: 'Bright green, title behind the head', bg: '#9ede45', ink: '#ffffff' }
 };
-var ILLU_G = 'Sampul ilustrasi';   /* rak untuk sampul gambar bawaan tema (Bali 2026, Journey to One, Slice of Life) */
+var ILLU_G = 'Cover ilustrasi';   /* rak untuk sampul gambar bawaan tema (Bali 2026, Journey to One, Slice of Life) */
 function coversOf(cat) {
   if (cat.covers) return cat.covers;
   var list = [];
@@ -62,21 +62,21 @@ function coversOf(cat) {
 }
 /* Sampul yang bisa dipilih pembeli. Sampul perangko (art) dihapus dari pilihan per review 18 Nov 2026, tapi datanya tetap
    ada di coversOf supaya halaman album admin masih bisa menampilkan pesanan lama yang memakai sampul perangko. */
-function pickableCovers(cat) { return coversOf(cat).filter(function (c) { return !c.art; }); }
+function pickableCovers(cat) { return coversOf(cat).filter(function (c) { return c.mag; }); }   /* review 20 Nov 2026: hanya Cover Majalah; sampul ilustrasi (Bali 2026 dll.) tetap ada di data untuk pesanan lama */
 function coverOf(cat, id) { var l = coversOf(cat); return l.filter(function (c) { return c.id === id; })[0] || l.filter(function (c) { return c.id === cat.cover.id; })[0]; }
 var LAYOUTS = {
-  'travel-1-scattered-street-notes': { name: 'Scattered Street Notes', desc: 'Foto bertebaran seperti catatan jalan-jalan, dengan judul besar di tiap bagian.' },
-  'travel-2-staircase-frames': { name: 'Staircase Frames', desc: 'Bingkai menurun seperti anak tangga. Paling banyak memuat foto.' },
-  'travel-3-postage-doodles': { name: 'Postage Doodles', desc: 'Perangko, polaroid miring, dan coretan merah yang ramai.' },
-  'travel-4-chapter-index': { name: 'Chapter Index', desc: 'Dibagi per bab dengan nomor besar, rapi seperti majalah perjalanan.' },
-  'sol-1-postcard-notes': { name: 'Postcard Notes', desc: 'Kartu pos dan catatan pendek untuk hari-hari biasa.' },
-  'sol-2-editorial-magazine': { name: 'Editorial Magazine', desc: 'Tata letak majalah dengan warna hangat dan judul miring.' },
-  'sol-3-pressed-taped': { name: 'Pressed & Taped', desc: 'Foto ditempel selotip, seperti buku tempel buatan sendiri.' },
-  'sol-4-quiet-letters': { name: 'Quiet Letters', desc: 'Banyak garis untuk menulis, cocok kalau kamu suka bercerita.' },
-  'event-1-classic-frame': { name: 'Classic Frame', desc: 'Bingkai klasik dan judul serif untuk momen yang resmi.' },
-  'event-2-gallery-story': { name: 'Gallery Story', desc: 'Seperti katalog galeri: foto bernomor lengkap dengan keterangan.' },
-  'event-3-monochrome-story': { name: 'Monochrome Story', desc: 'Latar abu lembut dan bingkai gelap yang tenang.' },
-  'event-4-chapter-spread': { name: 'Chapter Spread', desc: 'Cerita per bab dengan angka besar dan foto selebar halaman.' }
+  'travel-1-scattered-street-notes': { name: 'Scattered Street Notes', desc: 'Photos scattered like travel notes, with a big title for each section.' },
+  'travel-2-staircase-frames': { name: 'Staircase Frames', desc: 'Frames that step down like stairs. Holds the most photos.' },
+  'travel-3-postage-doodles': { name: 'Postage Doodles', desc: 'Stamps, tilted polaroids, and lively red doodles.' },
+  'travel-4-chapter-index': { name: 'Chapter Index', desc: 'Split into chapters with big numbers, neat like a travel magazine.' },
+  'sol-1-postcard-notes': { name: 'Postcard Notes', desc: 'Postcards and short notes for ordinary days.' },
+  'sol-2-editorial-magazine': { name: 'Editorial Magazine', desc: 'A magazine layout with warm colors and italic titles.' },
+  'sol-3-pressed-taped': { name: 'Pressed & Taped', desc: 'Photos taped down, like a handmade scrapbook.' },
+  'sol-4-quiet-letters': { name: 'Quiet Letters', desc: 'Lots of lines to write on, good if you like telling stories.' },
+  'event-1-classic-frame': { name: 'Classic Frame', desc: 'Classic frames and serif titles for formal moments.' },
+  'event-2-gallery-story': { name: 'Gallery Story', desc: 'Like a gallery catalog: numbered photos with captions.' },
+  'event-3-monochrome-story': { name: 'Monochrome Story', desc: 'A soft gray background with calm, dark frames.' },
+  'event-4-chapter-spread': { name: 'Chapter Spread', desc: 'A story in chapters with big numbers and full-width photos.' }
 };
 function catOf(id) { return CATS.filter(function (c) { return c.id === id; })[0]; }
 function slotCount(tplId) { return IMZ_TPL[tplId].pages.reduce(function (n, p) { return n + p.ph.length; }, 0); }
@@ -84,8 +84,9 @@ function slotCount(tplId) { return IMZ_TPL[tplId].pages.reduce(function (n, p) {
 /* ---------- small utilities ---------- */
 function $(s, r) { return (r || document).querySelector(s); }
 function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
-var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-function fmtDate(d) { return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); }
+var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], MONTHS_ID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+function months() { return typeof LANG !== 'undefined' && LANG === 'id' ? MONTHS_ID : MONTHS_EN; }
+function fmtDate(d) { return d.getDate() + ' ' + months()[d.getMonth()] + ' ' + d.getFullYear(); }
 function rupiah(n) { return 'Rp' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
 /* (12) bind the closing words (about 18 characters of them) so a line never ends on a lone short word */
@@ -96,7 +97,7 @@ function noWidow(s) {
   while (w.length > 2 && n < 4 && tail.length < 18) { tail = w.pop() + '\u00a0' + tail; n++; }
   return w.join(' ') + ' ' + tail;
 }
-var WIDOW_SEL = 'p, li, dd, summary, h1, h2, h3, .cat-desc, .cat-soon, .pick-desc, .pick-meta, .tip, .hint, .err, .dlg-p, .dlg-h, .drop-or, .setup-pick, .st-note p, .tf-h';
+var WIDOW_SEL = 'p, li, dd, summary, h1, h2, h3, .theme-desc, .pick-desc, .pick-meta, .tip, .hint, .err, .dlg-p, .dlg-h, .drop-or, .setup-pick, .st-note p, .tf-h';
 function fixWidows(root) {
   $$(WIDOW_SEL, root || document).forEach(function (el) {
     if (el.closest('.pg, pre, [data-nowidow]')) return;
@@ -191,9 +192,68 @@ function loadImg(url) {
     im.src = url;
   });
 }
+/* ---------- HEIC / HEIF (iPhone photos) ----------
+   Only Safari opens HEIC by itself. Every other browser gets libheif (heic-to 1.6.7, self-hosted in
+   public/imazine/vendor/heic, ~3 MB, ~0.8 MB over the wire), loaded only when the first HEIC photo arrives.
+   Every HEIC photo, in every browser, becomes a JPEG (quality .92, long side at most 4032 px, which is more than A4 at 300 dpi)
+   and THAT file goes to the server: the print team and the admin album page can always open it, HEIC or not.
+   One photo at a time: a 12 MP decode takes a lot of memory on a phone. */
+var HEIC_SRC = ['/public/imazine/vendor/heic/heic-to.js', 'https://cdn.jsdelivr.net/npm/heic-to@1.6.7/dist/iife/heic-to.js'];
+var HEIC_MAX = 4032, HEIC_Q = 0.92, heicLib = null, heicQueue = Promise.resolve();
+function isHeic(head, file) {
+  var b = new Uint8Array(head, 0, Math.min(12, head.byteLength)), s = String.fromCharCode.apply(null, b);
+  if (s.slice(4, 8) === 'ftyp') return /^(heic|heix|hevc|hevx|heim|heis|mif1|msf1|heif)/.test(s.slice(8, 12));
+  return /\.(heic|heif)$/i.test(file.name || '') || /^image\/hei[cf]/i.test(file.type || '');
+}
+/* EXIF inside a HEIC: find the "Exif\0\0" block and its TIFF header in the first bytes, read the date the same way as a JPEG */
+function heicExifDate(buf) {
+  try {
+    var u = new Uint8Array(buf), v = new DataView(buf);
+    for (var i = 0; i + 10 < u.length; i++) {
+      if (u[i] === 0x45 && u[i + 1] === 0x78 && u[i + 2] === 0x69 && u[i + 3] === 0x66 && u[i + 4] === 0 && u[i + 5] === 0 &&
+          ((u[i + 6] === 0x4D && u[i + 7] === 0x4D) || (u[i + 6] === 0x49 && u[i + 7] === 0x49))) return tiffDate(v, i + 6);
+    }
+  } catch (e) { /* no date */ }
+  return null;
+}
+function loadScript(src) {
+  return new Promise(function (res, rej) {
+    var s = document.createElement('script'); s.src = src; s.async = true;
+    s.onload = res; s.onerror = function () { s.remove(); rej(new Error('Could not load ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+function heicReady() {
+  if (!heicLib) heicLib = HEIC_SRC.reduce(function (p, src) {
+    return p.catch(function () { return loadScript(src).then(function () { if (typeof window.HeicTo !== 'function') throw new Error('HeicTo missing'); return window.HeicTo; }); });
+  }, Promise.reject()).catch(function (e) { heicLib = null; throw e; });   /* failed: try again on the next photo */
+  return heicLib;
+}
+function jpegOf(src, w, h) {
+  var k = Math.min(1, HEIC_MAX / Math.max(w, h)), c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * k)); c.height = Math.max(1, Math.round(h * k));
+  var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+  x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, c.width, c.height);
+  return new Promise(function (res, rej) { c.toBlob(function (b) { c.width = c.height = 0; if (b) res(b); else rej(new Error('JPEG failed')); }, 'image/jpeg', HEIC_Q); });
+}
+function heicToJpeg(file) {
+  var run = heicQueue.then(async function () {
+    var blob, u = URL.createObjectURL(file);
+    try { var img = await loadImg(u); blob = await jpegOf(img, img.naturalWidth, img.naturalHeight); }   /* Safari */
+    catch (e) {
+      var bmp = await (await heicReady())({ blob: file, type: 'bitmap' });
+      try { blob = await jpegOf(bmp, bmp.width, bmp.height); } finally { if (bmp.close) bmp.close(); }
+    } finally { URL.revokeObjectURL(u); }
+    var name = (file.name || 'foto').replace(/\.(heic|heif)$/i, '') + '.jpg';
+    return new File([blob], name, { type: 'image/jpeg', lastModified: file.lastModified || Date.now() });
+  });
+  heicQueue = run.catch(function () {});
+  return run;
+}
 async function intakeOne(file) {
-  var head = await file.slice(0, 262144).arrayBuffer();
-  var date = readExifDate(head) || dateFromName(file.name || '');
+  var head = await file.slice(0, 262144).arrayBuffer(), heic = isHeic(head, file);
+  var date = (heic ? heicExifDate(head) : readExifDate(head)) || dateFromName(file.name || '');
+  if (heic) file = await heicToJpeg(file);
   var src = URL.createObjectURL(file);
   try {
     var img = await loadImg(src);
@@ -254,14 +314,14 @@ function samplePhotos(n) {
 function newAlbum(tplId, photos) {
   var tpl = IMZ_TPL[tplId];
   return { tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
-    return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {} };
+    return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {} };
   }) };
 }
 function defaultFocus(photo, g) { return { fx: 0.5, fy: photo.w / photo.h < g[2] / g[3] ? 0.38 : 0.5, z: 1 }; }
 function setSlot(album, pi, si, photoIdx) {
   var s = album.pages[pi].slots[si];
   s.photo = photoIdx;
-  if (photoIdx != null) { var f = defaultFocus(album.photos[photoIdx], album.tpl.pages[pi].ph[si]); s.fx = f.fx; s.fy = f.fy; s.z = 1; }
+  if (photoIdx != null) { var f = defaultFocus(album.photos[photoIdx], slotGeo(album, pi, si)); s.fx = f.fx; s.fy = f.fy; s.z = 1; }
 }
 function byDate(photos, idxs) {
   return idxs.slice().sort(function (a, b) {

@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
     let fields = 0, caps = 0;
     for (let i = 0; i < 21; i++) {
       await pg.click('#tab-teks'); fields += await pg.locator('#text-fields .in').count(); caps += await pg.locator('#spread .cp:not(.is-empty)').count();
-      const tx = pg.locator('#spread [data-tx]').first(); if (i === 2 && await tx.count()) { await tx.click({ force: true }); const f = pg.locator('#text-fields .tf.is-sel .in'); if (await f.count()) await f.fill('Uji teks'); }
+      const tx = pg.locator('#spread [data-tx]').first(); if (i === 2 && await tx.count()) { await tx.click({ force: true }); await pg.keyboard.type('Uji teks'); await pg.keyboard.press('Enter'); }
       if (await pg.isDisabled('#pg-next')) break; await pg.click('#pg-next');
     }
     await pg.click('#tab-foto'); await pg.click('#st-note-fill'); await pg.click('#st-preview'); await pg.waitForSelector('[data-view="preview"]:not([hidden])');

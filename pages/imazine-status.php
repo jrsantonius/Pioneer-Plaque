@@ -51,19 +51,19 @@ if (!$ok) http_response_code(404);
 <?php if (!$ok): ?>
   <div class="card">
     <p class="eyebrow">Pesanan tidak ditemukan</p>
-    <h1>Link ini tidak berlaku.</h1>
+    <h1>Link ini sudah tidak berlaku.</h1>
     <p>Pesanan yang belum dibayar dihapus otomatis setelah <?= (int) IMAZINE_PAY_MINUTES / 60 ?> jam. Kalau itu yang terjadi, buat albummu lagi dari awal. Kalau kamu sudah membayar, hubungi tim kami lewat WhatsApp dengan menyebut nama dan email yang kamu pakai.</p>
     <a class="btn" href="/imazine">Ke beranda Imazine</a>
   </div>
 <?php else: ?>
   <div class="card" id="card" aria-live="polite">
-    <p class="eyebrow" id="eyebrow">Memeriksa…</p>
+    <p class="eyebrow" id="eyebrow">Mengecek pesananmu…</p>
     <h1 id="title">Sebentar ya.</h1>
     <p id="msg"></p>
     <a class="btn" id="btn" href="#" hidden></a>
     <dl>
       <div><dt>Nomor pesanan</dt><dd><?= e($imzOrderNo) ?></dd></div>
-      <div><dt>Sampul</dt><dd id="cover">-</dd></div>
+      <div><dt>Cover</dt><dd id="cover">-</dd></div>
       <div><dt>Jumlah</dt><dd id="qty">-</dd></div>
       <div><dt id="total-l">Harga album</dt><dd id="total">-</dd></div>
     </dl>
@@ -95,7 +95,7 @@ if (!$ok) http_response_code(404);
     } else {
       $('eyebrow').textContent = 'Pesanan belum selesai';
       $('title').textContent = 'Pesananmu belum terkirim sepenuhnya.';
-      $('msg').textContent = 'Foto belum selesai diunggah. Buka Imazine dan coba kirim lagi.';
+      $('msg').textContent = 'Fotomu belum selesai di-upload. Buka Imazine lagi, lalu kirim ulang albummu.';
       btn.href = '/imazine'; btn.textContent = 'Kembali ke Imazine'; btn.hidden = false;
     }
   }
@@ -103,7 +103,7 @@ if (!$ok) http_response_code(404);
     fetch('/api/imazine/orders/' + NO + '/status?t=' + encodeURIComponent(T), { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (s) { show(s); if (s.status === 'menunggu_bayar' && ++tries < 150) setTimeout(poll, 4000); })
-      .catch(function () { $('title').textContent = 'Tidak bisa memuat status.'; $('msg').textContent = 'Periksa koneksimu lalu muat ulang halaman ini.'; });
+      .catch(function () { $('title').textContent = 'Status pesananmu belum bisa dimuat.'; $('msg').textContent = 'Cek koneksi internetmu, lalu refresh halaman ini.'; });
   }
   poll();
 })();

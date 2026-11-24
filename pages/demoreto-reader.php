@@ -20,7 +20,7 @@ function dmrNotFound(): void {
     http_response_code(404);
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Robots-Tag: noindex, nofollow');
-    echo 'Halaman tidak ditemukan.';
+    echo 'Halaman ini tidak ditemukan atau link-nya sudah kedaluwarsa. Coba buka lagi bukunya dari link awal.';
     exit;
 }
 
@@ -395,13 +395,13 @@ header('Cache-Control: no-store');
             </button>
             <a class="cta-ghost" href="<?= e($pdfUrl) ?>" download>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-                Unduh PDF
+                Download PDF
             </a>
         </div>
         <button class="resume" id="resume" hidden></button>
     </div>
     <div class="book-wrap">
-        <div class="book"><img src="<?= e($pages[0]) ?>" alt="Sampul buku Demoreto" draggable="false"></div>
+        <div class="book"><img src="<?= e($pages[0]) ?>" alt="Cover buku Demoreto" draggable="false"></div>
     </div>
 </section>
 
@@ -409,10 +409,10 @@ header('Cache-Control: no-store');
     <header class="topbar">
         <div class="brand"><span class="dot"></span><b>Demoreto</b><small>Gagasan Suara Rakyat · The Innovators Studio</small></div>
         <div class="tools">
-            <a class="icon-btn" href="<?= e($pdfUrl) ?>" download title="Unduh PDF" aria-label="Unduh PDF">
+            <a class="icon-btn" href="<?= e($pdfUrl) ?>" download title="Download PDF" aria-label="Download PDF">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
             </a>
-            <button class="icon-btn" id="fs" title="Layar penuh" aria-label="Layar penuh">
+            <button class="icon-btn" id="fs" title="Fullscreen" aria-label="Fullscreen">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
             </button>
             <button class="icon-btn" id="tocBtn" title="Daftar isi" aria-label="Daftar isi">
@@ -451,7 +451,7 @@ header('Cache-Control: no-store');
         <div class="thumbs" id="thumbs"></div>
         <a class="cta-ghost drawer-dl" href="<?= e($pdfUrl) ?>" download>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-            Unduh PDF <small>· 19,8 MB</small>
+            Download PDF <small>· 19,8 MB</small>
         </a>
     </div>
 </aside>
@@ -657,7 +657,7 @@ header('Cache-Control: no-store');
     const saved = store.get();
     if (saved > 1 && saved <= TOTAL) {
         $('resume').hidden = false;
-        $('resume').textContent = 'Lanjutkan dari halaman ' + saved;
+        $('resume').textContent = 'Lanjut baca dari halaman ' + saved;
         $('resume').onclick = () => start(saved);
     }
     preload(1); preload(2); preload(3);

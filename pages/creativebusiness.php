@@ -9,9 +9,9 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Creative Businesses Blueprint | The Innovators Studio</title>
-    <meta name="description" content="A cheat sheet for turning creative ideas into working business. Four case studies, fourteen cheat sheets, one way of thinking. By The Innovators Studio.">
+    <meta name="description" content="A cheat sheet for turning creative ideas into a working business. Four case studies, fourteen cheat sheets, one way of thinking. By The Innovators Studio.">
     <meta property="og:title" content="The Creative Businesses Blueprint | The Innovators Studio">
-    <meta property="og:description" content="Four ideas. Fourteen steps. One way of thinking. A cheat sheet for turning creative ideas into working business.">
+    <meta property="og:description" content="Four ideas. Fourteen steps. One way of thinking. A cheat sheet for turning creative ideas into a working business.">
     <meta property="og:image" content="<?= BASE_URL ?>/public/images/creativebusiness-cover.jpg">
     <link rel="icon" type="image/png" href="/public/images/tis-logo-circle.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1097,8 +1097,8 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
         <source src="/public/images/creativebusiness-intro.mp4" type="video/mp4">
     </video>
     <div class="cb-intro-tint"></div>
-    <button id="cbIntroSkip" class="cb-intro-btn cb-intro-skip" type="button">Skip</button>
-    <button id="cbIntroMute" class="cb-intro-btn cb-intro-mute hidden" type="button" aria-label="Toggle sound">
+    <button id="cbIntroSkip" class="cb-intro-btn cb-intro-skip" type="button">Skip intro</button>
+    <button id="cbIntroMute" class="cb-intro-btn cb-intro-mute hidden" type="button" aria-label="Turn sound on or off">
         <svg id="cbIconOn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
         <svg id="cbIconOff" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
     </button>
@@ -1120,7 +1120,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
 <!-- ===== HERO TITLE CARD ===== -->
 <div class="hero-title-card" id="hero">
     <div class="hero-glow" id="heroGlow" aria-hidden="true"></div>
-    <p class="hero-hook">A cheat sheet for turning creative ideas<br>into working business.</p>
+    <p class="hero-hook">A cheat sheet for turning creative ideas<br>into a working business.</p>
 
     <div class="title-block">
         <div class="title-presents">
@@ -1229,7 +1229,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
             <div class="reveal-up stat-row">
                 <div class="stat"><div class="n" data-count="4">4</div><div class="l">Case Studies</div></div>
                 <div class="stat"><div class="n" data-count="14">14</div><div class="l">Cheat Sheets</div></div>
-                <div class="stat"><div class="n" data-count="87">87</div><div class="l">Pages</div></div>
+                <div class="stat"><div class="n" data-count="428">428</div><div class="l">Pages</div></div>
             </div>
 
             <div style="margin-top: 36px;">
@@ -1448,7 +1448,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
                     ['q' => 'Are the numbers final?', 'a' => 'No. Every figure is a planning assumption to be tested. The blueprint tells you to replace them with real vendor quotes and pilot data before making any investment decision.'],
                     ['q' => 'Can I use the cheat sheets for my own idea?', 'a' => 'Yes, that\'s the point. The same 14 steps apply to any creative business idea you want to work through.'],
                     ['q' => 'What language is it written in?', 'a' => 'Bahasa Indonesia.'],
-                    ['q' => 'What format will I receive?', 'a' => 'An 87-page digital PDF, available for instant download after your purchase.'],
+                    ['q' => 'What format will I receive?', 'a' => 'A 428-page digital PDF. You can download it right after you buy.'],
                     ['q' => 'Can I share or resell the PDF?', 'a' => 'No. The purchase is for personal use unless The Innovators Studio gives written permission.'],
                     ['q' => 'How much does it cost?', 'a' => $cbPrice . '.'],
                 ];
@@ -1509,7 +1509,7 @@ $cbCheckout = 'https://theinnovatorsstudio.myr.id/pl/creative-business';
         <span class="name">Creative Business</span>
         <span class="price"><?= $cbPrice ?></span>
     </div>
-    <a href="<?= $cbCheckout ?>" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get It</a>
+    <a href="<?= $cbCheckout ?>" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get the PDF</a>
 </div>
 
 <script>

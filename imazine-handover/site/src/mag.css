@@ -1,18 +1,37 @@
 /* Cover Majalah: editor di langkah sampul */
 .mag-ed { display: grid; gap: 14px; padding: 18px; margin-block: 8px 4px; border: 1.5px solid var(--line); border-radius: var(--r); background: var(--surface); }
-.mag-ed[hidden], .mag-ctl[hidden], .mag-note[hidden] { display: none; }
+.mag-ed[hidden], .mag-note[hidden] { display: none; }
 .mag-ed h3 { margin: 0; font: 400 clamp(22px, 3.4vw, 30px)/1.1 var(--font-display); letter-spacing: -.01em; }
 .mag-sub, .mag-info, .mag-note { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); max-width: 62ch; }
 .mag-info { color: var(--ink-3); font-size: 13px; }
 .mag-up { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.mag-ctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px 18px; }
-.mag-sl, .mag-f { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
-.mag-sl input[type="range"] { width: 100%; min-height: 32px; accent-color: var(--tangerine); }
-.mag-tx { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 16px; }
 .mag-note { font-size: 13px; color: var(--ink-3); }
-.mag-co { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.45; color: var(--ink-2); cursor: pointer; }
-.mag-co[hidden] { display: none; }
-.mag-co input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--tangerine); flex: none; }
-.mag-ctl .mag-fit { grid-column: 1 / -1; }
-.mag-ctl > .btn { justify-self: start; grid-column: 1 / -1; }
-.mag-ctl > .btn[hidden] { display: none; }
+/* edit langsung di sampul (24 Nov 2026) */
+.mag-work { position: relative; width: min(100%, 440px); justify-self: center; }
+.mag-stage { position: relative; aspect-ratio: 1000 / 1415; border-radius: 4px; overflow: hidden; background: var(--surface-2); box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 22px 40px -16px var(--shadow-book); cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; outline: none; -webkit-tap-highlight-color: transparent; }
+.mag-stage:focus-visible { box-shadow: 0 0 0 3px var(--bg, #fff), 0 0 0 5.5px var(--ink); }
+.mag-stage.is-drag { cursor: grabbing; }
+.mag-stage:not(.has-photo) { touch-action: pan-y; cursor: pointer; }   /* belum ada foto sendiri: halaman tetap bisa digulir di atas sampul */
+.mag-cv { display: block; width: 100%; height: 100%; }
+.mag-hits { position: absolute; inset: 0; }
+.mag-hit { position: absolute; padding: 0; margin: 0; border: 0; border-radius: 3px; background: none; cursor: move; -webkit-tap-highlight-color: transparent; }
+.mag-pop-a { display: flex; justify-content: flex-end; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mag-pop-t { margin: 0; font-size: 13px; line-height: 1.45; color: var(--ink-2); }
+@media (hover: hover) { .mag-stage:not(.is-drag) .mag-hit:hover { outline: 1.5px dashed rgba(255,255,255,.95); box-shadow: 0 0 0 1.5px rgba(0,0,0,.5); } }
+.mag-hit:focus-visible, .mag-hit.is-sel { outline: 2px solid var(--tangerine); box-shadow: 0 0 0 1px #fff, 0 0 0 4px rgba(0,0,0,.25); }
+.mag-sel { position: absolute; pointer-events: none; outline: 2px solid var(--tangerine); outline-offset: -2px; }
+.mag-add { position: absolute; left: 50%; bottom: 16%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: rgba(17,17,17,.82); color: #fff; font: 700 14px/1.2 var(--font-ui); white-space: nowrap; cursor: pointer; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+.mag-add[hidden] { display: none; }
+.mag-add:hover { background: #111; }
+.mag-pop { position: absolute; z-index: 5; display: grid; gap: 8px; padding: 12px; border-radius: var(--r-s); background: var(--surface); border: 1.5px solid var(--line); box-shadow: 0 14px 34px -10px rgba(0,0,0,.35); animation: rise var(--d-2) var(--ease-out) both; }
+.mag-pop[hidden] { display: none; }
+.mag-pop-r { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.mag-pop-l { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+.mag-pop-c { font-size: 12px; color: var(--ink-3); }
+.mag-pop textarea { resize: none; }
+.mag-seg { display: flex; flex-wrap: wrap; }
+.mag-seg .seg-b { flex: 1 1 auto; min-height: 40px; padding: 0 12px; font-size: 13px; }
+.mag-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 12px; }
+.mag-bar > [hidden] { display: none; }
+.mag-zoom { display: inline-flex; align-items: center; gap: 4px; padding: 2px; border-radius: 999px; background: var(--surface-2); }
+.mag-zv { min-width: 46px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ink-2); }

@@ -75,7 +75,7 @@ function imzCreateOrder(): void {
     // Simpan data pesanan apa adanya (tata letak, teks, fokus foto), tapi angka uang dari server.
     $in['orderNo'] = $orderNo;
     $in['createdAt'] = date('c');
-    $in['product'] = ['size' => 'A4', 'pages' => 40, 'paper' => 'Art Paper 260 gsm', 'cover' => 'Softcover', 'binding' => 'Binding', 'unitPrice' => $unit, 'qty' => $qty, 'total' => $total];
+    $in['product'] = ['size' => 'A4', 'pages' => 40, 'paper' => 'Art Paper 260 gsm', 'cover' => 'Soft Cover', 'binding' => 'Jilid binding', 'unitPrice' => $unit, 'qty' => $qty, 'total' => $total];
     $in['customer']['whatsapp'] = $wa;
     unset($in['customer']['address']);   // alamat hanya ada di Mayar
 

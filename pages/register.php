@@ -1,10 +1,10 @@
 <?php
-$pageTitle = 'Register - TIS Pioneer';
+$pageTitle = 'Set up your profile - TIS Pioneer';
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div id="loadingView" class="min-h-screen flex items-center justify-center bg-premium">
-  <div class="animate-pulse text-gray-500">Loading...</div>
+  <div class="animate-pulse text-gray-500">Loading your profile...</div>
 </div>
 
 <div id="mainView" class="min-h-screen bg-premium flex items-start justify-center py-8 px-4 hidden">
@@ -15,7 +15,7 @@ require __DIR__ . '/../includes/header.php';
         <img src="<?= asset('tis-logo.png') ?>" alt="TIS" class="w-14 h-14 rounded-full object-cover shadow-md border-2 border-gray-300"
              onerror="this.onerror=null; this.src='<?= asset('tis-logo.svg') ?>';" />
       </div>
-      <h1 class="text-xl font-bold text-gray-800">Complete Your Profile</h1>
+      <h1 class="text-xl font-bold text-gray-800">Finish setting up your profile</h1>
       <p class="text-sm text-gray-500 mt-1">
         Pioneer ID: <span id="pioneerId" class="font-mono font-bold"></span>
       </p>
@@ -35,13 +35,13 @@ require __DIR__ . '/../includes/header.php';
               class="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
               required />
           </div>
-          <p class="text-[10px] text-gray-400 mt-1">Letters, numbers, underscore. 3-30 characters.</p>
+          <p class="text-[10px] text-gray-400 mt-1">Letters, numbers and underscores, 3 to 30 characters.</p>
         </div>
 
         <!-- Full Name -->
         <div>
           <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Full Name *</label>
-          <input type="text" id="full_name" name="full_name" placeholder="Enter your full name"
+          <input type="text" id="full_name" name="full_name" placeholder="Your full name"
             class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
             required />
         </div>
@@ -79,7 +79,7 @@ require __DIR__ . '/../includes/header.php';
         <!-- Bio -->
         <div>
           <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>
-          <textarea id="bio" name="bio" placeholder="Tell us about yourself..." rows="3"
+          <textarea id="bio" name="bio" placeholder="A few words about you..." rows="3"
             class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all resize-none"></textarea>
         </div>
 
@@ -94,7 +94,7 @@ require __DIR__ . '/../includes/header.php';
         <!-- Submit -->
         <button type="submit" id="saveBtn"
           class="w-full py-3.5 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-400 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
-          Save & Activate Membership
+          Save & activate my membership
         </button>
       </form>
     </div>
@@ -144,7 +144,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
   errorBox.classList.add('hidden');
   successBox.classList.add('hidden');
   btn.disabled = true;
-  btn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Saving...</span>';
+  btn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Saving your profile...</span>';
 
   try {
     const body = {
@@ -165,21 +165,21 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     const data = await res.json();
 
     if (!res.ok) {
-      document.getElementById('regErrorMsg').textContent = data.error || 'Failed to save profile';
+      document.getElementById('regErrorMsg').textContent = data.error || "We couldn't save your profile. Please try again.";
       errorBox.classList.remove('hidden');
       btn.disabled = false;
-      btn.textContent = 'Save & Activate Membership';
+      btn.textContent = 'Save & activate my membership';
       return;
     }
 
-    document.getElementById('regSuccessMsg').textContent = 'Profile saved successfully! Redirecting...';
+    document.getElementById('regSuccessMsg').textContent = "You're all set! Taking you to your membership...";
     successBox.classList.remove('hidden');
     setTimeout(() => { window.location.href = BASE + '/membership'; }, 1500);
   } catch (err) {
-    document.getElementById('regErrorMsg').textContent = 'Connection error. Please try again.';
+    document.getElementById('regErrorMsg').textContent = "We couldn't reach our server. Check your connection and try again.";
     errorBox.classList.remove('hidden');
     btn.disabled = false;
-    btn.textContent = 'Save & Activate Membership';
+    btn.textContent = 'Save & activate my membership';
   }
 });
 

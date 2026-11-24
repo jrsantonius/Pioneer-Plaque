@@ -1,5 +1,5 @@
 <?php
-$pageTitle = 'Login - TIS Pioneer';
+$pageTitle = 'Log in - TIS Pioneer';
 require __DIR__ . '/../includes/header.php';
 ?>
 
@@ -18,7 +18,7 @@ require __DIR__ . '/../includes/header.php';
     <div class="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-8">
       <h2 class="text-xl font-bold text-gray-800 text-center mb-1">Welcome, Pioneer</h2>
       <p class="text-sm text-gray-500 text-center mb-6">
-        Enter your unique code to access your membership
+        Type the unique code from your Pioneer Plaque to open your membership.
       </p>
 
       <form id="loginForm" class="space-y-4">
@@ -29,7 +29,7 @@ require __DIR__ . '/../includes/header.php';
           <input
             id="code"
             type="text"
-            placeholder="Enter your unique code"
+            placeholder="Your unique code"
             class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg font-mono font-bold tracking-widest text-gray-800 placeholder:text-gray-300 placeholder:text-sm placeholder:font-normal placeholder:tracking-normal focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
             required
             autofocus
@@ -45,15 +45,15 @@ require __DIR__ . '/../includes/header.php';
           id="loginBtn"
           class="w-full py-3.5 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-400 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg disabled:shadow-none"
         >
-          Login
+          Log in
         </button>
       </form>
 
       <div class="mt-6 pt-4 border-t border-gray-200/60">
         <p class="text-xs text-gray-400 text-center leading-relaxed">
-          Your unique code can be found on your Pioneer Plaque.
+          You'll find your unique code on your Pioneer Plaque.
           <br />
-          Scan the QR code on your plaque to get started.
+          Or just scan the QR code on it to get started.
         </p>
       </div>
     </div>
@@ -85,7 +85,7 @@ loginForm.addEventListener('submit', async function(e) {
 
   errorBox.classList.add('hidden');
   loginBtn.disabled = true;
-  loginBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Verifying...</span>';
+  loginBtn.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Checking your code...</span>';
 
   try {
     const res = await fetch('/api/auth', {
@@ -96,10 +96,10 @@ loginForm.addEventListener('submit', async function(e) {
     const data = await res.json();
 
     if (!res.ok) {
-      errorMsg.textContent = data.error || 'Login failed';
+      errorMsg.textContent = data.error || "We couldn't log you in. Check your code and try again.";
       errorBox.classList.remove('hidden');
       loginBtn.disabled = false;
-      loginBtn.textContent = 'Login';
+      loginBtn.textContent = 'Log in';
       return;
     }
 
@@ -109,10 +109,10 @@ loginForm.addEventListener('submit', async function(e) {
       window.location.href = '/register';
     }
   } catch (err) {
-    errorMsg.textContent = 'Connection error. Please try again.';
+    errorMsg.textContent = "We couldn't reach our server. Check your connection and try again.";
     errorBox.classList.remove('hidden');
     loginBtn.disabled = false;
-    loginBtn.textContent = 'Login';
+    loginBtn.textContent = 'Log in';
   }
 });
 </script>

@@ -7,7 +7,11 @@ IMG = {'bali': uri('img/c-bali.webp'), 'bali_back': uri('img/c-bali-back.webp'),
        'logo_white': uri('img/logo_white.webp'), 'logo_black': uri('img/logo_black.webp')}
 TPL = {os.path.basename(f)[:-5]: json.load(open(f)) for f in sorted(glob.glob(os.path.join(R, 'tpl', '*.json')))}
 markup = rd('src/markup.html')
-for k, v in [('logo_white', IMG['logo_white']), ('logo_black', IMG['logo_black']), ('cover_bali', IMG['bali']), ('cover_sol', IMG['sol']), ('cover_journey', IMG['journey'])]:
+# Hero beranda: tiga contoh Cover Majalah (foto contoh orang, dibuat AI, dirender dengan magcover.js). Tidak masuk IMG/IMZ_IMG:
+# di /imazine disajikan sebagai file terpisah dari public/imazine/img (bisa di-cache, halaman tetap ringan); di build uji
+# (imazine.html, test.html) tetap disisipkan sebagai data URI supaya bisa dibuka tanpa server.
+HERO = {k: uri('img/c-mag-%s.webp' % k) for k in ('travel', 'event', 'sol')}
+for k, v in [('logo_white', IMG['logo_white']), ('logo_black', IMG['logo_black']), ('hero_travel', HERO['travel']), ('hero_event', HERO['event']), ('hero_sol', HERO['sol'])]:
     markup = markup.replace('{{%s}}' % k, v)
 FALLBACK = '''@font-face{font-family:"Manrope Fallback";src:local("Arial"),local("Helvetica Neue"),local("Liberation Sans");size-adjust:100.4%;ascent-override:106.2%;descent-override:29.9%;line-gap-override:0%}
 @font-face{font-family:"Instrument Serif Fallback";src:local("Georgia"),local("Times New Roman");size-adjust:77.2%;ascent-override:128.2%;descent-override:40.1%;line-gap-override:0%}
@@ -22,10 +26,12 @@ covers_js = '%s\n%s\n%s\nGRAIN_URI = "%s";\nvar COVER_NOTE = %s;' % (rc('stamp.j
 # kira-kira 75 KB terkompresi lebih ringan. Halaman album admin tetap memuat covers_js lengkap untuk pesanan lama.
 STAMP_STUB = "var ART = {}, PAL = [], COVER_NOTE = {}, GRAIN_URI = '';\nfunction stampDefs() { return ''; }\nfunction stampCover() { return '<svg></svg>'; }"
 js = '(function(){\n"use strict";\nvar IMZ_TPL=%s;\nvar IMZ_IMG=%s;\n%s\n%s\n%s\n%s\n})();' % (
-    json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps(IMG), STAMP_STUB, rd('src/render.js'), rd('src/app-core.js') + '\n' + rd('src/magcover.js'), rd('src/app-ui.js'))
+    json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps(IMG), STAMP_STUB, rd('src/render.js'), rd('src/app-core.js') + '\n' + rd('src/magcover.js'), rd('src/app-ui.js') + '\n' + rd('src/admin-edit.js'))
+# Bahasa (DNA TIS, 20 Nov 2026): kamus Indonesia + mesin terjemahan, sebelum semua kode lain supaya t() sudah ada.
+js = js.replace('"use strict";\n', '"use strict";\n' + rd('src/i18n-id.js') + '\n' + rd('src/i18n.js') + '\n', 1)
 js = js.replace('</script', '<\\/script')
 FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Caveat+Brush&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400..800&display=swap">\n'
-head = '<title>Imazine Album Cetak</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
+head = '<title>Imazine — Printed photo albums</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n'
 page = head + FONTS + '<style>\n' + css + '\n</style>\n' + markup + '\n<script>\n' + js + '\n</script>\n'
 os.makedirs(os.path.join(R, 'dist'), exist_ok=True)
 open(os.path.join(R, 'dist/imazine.html'), 'w', encoding='utf-8').write(page)
@@ -39,9 +45,9 @@ open(os.path.join(R, 'dist/test.html'), 'w', encoding='utf-8').write(skeleton + 
 print('page bytes', len(page.encode()), 'css', len(css), 'js', len(js))
 # Production: dokumen lengkap untuk /imazine (public/imazine/index.html). Tanpa doctype dan meta viewport, browser
 # merender dalam quirks mode selebar 980px dan semua aturan @media untuk HP/tablet tidak pernah terpakai.
-SITE_HEAD = ('<!doctype html><html lang="id"><head><meta charset="utf-8">'
+SITE_HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
              '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
-             '<meta name="description" content="Album foto cetak A4 40 halaman. Pilih tema, masukkan fotomu, lalu kami susun jadi album.">'
+             '<meta name="description" content="A printed A4 photo album, 40 pages. Pick a magazine-style cover, upload your photos, and we lay them out into an album. Available in English and Bahasa Indonesia.">'
              '<meta name="theme-color" content="#000000">'
              '<style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>\n')
 # Font disajikan dari server sendiri (public/imazine/fonts), bukan Google Fonts: stylesheet Google memblokir tampilan halaman
@@ -58,6 +64,8 @@ site = SITE_HEAD + page.replace(FONTS, '').replace('<meta name="claude:viewport-
 assert 'fonts.googleapis.com' not in site
 site = site.replace('</style>\n' + markup, '</style>\n</head><body>\n' + markup, 1) + '</body></html>\n'
 assert '</head><body>' in site
+for k in HERO: site = site.replace(HERO[k], '/public/imazine/img/c-mag-%s.webp' % k)
+assert 'c-mag-travel.webp' in site
 open(os.path.join(R, 'dist/imazine-site.html'), 'w', encoding='utf-8').write(site)
 print('site bytes', len(site.encode()))
 
@@ -119,7 +127,10 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
   .book{display:block;padding:0}
   .leaf{display:block;margin:0}
   .leaf+.leaf{break-before:page;page-break-before:always}
-  .sheet{width:210mm;height:297mm;max-width:none;max-height:none;box-shadow:none}
+  /* Bingkai foto yang mepet tepi atas/bawah halaman (y < 0 atau y + h > 1416, ada di 10 dari 12 layout) membuat Chrome
+     memecah bingkai itu di batas halaman cetak, lalu foto di dalamnya tidak terpotong dan meluber (PDF IMZ-BL39KY, 23 Nov 2026).
+     contain:strict menjadikan tiap lembar satu kesatuan yang tidak dipecah, jadi hasil cetak sama dengan layar. */
+  .sheet{width:210mm;height:297mm;max-width:none;max-height:none;box-shadow:none;contain:strict}
 }
 '''
 ALBUM_MARKUP = '''<header class="bar" id="bar"><div class="bar-in">
@@ -133,6 +144,8 @@ ALBUM_MARKUP = '''<header class="bar" id="bar"><div class="bar-in">
 album_js = '(function(){\n"use strict";\nvar IMZ_TPL=%s;\nvar IMZ_IMG=%s;\n%s\n%s\n%s\n%s\n})();' % (
     json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps({k: IMG[k] for k in ('bali', 'sol', 'journey')}), covers_js, rd('src/render.js'), rd('src/app-core.js'), rd('src/album-print.js'))
 album_js = album_js.replace('</script', '<\\/script')
+# render.js memakai t(); halaman album admin hanya berbahasa Inggris untuk teks bantuannya.
+album_js = album_js.replace('"use strict";\n', '"use strict";\nfunction t(s, p) { return p ? s.replace(/\\{(\\w+)\\}/g, function (m, k) { return p[k] != null ? p[k] : m; }) : s; }\n', 1)
 ALBUM_FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Manrope:wght@800&display=block">\n'
 album = ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">\n'
          '<title>Album cetak Imazine</title>\n' + ALBUM_FONTS + '<style>\n' + ALBUM_CSS + '\n</style></head><body>\n' + ALBUM_MARKUP + '\n<script>\n' + album_js + '\n</script>\n</body></html>\n')

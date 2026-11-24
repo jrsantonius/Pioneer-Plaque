@@ -35,9 +35,9 @@ const DIR = path.join(__dirname, 'testphotos') + path.sep; const ok = (c, m) => 
   const withCap = await pg.evaluate(() => { const c = document.querySelector('#spread .cp:not(.is-empty)'); return c ? { p: c.closest('.pg').dataset.p, i: c.dataset.cp } : null; });
   if (withCap) {
     await pg.click(`#spread .pg[data-p="${withCap.p}"] .cp[data-cp="${withCap.i}"]`, { force: true }); await pg.waitForTimeout(150);
-    ok(await pg.getAttribute('#tab-teks', 'aria-selected') === 'true', 'clicking a caption opens the Teks tab');
-    const f = pg.locator('#text-fields .tf.is-sel .in'); const before = await f.inputValue();
-    await f.fill('Makan siang bareng'); await pg.waitForTimeout(100);
+    ok(await pg.evaluate(() => !!(document.activeElement && document.activeElement.closest('.cp.is-editing'))), 'clicking a caption puts the cursor in it on the page');
+    const before = await pg.evaluate(() => document.activeElement.textContent);
+    await pg.keyboard.press('ControlOrMeta+a'); await pg.keyboard.type('Makan siang bareng'); await pg.keyboard.press('Enter'); await pg.waitForTimeout(100);
     ok((await pg.textContent(`#spread .pg[data-p="${withCap.p}"] .cp[data-cp="${withCap.i}"]`)) === 'Makan siang bareng', 'typed caption shows on the page (was "' + before + '")');
   }
   // swap two photos

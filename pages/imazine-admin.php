@@ -174,7 +174,7 @@ function imzSlipHtml(array $o): string {
       <p class="slip-n"><?= e($o['name']) ?></p>
       <p class="slip-c"><?= e($o['whatsapp']) ?><br><?= e($o['email']) ?></p>
       <p class="slip-k">Isi paket</p>
-      <p class="slip-f">Album foto cetak A4, Art Paper 260 gsm, softcover &times; <?= (int) $o['qty'] ?><br>Sampul: <?= e((string) $o['cover_name']) ?></p>
+      <p class="slip-f">Album foto cetak A4, 20 lembar (40 halaman bolak-balik), Art Paper 260 gsm, soft cover, jilid binding &times; <?= (int) $o['qty'] ?><br>Sampul: <?= e((string) $o['cover_name']) ?></p>
       <?php if ($o['note']): ?><p class="slip-k">Catatan pembeli</p><p class="slip-f"><?= e($o['note']) ?></p><?php endif; ?>
       <p class="slip-w">Sebelum paket ditutup, pastikan nama dan HP di label JNE (dari Mayar) sama dengan di atas.</p>
     </section><?php
@@ -205,7 +205,7 @@ if ($path === '/imazine/admin/slip') {
 }
 
 // ---- detail & unduhan ----
-if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.zip|slip|album|(?:foto|cetak)/(\d{1,3})))?$#', $path, $m)) {
+if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.zip|slip|album|edit|simpan|simpan-sampul|sampul(?:/foto)?|(?:foto|cetak)/(\d{1,3})))?$#', $path, $m)) {
     $o = imzOrder($m[1]);
     if (!$o) { http_response_code(404); imzAdminHead('Tidak ditemukan'); echo '<p>Pesanan tidak ditemukan. <a href="/imazine/admin">Kembali</a></p>'; imzAdminFoot(); exit; }
     $what = $m[2] ?? '';
@@ -227,6 +227,52 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
         header('Content-Type: text/html; charset=utf-8');
         readfile(__DIR__ . '/imazine-album.html');
         exit;
+    }
+    // ---- edit album pesanan (23 Nov 2026): halaman pembeli yang sama, dibuka dalam mode admin (src/admin-edit.js) ----
+    if ($what === 'edit') {
+        header('Content-Type: text/html; charset=utf-8');
+        readfile(__DIR__ . '/../public/imazine/index.html');
+        exit;
+    }
+    if ($what === 'simpan' || $what === 'simpan-sampul') {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($method !== 'POST') { http_response_code(405); exit(json_encode(['error' => 'Pakai POST'])); }
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        if ($origin !== '' && parse_url($origin, PHP_URL_HOST) !== parse_url('http://' . ($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST)) { http_response_code(403); exit(json_encode(['error' => 'Asal permintaan tidak dikenal'])); }
+        $dir = imzDataDir('orders/' . $o['order_no']);
+        if ($what === 'simpan') {
+            $raw = file_get_contents('php://input', false, null, 0, 4 * 1048576);
+            $in = json_decode((string) $raw, true);
+            $old = json_decode($o['order_json'], true) ?: [];
+            if (!is_array($in) || !is_array($in['pages'] ?? null) || count($in['pages']) !== count($old['pages'] ?? []) || count($in['pages']) < 1) { http_response_code(422); exit(json_encode(['error' => 'Data album tidak lengkap'])); }
+            if (!is_string($in['template'] ?? null) || !preg_match('/^[a-z0-9-]{3,60}$/', $in['template']) || !is_string($in['cover'] ?? null) || !preg_match('/^[a-z0-9-]{2,60}$/', $in['cover'])) { http_response_code(422); exit(json_encode(['error' => 'Layout atau sampul tidak dikenal'])); }
+            $nPhotos = count($old['photos'] ?? []);
+            foreach ($in['pages'] as $pg) foreach (($pg['slots'] ?? []) as $sl) {
+                if (($sl['photo'] ?? null) !== null && (!is_int($sl['photo']) || $sl['photo'] < 0 || $sl['photo'] >= $nPhotos)) { http_response_code(422); exit(json_encode(['error' => 'Ada foto yang tidak ada di pesanan ini'])); }
+            }
+            // versi pertama dari pembeli disimpan sekali, tidak pernah ditimpa
+            if (!is_file($dir . '/order-asli.json')) file_put_contents($dir . '/order-asli.json', $o['order_json']);
+            $new = $old;
+            foreach (['template', 'cover', 'pages'] as $k) $new[$k] = $in[$k];
+            $new['coverName'] = mb_substr((string) ($in['coverName'] ?? $old['coverName'] ?? ''), 0, 80);
+            if (is_array($in['magCover'] ?? null)) $new['magCover'] = $in['magCover']; else unset($new['magCover']);
+            $new['editedAt'] = date('c');
+            $new['editCount'] = (int) ($old['editCount'] ?? 0) + 1;
+            imzDb()->prepare('UPDATE imazine_orders SET order_json = ?, cover_name = ? WHERE order_no = ?')
+                ->execute([json_encode($new, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $new['coverName'], $o['order_no']]);
+            imzLog('admin.log', "album $o[order_no] diedit admin (ke-{$new['editCount']})");
+            exit(json_encode(['ok' => true, 'editCount' => $new['editCount']]));
+        }
+        // simpan-sampul: render sampul majalah baru (JPEG Full HD dari browser admin)
+        $tmp = $dir . '/cover/render.tmp-' . bin2hex(random_bytes(3));
+        if (!is_dir($dir . '/cover')) mkdir($dir . '/cover', 0755, true);
+        $in = fopen('php://input', 'rb'); $outF = fopen($tmp, 'wb'); $bytes = stream_copy_to_stream($in, $outF, 20 * 1048576 + 1); fclose($in); fclose($outF);
+        $head = (string) file_get_contents($tmp, false, null, 0, 3);
+        if ($bytes < 1000 || $bytes > 20 * 1048576 || $head !== "\xFF\xD8\xFF" || !@getimagesize($tmp)) { @unlink($tmp); http_response_code(415); exit(json_encode(['error' => 'Sampul harus JPEG (maks 20 MB)'])); }
+        $cur = $dir . '/cover/render.jpg';
+        if (is_file($cur) && !is_file($dir . '/cover/render-asli.jpg')) copy($cur, $dir . '/cover/render-asli.jpg');
+        rename($tmp, $cur);
+        exit(json_encode(['ok' => true]));
     }
     if ($what === 'sampul' || $what === 'sampul/foto') {
         $f = imzCoverFile($o['order_no'], $what === 'sampul' ? 'render' : 'photo');
@@ -348,9 +394,11 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
     <h2>Berkas</h2>
     <?php $allIn = count($photos) >= (int) $o['photo_count']; ?>
     <div class="card" style="margin-bottom:12px">
+      <?php if (!empty($json['editedAt'])): ?><p class="muted" style="margin:0 0 8px">Sudah diedit tim <?= (int) ($json['editCount'] ?? 1) ?>&times;, terakhir <?= e(date('d M Y H:i', strtotime((string) $json['editedAt']))) ?>. Versi asli pembeli tersimpan di server (order-asli.json).</p><?php endif; ?>
       <p style="margin:0 0 10px"><strong>Album jadi (PDF A4)</strong><br><span class="muted">40 halaman persis seperti yang disusun pembeli: tata letak, crop foto, dan semua teksnya. Foto dipakai dalam ukuran cetak, bukan versi kecil dari browser.</span></p>
       <?php if ($allIn): ?>
         <a class="btn" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/album" target="_blank">Buka album &amp; simpan PDF</a>
+        <a class="btn ghost" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/edit">Edit album</a>
       <?php else: ?>
         <span class="muted">Belum bisa: baru <?= count($photos) ?> dari <?= (int) $o['photo_count'] ?> foto terunggah.</span>
       <?php endif; ?>

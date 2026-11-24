@@ -8,14 +8,14 @@
 ------------------------------------------------------------------------------------------------ */
 var MAG_W = 1920, MAG_RATIO = 283 / 200, MAG_UP_MAX = 4, MAG_KEEP_MAX = 3000;
 var MAG_FIELDS = {
-  noir:  [['issue', 'Nomor edisi', 24], ['dateLine', 'Bulan dan tahun', 24], ['issueNo', 'Edisi', 16]],
-  biru:  [['dateLine', 'Bulan dan tahun', 24], ['headA', 'Judul kiri', 28], ['subA', 'Keterangan kiri', 70], ['headB', 'Judul kanan', 28], ['subB', 'Keterangan kanan', 70]],
-  krem:  [['tag1', 'Kolom 1', 30], ['tag2', 'Kolom 2', 44], ['tag3', 'Kolom 3', 44]],
-  lukis: [['headline', 'Judul', 36], ['edition', 'Baris bawah', 28]],
-  segar: [['tagA', 'Label atas 1', 16], ['tagB', 'Label atas 2', 16], ['tagC', 'Label atas 3', 16], ['dateLine', 'Bulan dan tahun', 24],
-          ['a1', 'Judul kiri (kecil)', 24], ['a2', 'Judul kiri (besar)', 14], ['aSub', 'Keterangan kiri', 60],
-          ['b1', 'Judul kedua (kecil)', 24], ['b2', 'Judul kedua (besar)', 14], ['bSub', 'Keterangan kedua', 60],
-          ['badge', 'Lingkaran: judul', 22], ['badgeSub', 'Lingkaran: keterangan', 44]]
+  noir:  [['issue', 'Issue number', 24], ['dateLine', 'Month and year', 24], ['issueNo', 'Edition', 16]],
+  biru:  [['dateLine', 'Month and year', 24], ['headA', 'Left title', 28], ['subA', 'Left caption', 70], ['headB', 'Right title', 28], ['subB', 'Right caption', 70]],
+  krem:  [['tag1', 'Column 1', 30], ['tag2', 'Column 2', 44], ['tag3', 'Column 3', 44]],
+  lukis: [['headline', 'Title', 36], ['edition', 'Bottom line', 28]],
+  segar: [['tagA', 'Top label 1', 16], ['tagB', 'Top label 2', 16], ['tagC', 'Top label 3', 16], ['dateLine', 'Month and year', 24],
+          ['a1', 'Left title (small)', 24], ['a2', 'Left title (large)', 14], ['aSub', 'Left caption', 60],
+          ['b1', 'Second title (small)', 24], ['b2', 'Second title (large)', 14], ['bSub', 'Second caption', 60],
+          ['badge', 'Circle: title', 22], ['badgeSub', 'Circle: caption', 44]]
 };
 var MAG_COPY_SEGAR = {
   travel: { tagA: 'ADVENTURE', tagB: 'WANDER', tagC: 'MEMORIES', a1: 'WHERE THE ROAD', a2: 'LEADS', aSub: 'Places that change how we see', b1: 'THE NEXT', b2: 'ADVENTURE', bSub: 'Mapping the trips still to come', badge: 'TRAVEL DIARY', badgeSub: 'Stories from the road, together' },
@@ -82,6 +82,7 @@ function magEnhance(img) {
   return magScale(img, long < MAG_W ? MAG_W : Math.min(long, MAG_KEEP_MAX));
 }
 async function magLoadFile(file) {
+  if (isHeic(await file.slice(0, 16).arrayBuffer(), file)) file = await heicToJpeg(file);   /* the cover's original photo goes to the server too: JPEG */
   var url = URL.createObjectURL(file), img;
   try { img = await loadImg(url); } finally { URL.revokeObjectURL(url); }
   var ow = img.naturalWidth, oh = img.naturalHeight, c = magEnhance(img);
@@ -282,7 +283,34 @@ function magGrain(x, W, H, alpha, mode) {
   x.fillStyle = x.createPattern(magTile, 'repeat'); x.fillRect(0, 0, W, H); x.restore();
 }
 
-/* Foto contoh sebelum pembeli mengunggah: dua siluet di latar polos. */
+/* Foto contoh per tema sebelum pembeli mengunggah (foto orang buatan AI, lihat catatan di halaman): foto + masker subjek
+   yang sudah dihitung sebelumnya, jadi efek judul di belakang orang langsung tampil tanpa memuat model segmentasi.
+   Dimuat sekali per tema; selama belum siap (atau gagal dimuat), sampul memakai siluet di bawah. */
+var MAG_SAMPLE_DIR = '/public/imazine/img/';
+var MAG_SAMPLE_FIT = { travel: { fx: 0.523, fy: 0.985, z: 1.58 }, event: { fx: 0.539, fy: 1, z: 1.07 }, sol: { fx: 0.66, fy: 1, z: 1.48 } };
+var magSamples = {};
+function magSample(catId) {
+  if (!MAG_SAMPLE_FIT[catId]) return null;
+  var s = magSamples[catId];
+  if (s) return s.canvas ? s : null;
+  s = magSamples[catId] = {};
+  s.p = Promise.all([loadImg(MAG_SAMPLE_DIR + 'sample-' + catId + '.webp'), loadImg(MAG_SAMPLE_DIR + 'sample-' + catId + '-cut.webp')]).then(function (r) {
+    var pc = magCanvas(r[0].naturalWidth, r[0].naturalHeight); pc.getContext('2d').drawImage(r[0], 0, 0);
+    var mc = magCanvas(r[1].naturalWidth, r[1].naturalHeight), mx = mc.getContext('2d'); mx.drawImage(r[1], 0, 0);
+    var id = mx.getImageData(0, 0, mc.width, mc.height), d = id.data;
+    for (var i = 0; i < d.length; i += 4) { d[i + 3] = d[i]; d[i] = d[i + 1] = d[i + 2] = 0; }   /* terang = subjek */
+    mx.putImageData(id, 0, 0);
+    s.canvas = pc; s.cut = mc; s.w = pc.width; s.h = pc.height; s.paint = null; s.fit = MAG_SAMPLE_FIT[catId];
+  }).catch(function () { });
+  return null;
+}
+/* Render menunggu foto contoh tema itu siap, supaya rak tidak sempat menampilkan siluet lalu berganti. */
+function magSampleReady(catId) {
+  if (S.mag.photo || !MAG_SAMPLE_FIT[catId]) return Promise.resolve();
+  magSample(catId);
+  return magSamples[catId].p || Promise.resolve();
+}
+/* Cadangan terakhir: dua siluet di latar polos. */
 var magPh = null, magPhObj = null;
 function magPlaceholder() {
   if (magPh) return magPh;
@@ -311,12 +339,32 @@ var MAG_SANS = '"Manrope", "Manrope Fallback", Arial, sans-serif';
 
 /* ---------- the cover ---------- */
 function magRender(style, catId, W) {
-  return magFonts().then(function () { return magDraw(style, catId, W); });
+  return Promise.all([magFonts(), magSampleReady(catId)]).then(function () { return magDraw(style, catId, W); });
 }
 function magDraw(style, catId, W) {
   var H = Math.round(W * MAG_RATIO), u = W / 1000, HU = H / u, c = magCanvas(W, H), x = c.getContext('2d'), st = S.mag, ph = st.photo;
+  var smp = !ph && magSample(catId);
+  if (smp) { ph = smp; st = Object.assign({}, S.mag, smp.fit); }   /* belum ada foto pembeli: foto contoh tema ini */
   var src = ph ? ph.canvas : magPlaceholder(), T = function (k) { return magText(style, catId, k); };
   x.scale(u, u);
+  /* Kotak tiap teks dan foto, dalam satuan grid 1000 (edit langsung di sampul, 24 Nov 2026): editor memasang area ketuk di atasnya.
+     Teks kosong tetap dapat kotak supaya pembeli bisa mengisinya lagi. */
+  var hits = [];
+  c.hits = hits; c.photoBox = { x: 0, y: 0, w: 1000, h: HU }; c.HU = HU;
+  /* Kelompok teks bisa digeser bebas (24 Nov 2026, "kayak di Canva"): S.mag.moves[gaya][kelompok] = [dx, dy] dalam satuan grid.
+     at(g, fn) menggambar fn bergeser sejauh itu; kotak ketuk (hit) dan contoh warna foto (inkAt) ikut bergeser. */
+  var MV = (S.mag.moves && S.mag.moves[style]) || {}, O = { x: 0, y: 0, g: null };
+  function at(g, fn) {
+    var m = MV[g], o = O; O = { x: m ? +m[0] || 0 : 0, y: m ? +m[1] || 0 : 0, g: g };
+    x.save(); if (O.x || O.y) x.translate(O.x, O.y);
+    try { return fn(); } finally { x.restore(); O = o; }
+  }
+  function hit(k, X, Y, w, h2) { hits.push({ k: k, g: O.g, x: X + O.x, y: Y + O.y, w: Math.max(w, 40), h: Math.max(h2, 24) }); }
+  function tw(t) { return x.measureText(String(t)).width; }
+  /* Teks satu baris tanpa batas huruf: font dikecilkan sampai muat di lebar maxW (paling kecil min px). */
+  function fit(t, pre, size, post, maxW, min) {
+    for (var s2 = size; ; s2 -= 1) { x.font = pre + s2 + post; if (s2 <= min || x.measureText(String(t)).width <= maxW) return s2; }
+  }
   function layer(wU, hU) { return magCanvas(wU * u, hU * u); }
   function put(l, X, Y, wU, hU) { x.drawImage(l, X, Y, wU, hU); }
   function photoLayer(wU, hU, fn, painted) {
@@ -333,6 +381,7 @@ function magDraw(style, catId, W) {
     return lines;
   }
   function inkAt(X, Y, w, h, dark, light) {
+    X += O.x; Y += O.y;
     var d = x.getImageData(Math.max(0, Math.round(X * u)), Math.max(0, Math.round(Y * u)), Math.max(1, Math.round(w * u)), Math.max(1, Math.round(h * u))).data, s = 0, n = 0;
     for (var i = 0; i < d.length; i += 16) { s += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; n++; }
     return n && s / n < 135 ? (light || '#ffffff') : (dark || '#111111');
@@ -387,35 +436,43 @@ function magDraw(style, catId, W) {
 
   if (style === 'noir') {
     x.fillStyle = '#ebebe7'; x.fillRect(0, 0, 1000, HU);
-    stage(0, { prep: function (l) { magGray(l, 1.12); }, title: function () {
+    stage(0, { prep: function (l) { magGray(l, 1.12); }, title: function () { at('mast', function () {
       x.save(); x.translate(540, 345); x.rotate(-0.05); x.textAlign = 'center'; x.font = '100px ' + MAG_CRAYON;
       var cw = x.measureText('imazine').width, cs = 100 * 800 / cw; x.font = cs + 'px ' + MAG_CRAYON;
+      hit('mast', 140, 345 - cs * 0.72, 800, cs * 0.95);
       x.fillStyle = 'rgba(143,43,111,.5)'; x.fillText('imazine', 2.5, 2); x.fillText('imazine', -1.5, 1);
       x.fillStyle = 'rgba(143,43,111,.95)'; x.fillText('imazine', 0, 0);
       x.lineWidth = 2.4; x.strokeStyle = 'rgba(143,43,111,.45)'; x.strokeText('imazine', 0, 0);
       x.restore();
-    } });
+    }); } });
     magGrain(x, W, H, 0.12, 'multiply');
+    at('side', function () {
     var sideInk = inkOn(14, 90, 60, 440);
     x.save(); x.translate(60, 96); x.rotate(Math.PI / 2); x.fillStyle = sideInk; x.textAlign = 'left'; x.font = '500 15px "DM Mono", monospace';
     ['IMAZINE', T('issue'), T('dateLine')].forEach(function (t, i) { x.fillText(t, 0, -i * 21); });
+    hit('issue', 77, 90, 19, tw(T('issue')) + 12); hit('dateLine', 98, 90, 19, tw(T('dateLine')) + 12);
     x.restore();
+    });
+    at('foot', function () {
     x.fillStyle = 'rgba(235,235,231,.86)'; x.fillRect(34, HU - 196, 250, 150);   /* alas terang di bawah logo kecil, supaya terbaca di atas foto gelap */
     masthead(52, HU - 128, 190, '#111111', false);
     x.fillStyle = '#111'; x.fillRect(52, HU - 108, 30, 2);
-    x.font = '500 14px "DM Mono", monospace'; x.textAlign = 'left';
-    [T('issueNo'), T('issue'), T('dateLine')].forEach(function (t, i) { x.fillText(t, 52, HU - 84 + i * 19); });
+    x.textAlign = 'left';
+    [T('issueNo'), T('issue'), T('dateLine')].forEach(function (t, i) { fit(t, '500 ', 14, 'px "DM Mono", monospace', 226, 7); x.fillText(t, 52, HU - 84 + i * 19); });
+    ['issueNo', 'issue', 'dateLine'].forEach(function (k, i) { hit(k, 46, HU - 99 + i * 19, Math.max(tw(T(k)), 80) + 12, 19); });
+    hit('logo', 34, HU - 196, 250, 92);
+    });
   }
 
   else if (style === 'biru') {
     x.fillStyle = '#5c7aa6'; x.fillRect(0, 0, 1000, HU);
     stage(0, { title: function () {
-      var mc = inkOn(42, 110, 916, 160); soft(mc, function () { masthead(42, 262, 916, mc, true); });
-      var dc = inkOn(50, 296, 400, 34); soft(dc, function () { x.fillStyle = dc; x.font = '700 26px ' + MAG_SANS; x.textAlign = 'left'; x.fillText(T('dateLine'), 50, 322); });
+      at('mast', function () { var mc = inkOn(42, 110, 916, 160); soft(mc, function () { masthead(42, 262, 916, mc, true); }); hit('mast', 42, 120, 916, 160); });
+      at('date', function () { var dc = inkOn(50, 296, 400, 34); soft(dc, function () { x.fillStyle = dc; fit(T('dateLine'), '700 ', 26, 'px ' + MAG_SANS, 900, 12); x.textAlign = 'left'; x.fillText(T('dateLine'), 50, 322); hit('dateLine', 44, 294, Math.max(tw(T('dateLine')), 140) + 12, 36); }); });
     } });
     magGrain(x, W, H, 0.1, 'overlay');
-    var coverLine = function (X, Y, w, head, sub, right) {
-      x.save(); x.textAlign = right ? 'right' : 'left'; var yy = Y, col = '#ffffff';
+    var coverLine = function (X, Y, w, head, sub, right, kh, ks) {
+      x.save(); x.textAlign = right ? 'right' : 'left'; var yy = Y, col = '#ffffff', L = right ? X - w - 6 : X - 6;
       function line(t, base, size) {   /* warna per baris, mengikuti foto tepat di bawah baris itu */
         var tw = x.measureText(t).width; col = inkAt(right ? X - tw : X, base - size * 0.8, tw, size * 0.95, '#10151c', '#ffffff');
         x.fillStyle = col; x.shadowColor = col === '#ffffff' ? 'rgba(20,30,50,.6)' : 'rgba(255,255,255,.85)'; x.shadowBlur = 12;
@@ -423,23 +480,25 @@ function magDraw(style, catId, W) {
       }
       x.font = '800 54px ' + MAG_SANS;
       wrap(String(head).toUpperCase(), w).forEach(function (t) { line(t, yy + 44, 54); yy += 52; });
+      hit(kh, L, Y - 2, w + 12, Math.max(yy - Y, 52) + 4); var ys = Math.max(yy, Y + 52);
       x.font = '600 27px ' + MAG_SANS; wrap(sub, w).forEach(function (t) { line(t, yy + 36, 27); yy += 33; });
+      hit(ks, L, ys + 4, w + 12, Math.max(yy - ys, 33) + 6);
       x.fillStyle = col; x.fillRect(right ? X - 70 : X, yy + 30, 70, 4); x.restore();
     };
-    if (T('headA') || T('subA')) coverLine(48, 430, 235, T('headA'), T('subA'), false);
-    if (T('headB') || T('subB')) coverLine(952, 740, 235, T('headB'), T('subB'), true);
+    at('lineA', function () { if (T('headA') || T('subA')) coverLine(48, 430, 235, T('headA'), T('subA'), false, 'headA', 'subA'); else { hit('headA', 42, 428, 247, 56); hit('subA', 42, 488, 247, 40); } });
+    at('lineB', function () { if (T('headB') || T('subB')) coverLine(952, 740, 235, T('headB'), T('subB'), true, 'headB', 'subB'); else { hit('headB', 711, 738, 247, 56); hit('subB', 711, 798, 247, 40); } });
   }
 
   else if (style === 'krem') {
     x.fillStyle = '#ece7dc'; x.fillRect(0, 0, 1000, HU);
-    masthead(70, 300, 860, '#111111', true);
+    at('mast', function () { masthead(70, 300, 860, '#111111', true); hit('mast', 70, 178, 860, 140); });
     x.fillStyle = '#141414';
-    x.textAlign = 'left'; x.font = '700 17px ' + MAG_SANS; wrap(T('tag1'), 175).forEach(function (t, i) { spaced(t, 70, 388 + i * 24, 2.4); });
-    x.font = '400 26px ' + MAG_SERIF;
-    wrap(T('tag2'), 270).forEach(function (t, i) { x.fillText(t, 330, 390 + i * 29); });
-    wrap(T('tag3'), 250).forEach(function (t, i) { x.fillText(t, 690, 390 + i * 29); });
+    at('col1', function () { x.textAlign = 'left'; x.font = '700 17px ' + MAG_SANS; var n1 = wrap(T('tag1'), 175); n1.forEach(function (t, i) { spaced(t, 70, 388 + i * 24, 2.4); }); hit('tag1', 62, 368, 224, Math.max(n1.length, 1) * 24 + 10); });
+    x.textAlign = 'left'; x.font = '400 26px ' + MAG_SERIF;
+    at('col2', function () { var n2 = wrap(T('tag2'), 270); n2.forEach(function (t, i) { x.fillText(t, 330, 390 + i * 29); }); hit('tag2', 322, 366, 316, Math.max(n2.length, 1) * 29 + 10); });
+    at('col3', function () { var n3 = wrap(T('tag3'), 250); n3.forEach(function (t, i) { x.fillText(t, 690, 390 + i * 29); }); hit('tag3', 682, 366, 290, Math.max(n3.length, 1) * 29 + 10); });
     x.fillRect(298, 372, 1.5, 60); x.fillRect(658, 372, 1.5, 60);
-    var fh = HU - 470 - 38, pk = photoLayer(940, fh, null);
+    var fh = HU - 470 - 38, pk = photoLayer(940, fh, null); c.photoBox = { x: 30, y: 470, w: 940, h: fh };
     put(pk, 30, 470, 940, fh);
     magGrain(x, W, H, 0.09, 'multiply');
   }
@@ -447,17 +506,19 @@ function magDraw(style, catId, W) {
   else if (style === 'segar') {
     var gg = x.createLinearGradient(0, 0, 0, HU); gg.addColorStop(0, '#b9ee5c'); gg.addColorStop(1, '#8cd13a'); x.fillStyle = gg; x.fillRect(0, 0, 1000, HU);
     stage(0, { title: function () {
+      at('tags', function () {
       var tc = inkOn(80, 90, 860, 32), tg = tc === '#ffffff' ? '#ffffff' : '#0d3b1a';
       soft(tc, function () {
-        x.fillStyle = tg; x.font = '700 21px ' + MAG_SANS; x.textAlign = 'left';
-        [[T('tagA'), 118], [T('tagB'), 430], [T('tagC'), 742]].forEach(function (g) { x.fillRect(g[1] - 30, 98, 14, 14); x.fillText(g[0], g[1], 114); });
+        x.fillStyle = tg; x.textAlign = 'left';
+        [[T('tagA'), 118, 'tagA'], [T('tagB'), 430, 'tagB'], [T('tagC'), 742, 'tagC']].forEach(function (g) { fit(g[0], '700 ', 21, 'px ' + MAG_SANS, g[2] === 'tagC' ? 220 : 270, 9); x.fillRect(g[1] - 30, 98, 14, 14); x.fillText(g[0], g[1], 114); hit(g[2], g[1] - 36, 88, Math.max(tw(g[0]), 90) + 46, 34); });
       });
-      var mc = inkOn(30, 200, 940, 180); soft(mc, function () { masthead(30, 372, 940, mc, false); });
-      var dc = inkOn(62, 400, 400, 36); soft(dc, function () { x.fillStyle = dc; x.font = '700 28px ' + MAG_SANS; x.textAlign = 'left'; x.fillText(T('dateLine'), 62, 428); });
+      });
+      at('mast', function () { var mc = inkOn(30, 200, 940, 180); soft(mc, function () { masthead(30, 372, 940, mc, false); }); hit('mast', 30, 230, 940, 160); });
+      at('date', function () { var dc = inkOn(62, 400, 400, 36); soft(dc, function () { x.fillStyle = dc; fit(T('dateLine'), '700 ', 28, 'px ' + MAG_SANS, 880, 12); x.textAlign = 'left'; x.fillText(T('dateLine'), 62, 428); hit('dateLine', 56, 398, Math.max(tw(T('dateLine')), 140) + 12, 38); }); });
     } });
     magGrain(x, W, H, 0.07, 'overlay');
     /* Latar sampul kini selalu foto asli, jadi warna teks mengikuti terang-gelapnya foto di bawahnya supaya tetap terbaca. */
-    function block(Y, small, big, sub) {
+    function block(Y, small, big, sub, ks) {
       /* warna dipilih per baris: satu blok bisa jatuh sebagian di latar terang dan sebagian di baju gelap */
       function line(t, X, base, size, accent) {
         var w = x.measureText(t).width, dark = inkAt(X, base - size * 0.8, w, size * 0.95, 'd', 'l') === 'l';
@@ -467,17 +528,28 @@ function magDraw(style, catId, W) {
       }
       x.save(); x.textAlign = 'left'; var yy = Y, lastDark = false;
       x.font = '800 36px ' + MAG_SANS; wrap(String(small).toUpperCase(), 270).forEach(function (t) { line(t, 70, yy + 32, 36); yy += 38; });
-      x.font = '800 62px ' + MAG_SANS; line(String(big).toUpperCase(), 70, yy + 52, 62, true); yy += 62;
-      x.font = '600 25px ' + MAG_SANS; wrap(sub, 280).forEach(function (t) { lastDark = line(t, 70, yy + 32, 25); yy += 30; });
+      yy = Math.max(yy, Y + 38); hit(ks[0], 62, Y, 300, yy - Y + 2);
+      var bigS = fit(String(big).toUpperCase(), '800 ', 62, 'px ' + MAG_SANS, 860, 24); line(String(big).toUpperCase(), 70, yy + 52, bigS, true); hit(ks[1], 62, yy + 4, Math.max(tw(String(big).toUpperCase()), 200) + 16, 60); yy += 62;
+      var y3 = yy; x.font = '600 25px ' + MAG_SANS; wrap(sub, 280).forEach(function (t) { lastDark = line(t, 70, yy + 32, 25); yy += 30; });
+      hit(ks[2], 62, y3 + 6, 300, Math.max(yy - y3, 30) + 4);
       x.fillStyle = lastDark ? '#ffffff' : '#0d3b1a'; x.fillRect(70, yy + 36, 110, 3); x.restore();
+      return yy + 40;
     }
-    block(520, T('a1'), T('a2'), T('aSub'));
-    block(830, T('b1'), T('b2'), T('bSub'));
+    var endA = at('blockA', function () { return block(520, T('a1'), T('a2'), T('aSub'), ['a1', 'a2', 'aSub']); }) + (MV.blockA ? +MV.blockA[1] || 0 : 0);
+    /* teks kiri yang panjang mendorong blok kedua ke bawah, selama blok kedua belum digeser sendiri */
+    at('blockB', function () { block(MV.blockB ? 830 : Math.max(830, endA + 30), T('b1'), T('b2'), T('bSub'), ['b1', 'b2', 'bSub']); });
     /* lingkaran + barcode */
+    at('badge', function () {
     x.save(); x.shadowColor = 'rgba(0,0,0,.18)'; x.shadowBlur = 16; x.fillStyle = '#ffffff'; x.beginPath(); x.arc(852, 1086, 96, 0, 7); x.fill(); x.restore();
-    x.fillStyle = '#0d3b1a'; x.textAlign = 'center'; x.font = '800 25px ' + MAG_SANS;
-    var by0 = 1070 - (wrap(T('badge'), 150).length - 1) * 14; wrap(String(T('badge')).toUpperCase(), 150).forEach(function (t, i) { x.fillText(t, 852, by0 + i * 28 - 10); });
-    x.font = '600 14px ' + MAG_SANS; x.fillStyle = '#41584a'; wrap(T('badgeSub'), 140).slice(0, 3).forEach(function (t, i) { x.fillText(t, 852, 1108 + i * 17); });
+    /* isi lingkaran mengecil sendiri supaya teks panjang tetap di dalam lingkaran: judul maks 2 baris, keterangan maks 3 baris */
+    x.fillStyle = '#0d3b1a'; x.textAlign = 'center';
+    var bS = 25, bl; for (; ; bS--) { x.font = '800 ' + bS + 'px ' + MAG_SANS; bl = wrap(String(T('badge')).toUpperCase(), 150); if (bl.length <= 2 || bS <= 11) break; }
+    var bLh = bS * 1.12, by0 = 1070 - (bl.length - 1) * bLh / 2; bl.forEach(function (t, i) { x.fillText(t, 852, by0 + i * bLh - 10); });
+    hit('badge', 764, by0 - 10 - bS * 0.9, 176, Math.max(bl.length, 1) * bLh + 6);
+    var sS = 14, bs; for (; ; sS--) { x.font = '600 ' + sS + 'px ' + MAG_SANS; bs = wrap(T('badgeSub'), 140); if (bs.length * sS * 1.2 <= 54 || sS <= 7) break; }
+    x.fillStyle = '#41584a'; bs.forEach(function (t, i) { x.fillText(t, 852, 1108 + i * sS * 1.2); });
+    hit('badgeSub', 772, 1094, 160, Math.max(bs.length, 1) * sS * 1.2 + 8);
+    });
     x.fillStyle = '#ffffff'; x.fillRect(690, HU - 190, 262, 142);
     x.fillStyle = '#111'; var bx = 706, sd = 7; while (bx < 936) { sd = (sd * 9301 + 49297) % 233280; var bw = 2 + (sd % 4) * 1.4; x.fillRect(bx, HU - 178, bw, 92); bx += bw + 2 + (sd % 3) * 1.2; }
     x.font = '500 15px "DM Mono", monospace'; x.textAlign = 'center'; x.fillText('1 18091 95600 583', 821, HU - 62);
@@ -485,7 +557,7 @@ function magDraw(style, catId, W) {
 
   else {   /* lukis */
     x.fillStyle = '#128037'; x.fillRect(0, 0, 1000, HU);
-    stage(0, { painted: true, title: function () { var mc = inkOn(30, 110, 940, 170); soft(mc, function () { masthead(30, 272, 940, mc, true); }); } });
+    stage(0, { painted: true, title: function () { at('mast', function () { var mc = inkOn(30, 110, 940, 170); soft(mc, function () { masthead(30, 272, 940, mc, true); }); hit('mast', 30, 120, 940, 170); }); } });
     var rg = x.createLinearGradient(0, HU - 560, 0, HU); rg.addColorStop(0, 'rgba(120,0,20,0)'); rg.addColorStop(0.55, 'rgba(120,0,20,.62)'); rg.addColorStop(1, 'rgba(105,0,16,.92)');
     x.fillStyle = rg; x.fillRect(0, HU - 560, 1000, 560);
     magGrain(x, W, H, 0.22, 'overlay');
@@ -493,8 +565,11 @@ function magDraw(style, catId, W) {
     for (; fs2 >= 54; fs2 -= 6) { x.font = 'italic 400 ' + fs2 + 'px ' + MAG_SERIF; lines = wrap(head, 860); if (lines.length <= 2) break; }
     x.fillStyle = '#ffffff'; x.textAlign = 'center';
     var last = HU - 110;
+    at('headline', function () {
     lines.slice().reverse().forEach(function (t, i) { x.fillText(t, 500, last - i * fs2 * 0.92); });
-    x.font = '400 26px ' + MAG_SERIF; x.fillStyle = 'rgba(255,255,255,.9)'; spaced(String(T('edition')).toUpperCase(), 500, HU - 52, 7, 'center');
+    var nl = Math.max(lines.length, 1); hit('headline', 60, last - (nl - 1) * fs2 * 0.92 - fs2 * 0.78, 880, (nl - 1) * fs2 * 0.92 + fs2 * 0.95);
+    });
+    at('edition', function () { var ed = String(T('edition')).toUpperCase(), es = 26; for (; es > 10; es--) { x.font = '400 ' + es + 'px ' + MAG_SERIF; if (tw(ed) + ed.length * es * 0.27 <= 900) break; } x.fillStyle = 'rgba(255,255,255,.9)'; spaced(ed, 500, HU - 52, es * 0.27, 'center'); hit('edition', 220, HU - 82, 560, 42); });
   }
   return c;
 }

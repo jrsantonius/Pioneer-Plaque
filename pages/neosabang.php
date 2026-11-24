@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neo Sabang Blueprint | The Innovators Studio</title>
-    <meta name="description" content="A 50+ page working blueprint exploring how Jalan Sabang could become Sabang–Merauke, Jakarta's pedestrian-first culinary destination shaped by food, movement, business, and the people already there.">
+    <meta name="description" content="A 90+ page working blueprint exploring how Jalan Sabang could become Sabang–Merauke, Jakarta's pedestrian-first culinary destination shaped by food, movement, business, and the people already there.">
     <meta property="og:title" content="Neo Sabang Blueprint | The Innovators Studio">
     <meta property="og:description" content="One street. All of Indonesia. One long table. A working urban blueprint by The Innovators Studio.">
     <meta property="og:image" content="<?= BASE_URL ?>/public/images/neosabang-cover.jpg">
@@ -472,10 +472,13 @@
         /* ===== HONESTY CARDS ===== */
         .honesty-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1px;
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.08);
+        }
+        @media (max-width: 600px) {
+            .honesty-grid { grid-template-columns: 1fr; }
         }
         .honesty-card {
             background: var(--blueprint);
@@ -823,12 +826,12 @@
     <div class="hero-video-tint"></div>
     <div class="blueprint-grid"></div>
 
-    <button id="introMuteBtn" class="intro-mute-btn hidden" type="button" aria-label="Toggle sound">
+    <button id="introMuteBtn" class="intro-mute-btn hidden" type="button" aria-label="Turn sound on or off">
         <svg id="iconSoundOn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
         <svg id="iconSoundOff" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
     </button>
 
-    <p class="hero-hook">What if one street could bring all of Indonesia cuisine to the same table?</p>
+    <p class="hero-hook">What if one street could bring all of Indonesia's food to the same table?</p>
 
     <div class="title-block">
         <div class="title-presents">
@@ -931,7 +934,7 @@
     <section id="preview" style="padding: 0 24px 80px;">
         <div style="max-width: 700px; margin: 0 auto; text-align: center;">
             <div class="reveal-up section-label">The Manuscript</div>
-            <h2 class="reveal-up d1 section-heading">50+ pages of thinking you were never meant to see.</h2>
+            <h2 class="reveal-up d1 section-heading">90+ pages of thinking you were never meant to see.</h2>
             <p class="reveal-up d2" style="color: var(--text-dim); margin-top: 20px; font-size: 15px; max-width: 480px; margin-left: auto; margin-right: auto;">
                 Not just the final idea. The questions, references, assumptions, and unfinished parts behind it.
             </p>
@@ -987,10 +990,7 @@
                 </div>
             </div>
 
-            <p class="reveal-up" style="text-align: center; color: var(--text-dim); margin-top: 32px; font-size: 14px;">
-                It's not a weakness. It's what honest work looks like.
-            </p>
-            <div class="reveal-up scroll-next" style="margin-left: auto; margin-right: auto;" data-next="#inside">
+            <div class="reveal-up scroll-next" style="margin-top: 32px; margin-left: auto; margin-right: auto;" data-next="#inside">
                 <span>Scroll to Explore</span>
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
             </div>
@@ -1001,11 +1001,11 @@
         <div class="line"></div><div class="diamond"></div><div class="line"></div>
     </div>
 
-    <!-- ===== INSIDE THE BLUEPRINT (9 chapters) ===== -->
+    <!-- ===== INSIDE THE BLUEPRINT (8 chapters) ===== -->
     <section id="inside" style="padding: 80px 24px;">
         <div style="max-width: 1100px; margin: 0 auto;">
             <div class="reveal-up" style="text-align: center; margin-bottom: 56px;">
-                <div class="section-label">9 Chapters</div>
+                <div class="section-label">8 Chapters</div>
                 <h2 class="section-heading">From one street to Sabang&ndash;Merauke.</h2>
             </div>
 
@@ -1020,7 +1020,6 @@
                     ['num' => '06', 'title' => 'The Math', 'desc' => 'What it costs, what it returns, laid out honestly.'],
                     ['num' => '07', 'title' => 'The Challenges', 'desc' => 'Land, conflicting interests, and who runs it after opening day.'],
                     ['num' => '08', 'title' => 'The Impact', 'desc' => 'Social, economic, ecological, mobility. Measured, not assumed.'],
-                    ['num' => '09', 'title' => 'Conclusion & Recommendations', 'desc' => 'A phased rollout: pilot, evaluate, expand.'],
                 ];
                 foreach($chapters as $i => $c): ?>
                 <div class="reveal-up d<?= ($i % 5) + 1 ?> pillar-card">
@@ -1061,7 +1060,7 @@
                     <ul class="feature-list">
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
-                            9 chapters, start to finish
+                            8 chapters, start to finish
                         </li>
                         <li>
                             <div class="check"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></div>
@@ -1126,7 +1125,7 @@
                 $faqs = [
                     ['q' => 'Is Neo Sabang an official government proposal?', 'a' => 'No. Neo Sabang is an independent working blueprint created by The Innovators Studio.'],
                     ['q' => 'Is every number inside the blueprint final?', 'a' => 'No. Preliminary estimates are clearly labeled as working estimates. The manuscript also states which data and hypotheses still need verification.'],
-                    ['q' => 'What format will I receive?', 'a' => 'A digital PDF, available for instant download after your purchase.'],
+                    ['q' => 'What format will I receive?', 'a' => 'A digital PDF. You can download it right after you buy.'],
                     ['q' => 'Is this only for architects or urban designers?', 'a' => 'No. It\'s written for designers, builders, business thinkers, students, policymakers, culinary founders, and anyone curious about how cities work.'],
                     ['q' => 'Is this a finished masterplan?', 'a' => 'No. It\'s a studio manuscript that explores a direction, the reasoning behind it, and the questions that still need to be tested.'],
                     ['q' => 'Can I share or resell the PDF?', 'a' => 'No. The purchase is for personal use unless The Innovators Studio gives written permission.'],
@@ -1189,7 +1188,7 @@
         <span class="name">Neo Sabang</span>
         <span class="price">Rp30.000</span>
     </div>
-    <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get It</a>
+    <a href="https://theinnovatorsstudio.myr.id/pl/neo-sabang" class="sticky-cta-btn" target="_blank" data-cta="mobile_sticky_get_it">Get the PDF</a>
 </div>
 
 <script>

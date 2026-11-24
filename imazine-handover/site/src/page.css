@@ -11,11 +11,11 @@
 .tx-r{transform:translateX(-100%)}
 .tx-sp .tx-v{letter-spacing:.28em}
 .tx-up .tx-v{text-transform:uppercase}
-.cp{overflow:hidden;text-overflow:clip}
-.pa{position:absolute;padding:0;margin:0;border:0;background:none;display:block;text-align:left;overflow:hidden}
+.cp{overflow:visible}
+.pa{position:absolute;padding:0;margin:0;border:0;background:none;display:block;text-align:left;overflow:visible}
 .pa-bar,.pa-rule{position:absolute;display:block}
 .pa-rule{left:0;right:0;height:0}
-.pa-t{position:absolute;inset:0;white-space:pre-wrap;overflow-wrap:break-word;color:#2b2b2b;overflow:hidden}
+.pa-t{position:absolute;top:0;left:0;right:0;min-height:100%;white-space:pre-wrap;overflow-wrap:break-word;color:#2b2b2b}
 .cp-bar{position:absolute;display:block}
 
 /* Mode pembayaran: tanpa kelas .pay di <html> (bawaan) pembayaran disembunyikan; /api/imazine/config payment:true menambahkan .pay */

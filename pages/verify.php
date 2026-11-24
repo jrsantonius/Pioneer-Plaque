@@ -1,10 +1,10 @@
 <?php
-$pageTitle = 'Verify Member - TIS Pioneer';
+$pageTitle = 'Check a member - TIS Pioneer';
 require __DIR__ . '/../includes/header.php';
 ?>
 
 <div id="loadingView" class="min-h-screen flex items-center justify-center bg-premium">
-  <div class="animate-pulse text-gray-500">Verifying...</div>
+  <div class="animate-pulse text-gray-500">Checking this membership...</div>
 </div>
 
 <!-- Not Found View -->
@@ -15,8 +15,8 @@ require __DIR__ . '/../includes/header.php';
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
       </svg>
     </div>
-    <h1 class="text-xl font-bold text-red-700 mb-2">Invalid Member</h1>
-    <p class="text-sm text-red-600">This membership QR code is not valid.</p>
+    <h1 class="text-xl font-bold text-red-700 mb-2">We can't find this member</h1>
+    <p class="text-sm text-red-600">This QR code doesn't match any Pioneer membership. Ask the member to open their membership page and show the code there.</p>
   </div>
 </div>
 
@@ -85,7 +85,7 @@ async function init() {
       document.getElementById('statusTitle').className = 'text-xl font-bold text-green-700 mb-1';
       document.getElementById('statusTitle').textContent = 'Verified Member';
       document.getElementById('statusSubtitle').className = 'text-sm text-green-600 mb-4';
-      document.getElementById('statusSubtitle').textContent = 'This is a valid TIS Pioneer member.';
+      document.getElementById('statusSubtitle').textContent = 'This person is a verified TIS Pioneer member.';
       document.getElementById('vStatus').className = 'text-sm font-bold text-green-600';
       document.getElementById('vStatus').textContent = 'ACTIVE';
     } else {
@@ -93,9 +93,9 @@ async function init() {
       iconWrap.className = 'w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4';
       iconWrap.innerHTML = '<svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>';
       document.getElementById('statusTitle').className = 'text-xl font-bold text-yellow-700 mb-1';
-      document.getElementById('statusTitle').textContent = 'Inactive Member';
+      document.getElementById('statusTitle').textContent = 'Not active yet';
       document.getElementById('statusSubtitle').className = 'text-sm text-yellow-600 mb-4';
-      document.getElementById('statusSubtitle').textContent = 'This member has not completed registration.';
+      document.getElementById('statusSubtitle').textContent = "This member hasn't finished registering yet.";
       document.getElementById('vStatus').className = 'text-sm font-bold text-yellow-600';
       document.getElementById('vStatus').textContent = 'PENDING';
     }

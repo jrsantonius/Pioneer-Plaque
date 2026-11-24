@@ -15,14 +15,23 @@ function h(tag, cls, text) {
 function pct(v, base) { return (v / base * 100).toFixed(3) + '%'; }
 
 /* Placeholder wording follows the casing the template asked for. */
-function tokenHint(t) { return t.up ? 'TEKS' : 'teks'; }
+function tokenHint(tk) { return t(tk.up ? 'TEXT' : 'text'); }
 
 /* Keterangan foto hanya berisi apa yang ditulis pembeli. Tanggal dari file foto TIDAK diisikan otomatis (review 18 Nov 2026):
    tanggal di file bisa saja tanggal unduh, edit, atau pindah, bukan tanggal foto diambil. Pembeli bisa memakainya lewat tombol. */
-var CAP_HINT = 'Tulis tanggal di sini';
+var CAP_HINT = 'Write a date here';   /* placeholder; t(CAP_HINT) where it is shown */
 function captionValue(album, pi, ci) {
   var v = album.pages[pi].cp[ci];
   return v != null ? v : '';
+}
+
+/* Teks yang digeser pembeli (24 Nov 2026): album.pages[pi].mv['tx3'|'pa0'|'cp2'] = [dx, dy] dalam satuan halaman (1000 x 1416). */
+function textMove(st, key) { var m = st.mv && st.mv[key]; return m ? [+m[0] || 0, +m[1] || 0] : [0, 0]; }
+
+/* Bingkai foto yang di-resize pembeli (24 Nov 2026): slots[k].g = [x, y, w, h] dalam satuan halaman; rotasi tetap dari template. */
+function slotGeo(album, pi, k) {
+  var g = album.tpl.pages[pi].ph[k], b = album.pages[pi].slots[k] && album.pages[pi].slots[k].g;
+  return b ? [+b[0], +b[1], +b[2], +b[3], g[4] || 0] : g;
 }
 
 function imgBox(photo, slotW, slotH, s) {
@@ -50,7 +59,7 @@ function renderPage(album, pi, mode) {
 
   P.ly.forEach(function (layer) {
     if (typeof layer === 'number') {
-      var k = layer, g = P.ph[k], s = st.slots[k];
+      var k = layer, g = slotGeo(album, pi, k), s = st.slots[k];
       var photo = s.photo != null ? album.photos[s.photo] : null;
       var d = h(edit ? 'button' : 'div', 'slot' + (photo ? '' : ' is-empty'));
       if (edit) { d.type = 'button'; d.dataset.s = k; }
@@ -67,10 +76,10 @@ function renderPage(album, pi, mode) {
       } else if (!thumb) {
         var lb = h('span', 'slot-lb');
         lb.appendChild(h('span', 'slot-plus', '+'));
-        lb.appendChild(h('span', null, 'Foto ' + (k + 1)));
+        lb.appendChild(h('span', null, t('Photo {n}', { n: k + 1 })));
         d.appendChild(lb);
       }
-      if (edit) d.setAttribute('aria-label', 'Foto ' + (k + 1) + (photo ? ', terisi. Pilih untuk mengatur' : ', masih kosong. Pilih untuk mengisi'));
+      if (edit) d.setAttribute('aria-label', t(photo ? 'Photo {n}, filled. Pick to adjust' : 'Photo {n}, empty. Pick to fill', { n: k + 1 }));
       pg.appendChild(d);
     } else {
       var svg = document.createElementNS(SVGNS, 'svg');
@@ -113,8 +122,8 @@ function renderPage(album, pi, mode) {
     if (!edit && !val && !pa.rule) return;
     var box = h('div', 'pa' + (val ? '' : ' is-empty') + (pa.rule ? ' pa-ruled' : ''));
     if (edit) box.dataset.pa = i;
-    var boxH = pa.n * pa.lh;
-    box.style.cssText = 'left:' + pct(pa.x, 1000) + ';top:' + pct(pa.y, PAGE_H) + ';width:' + pct(pa.w, 1000) + ';height:' + pct(boxH, PAGE_H);
+    var boxH = pa.n * pa.lh, mp = textMove(st, 'pa' + i);
+    box.style.cssText = 'left:' + pct(pa.x + mp[0], 1000) + ';top:' + pct(pa.y + mp[1], PAGE_H) + ';width:' + pct(pa.w, 1000) + ';height:' + pct(boxH, PAGE_H);
     if (pa.rule) {
       for (var r = 0; r < pa.n; r++) {
         var ln = h('span', 'pa-rule');
@@ -128,7 +137,7 @@ function renderPage(album, pi, mode) {
         box.appendChild(bar);
       });
     }
-    if (val) {
+    if (val || edit) {   /* in edit mode an empty paragraph still gets its text node, so it can be typed into on the page */
       var t = h('span', 'pa-t', val);
       var fs = Math.min(pa.lh * 0.52, 46);
       t.style.cssText = 'font-family:' + bodyFont + ';font-size:' + (fs / 10).toFixed(3) + 'cqw;line-height:' + (pa.lh / fs).toFixed(3) + ';text-align:' + (pa.a === 'r' ? 'right' : pa.a === 'c' ? 'center' : 'left') + (pa.rule ? ';padding-top:' + pct(pa.lh * 0.16, pa.w) : '');
@@ -140,18 +149,18 @@ function renderPage(album, pi, mode) {
   /* captions beside photo numbers: written by the buyer (a date or a short note); empty ones show a hint while editing */
   P.cp.forEach(function (cp, i) {
     var val = captionValue(album, pi, i);
-    var hasPhoto = cp.p != null && st.slots[cp.p] && st.slots[cp.p].photo != null;
+    var hasPhoto = cp.p != null && st.slots[cp.p] && st.slots[cp.p].photo != null, mc = textMove(st, 'cp' + i);
     if (cp.bar && !val && edit) {
       var bar = h('span', 'cp-bar');
-      bar.style.cssText = 'left:' + pct(cp.bar[0], 1000) + ';top:' + pct(cp.bar[1], PAGE_H) + ';width:' + pct(cp.bar[2], 1000) + ';height:' + pct(cp.bar[3], PAGE_H) + ';background:' + cp.bar[4];
+      bar.style.cssText = 'left:' + pct(cp.bar[0] + mc[0], 1000) + ';top:' + pct(cp.bar[1] + mc[1], PAGE_H) + ';width:' + pct(cp.bar[2], 1000) + ';height:' + pct(cp.bar[3], PAGE_H) + ';background:' + cp.bar[4];
       pg.appendChild(bar);
     }
     var hint = !val && edit && (cp.bar || hasPhoto);
     if (!val && !hint) return;
     var c = h('div', 'tx cp' + (val ? '' : ' is-empty') + (cp.a === 'r' ? ' tx-r' : ''));
-    if (val) c.textContent = val; else c.appendChild(h('span', 'tx-v', CAP_HINT));
+    c.appendChild(h('span', 'tx-v', val || t(CAP_HINT)));
     if (edit) c.dataset.cp = i;
-    c.style.cssText = 'left:' + pct(cp.x, 1000) + ';top:' + pct(cp.y - 0.847 * cp.z, PAGE_H) + ';font-size:' + (cp.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[cp.f] + ';color:' + cp.c + ';max-width:' + pct(cp.w, 1000) + (val || !cp.bar ? '' : ';width:' + pct(cp.bar[2], 1000));
+    c.style.cssText = 'left:' + pct(cp.x + mc[0], 1000) + ';top:' + pct(cp.y - 0.847 * cp.z + mc[1], PAGE_H) + ';font-size:' + (cp.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[cp.f] + ';color:' + cp.c + (val || !cp.bar ? '' : ';width:' + pct(cp.bar[2], 1000));   /* tanpa max-width: caption panjang tidak terpotong */
     pg.appendChild(c);
   });
 
@@ -164,7 +173,8 @@ function renderPage(album, pi, mode) {
     if (!edit && !shown && !t.post) return;
     var e = h('div', 'tx' + (t.a === 'c' ? ' tx-c' : t.a === 'r' ? ' tx-r' : '') + (t.sp ? ' tx-sp' : '') + (t.up ? ' tx-up' : '') + (shown ? '' : ' is-empty'));
     if (edit) e.dataset.tx = i;
-    var css = 'left:' + pct(t.x, 1000) + ';top:' + pct(t.y - 0.847 * t.z, PAGE_H) + ';font-size:' + (t.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[t.f] + ';color:' + t.c;
+    var mt = textMove(st, 'tx' + i);
+    var css = 'left:' + pct(t.x + mt[0], 1000) + ';top:' + pct(t.y - 0.847 * t.z + mt[1], PAGE_H) + ';font-size:' + (t.z / 10).toFixed(3) + 'cqw;font-family:' + FONT[t.f] + ';color:' + t.c;
     if (t.b) css += ';font-weight:700';
     if (t.i) css += ';font-style:italic';
     if (t.r) css += ';transform:rotate(' + t.r + 'deg)';

@@ -154,6 +154,14 @@ if ($requestUri === '/creativebusiness') {
     exit;
 }
 
+// GET /demoreto -> short public link to the reader
+if ($requestUri === '/demoreto') {
+    require_once __DIR__ . '/storage/demoreto-secret.php';
+    $readerToken = DEMORETO_TOKEN;
+    require __DIR__ . '/pages/demoreto-reader.php';
+    exit;
+}
+
 // GET /baca/demoreto/{token} -> protected book reader
 if (preg_match('#^/baca/demoreto/([a-f0-9]{24})$#', $requestUri, $m)) {
     $readerToken = $m[1];
@@ -210,5 +218,5 @@ if (preg_match('#^/verify/(TIS-\d{4})$#', $requestUri, $m)) {
 http_response_code(404);
 $pageTitle = 'Not Found - TIS';
 require __DIR__ . '/includes/header.php';
-echo '<div class="min-h-screen flex items-center justify-center"><div class="text-center"><h1 class="text-2xl font-bold text-gray-700 mb-2">404</h1><p class="text-gray-500">Halaman tidak ditemukan.</p><a href="' . BASE_URL . '/login" class="mt-4 inline-block text-sm text-gray-600 underline">Kembali ke Login</a></div></div>';
+echo '<div class="min-h-screen flex items-center justify-center"><div class="text-center"><h1 class="text-2xl font-bold text-gray-700 mb-2">404</h1><p class="text-gray-500">Halaman yang kamu cari tidak ada. Mungkin link-nya salah ketik atau halamannya sudah dipindah.</p><a href="' . BASE_URL . '/login" class="mt-4 inline-block text-sm text-gray-600 underline">Kembali ke Login</a></div></div>';
 require __DIR__ . '/includes/footer.php';

@@ -1,6 +1,6 @@
 /* ---------- state ---------- */
-var S = { view: 'home', step: 'tema', cat: null, cover: null, layout: null, photos: [], album: null, page: 0, sel: null, armed: null, swap: null, tab: 'foto', dirty: false, qty: 1, pv: 0,
-  mag: { photo: null, fx: 0.5, fy: 0.3, z: 1, front: true, ed: {}, rev: 0 } };   /* Cover Majalah: satu foto + teks per gaya, dipakai semua gaya majalah */
+var S = { view: 'home', step: 'sampul', cat: null, cover: null, layout: null, photos: [], album: null, page: 0, sel: null, armed: null, swap: null, tab: 'foto', dirty: false, qty: 1, pv: 0,
+  mag: { photo: null, fx: 0.5, fy: 0.3, z: 1, front: true, ed: {}, moves: {}, rev: 0 } };   /* Cover Majalah: satu foto + teks per gaya, dipakai semua gaya majalah */
 var wide = window.matchMedia('(min-width: 1000px)');
 var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 var SCENE = { home: 'dark', setup: 'desk', studio: 'desk', preview: 'dark', checkout: 'desk', done: 'dark' };
@@ -92,80 +92,81 @@ function busy(on, done, of) {
   $('#busy-fill').style.width = (of ? done / of * 100 : 0) + '%';
 }
 
-/* ---------- home ---------- */
+/* ---------- home: the first question is the theme (review 20 Nov 2026) ----------
+   Each card in the markup shows the theme's sample cover; here an open spread of the theme's first layout is added,
+   filled with AI sample photos (img/pv-*.webp), so the buyer sees what that kind of album looks like before choosing. */
+var HOME_COVER = { travel: 'mag-segar', event: 'mag-noir', sol: 'mag-lukis' };   /* the sample cover each card shows: picking the theme starts on it */
+var PV_DIM = {
+  travel: [[416, 560], [560, 364], [560, 408], [417, 560], [560, 332], [560, 376]],
+  event: [[560, 391], [560, 360], [560, 454], [560, 387], [560, 180], [560, 383]],
+  sol: [[440, 560], [560, 397], [560, 376], [560, 385], [560, 375], [560, 180]]
+};
+function pvPhotos(id) {
+  return PV_DIM[id].map(function (d, i) { var u = MAG_SAMPLE_DIR + 'pv-' + id + '-' + (i + 1) + '.webp'; return { url: u, thumb: u, w: d[0], h: d[1], date: null, sample: true }; });
+}
+/* the first spread (left page odd, as in the preview) where both pages hold photos */
+function pvSpread(album) {
+  for (var p = 1; p + 1 < album.pages.length; p += 2) { var a = album.pages[p].slots.length, b = album.pages[p + 1].slots.length; if (a && b && a + b >= 3) return [p, p + 1]; }
+  return [1, 2];
+}
 function drawHome() {
-  var box = $('#home-cats');
-  CATS.forEach(function (c, i) {
-    var b = h('button', 'cat'); b.type = 'button'; b.style.setProperty('--i', i);
-    var art = h('span', 'cat-art'), im = new Image();
-    im.src = IMZ_IMG[c.cover.img]; im.alt = 'Sampul ' + c.cover.name; im.width = 190; im.height = 269;
-    art.appendChild(im);
-    var body = h('span', 'cat-body');
-    body.appendChild(h('span', 'cat-name', c.name));
-    body.appendChild(h('span', 'cat-desc', c.desc));
-    var cvs = pickableCovers(c), nMag = cvs.filter(function (x) { return x.mag; }).length, more = h('span', 'cat-soon');
-    more.appendChild(h('b', null, cvs.length + ' sampul: '));
-    more.appendChild(document.createTextNode(nMag + ' gaya Cover Majalah dengan fotomu sendiri, plus sampul ilustrasi ' + c.cover.name + '.'));
-    body.appendChild(more);
-    var goEl = h('span', 'cat-go', 'Pakai tema ini'); goEl.appendChild(icon('right'));
-    body.appendChild(goEl);
-    b.appendChild(art); b.appendChild(body);
-    b.addEventListener('click', function () { carry(im); pickCat(c.id); });
-    box.appendChild(b);
+  $$('.theme').forEach(function (b) {
+    var id = b.dataset.theme, cat = catOf(id), box = $('[data-spread]', b);
+    b.addEventListener('click', function () { carry($('.theme-cover', b)); pickCat(id); });
+    var paint = function () {
+      var album = newAlbum(cat.layouts[0], pvPhotos(id)), sp = pvSpread(album), k = 0;
+      sp.forEach(function (pi) { album.pages[pi].slots.forEach(function (s, si) { setSlot(album, pi, si, k++ % album.photos.length); }); });
+      box.textContent = '';
+      sp.forEach(function (pi) { box.appendChild(renderPage(album, pi, 'thumb')); });
+    };
+    /* after the first paint: the hero text and covers come first, the 18 small sample photos after */
+    if (window.requestIdleCallback) requestIdleCallback(paint, { timeout: 1200 }); else setTimeout(paint, 300);
   });
+}
+/* "Make an album" with no album yet: the theme question is the first step, so take the buyer to it */
+function toThemes(now) {
+  var sec = $('#mulai'); if (!sec) return;
+  $('#mulai-h').focus({ preventScroll: true });   /* focus first: focusing during a smooth scroll stops it */
+  sec.scrollIntoView({ behavior: now || calm.matches ? 'auto' : 'smooth', block: 'start' });
 }
 function startFlow() {
   if (S.album) { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; drawStudio(); return go('studio'); }
-  S.step = 'tema'; drawSetup(); go('setup', 'setup-h');
+  if (S.view !== 'home') return go('home', null, function () { requestAnimationFrame(function () { toThemes(true); }); });
+  toThemes();
 }
-function labelStart() { $$('[data-start]').forEach(function (b) { b.textContent = S.album ? 'Lanjutkan album' : 'Buat album'; }); }
+function labelStart() { $$('[data-start]').forEach(function (b) { b.textContent = S.album ? 'Continue your album' : 'Make an album'; }); }
 function pickCat(id) {
-  if (S.cat !== id) { var same = S.album && S.album.cat === id; S.cat = id; S.layout = same ? S.album.tpl.id : null; S.cover = same && S.album.cover ? S.album.cover : catOf(id).cover.id; }
+  if (S.cat !== id) { var same = S.album && S.album.cat === id; S.cat = id; S.layout = same ? S.album.tpl.id : null; S.cover = same && S.album.cover ? S.album.cover : HOME_COVER[id] || 'mag-segar'; }
   S.step = 'sampul';
   if (S.view !== 'setup') { drawSetup(); go('setup', 'setup-h'); }
   else vtRun(function () { drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); });
 }
 
-/* ---------- setup: tema → sampul → gaya → foto ---------- */
+/* ---------- setup: sampul (sekaligus tema) → gaya → foto ---------- */
 var SETUP = {
-  tema: { n: 1, h: 'Mau cerita tentang apa?', sub: 'Pilih satu tema. Sampul dan gaya layoutnya mengikuti.', back: 'Beranda' },
-  sampul: { n: 1, h: 'Pilih sampul albummu.', sub: 'Jadikan fotomu sampul bergaya majalah, atau pakai sampul ilustrasi bawaan tema. Ketuk salah satu untuk memilihnya.', back: 'Ganti tema' },
-  gaya: { n: 1, h: 'Pilih gaya layout.', sub: 'Semua gaya berisi 40 halaman. Bedanya ada di susunan foto dan banyaknya ruang untuk menulis.', back: 'Sampul' },
-  foto: { n: 2, h: 'Sekarang, masukkan fotomu.', sub: 'Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari foto yang paling lama.', back: 'Ganti gaya' }
+  sampul: { n: 1, h: 'Choose your cover.', sub: function (cat) { return t('Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.', { theme: cat.name }); }, back: 'Change theme' },
+  gaya: { n: 1, h: 'Choose a layout.', sub: 'Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.', back: 'Cover' },
+  foto: { n: 2, h: 'Now, upload your photos.', sub: 'Select them all at once. We’ll place them on each page, oldest first.', back: 'Change layout' }
 };
 function drawSetup() {
   var st = SETUP[S.step], body = $('#setup-body'), foot = $('#setup-foot'), cat = S.cat && catOf(S.cat);
-  $('#setup-eyebrow').textContent = 'Langkah ' + st.n + ' dari 4';
+  $('#setup-eyebrow').textContent = t('Step {n} of 4', { n: st.n });
   $$('.steps li').forEach(function (li, i) { li.classList.toggle('is-on', i === st.n - 1); li.classList.toggle('is-done', i < st.n - 1); });
   $('#setup-h').textContent = noWidow(st.h);
-  $('#setup-sub').textContent = noWidow(st.sub);
-  $('#setup-back-t').textContent = st.back;
+  $('#setup-sub').textContent = noWidow(typeof st.sub === 'function' ? st.sub(cat) : st.sub);
+  $('#setup-back-t').textContent = S.step === 'sampul' && S.coverFrom ? 'Back to preview' : S.step === 'sampul' && S.album ? 'Back to your album' : st.back;
+  /* Ganti cover dari preview (feedback Huda, 23 Nov 2026): pembeli yang sudah menulis caption takut semuanya hilang. Katakan dengan jelas bahwa album tetap utuh. */
+  if (S.step === 'sampul' && (S.coverFrom || S.album)) $('#setup-sub').textContent = noWidow('Pick another cover. Your photos, layout, and captions stay exactly as they are.');
   body.textContent = '';
   foot.hidden = true;
-  if (S.step === 'tema') {
-    var g = h('div', 'picks');
-    CATS.forEach(function (c, i) {
-      var b = h('button', 'pick pick-cat'); b.type = 'button'; b.style.setProperty('--i', i);
-      b.setAttribute('aria-pressed', S.cat === c.id ? 'true' : 'false');
-      var art = h('span', 'pick-art'), im = new Image(); im.src = IMZ_IMG[c.cover.img]; im.alt = 'Sampul ' + c.cover.name; im.width = 170; im.height = 241; art.appendChild(im);
-      var tx = h('span'); tx.style.display = 'grid'; tx.style.gap = '8px';
-      tx.appendChild(h('span', 'pick-name', c.name));
-      tx.appendChild(h('span', 'pick-desc', c.desc));
-      tx.appendChild(h('span', 'pick-meta', pickableCovers(c).length + ' sampul · 4 gaya layout'));
-      var tick = h('span', 'pick-tick'); tick.appendChild(icon('check'));
-      b.appendChild(art); b.appendChild(tx); b.appendChild(tick);
-      b.addEventListener('click', function () { carry(im); pickCat(c.id); });
-      g.appendChild(b);
-    });
-    body.appendChild(g);
-  } else if (S.step === 'sampul') {
-    body.appendChild(coverShelf(cat));
+  if (S.step === 'sampul') {
+    body.appendChild(coverShelf());
     foot.hidden = false;
     drawCoverPick();
-    $('#setup-next').textContent = 'Lanjut pilih gaya';
+    $('#setup-next').textContent = S.coverFrom ? 'Use this cover' : 'Continue to layouts';
     $('#setup-next').disabled = false;
   } else if (S.step === 'gaya') {
-    var grid = h('div', 'styles'); grid.setAttribute('role', 'radiogroup'); grid.setAttribute('aria-label', 'Gaya layout');
+    var grid = h('div', 'styles'); grid.setAttribute('role', 'radiogroup'); grid.setAttribute('aria-label', 'Layout');
     cat.layouts.forEach(function (id, i) {
       var L = LAYOUTS[id], b = h('button', 'pick'); b.type = 'button'; b.style.setProperty('--i', i);
       b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', S.layout === id ? 'true' : 'false');
@@ -174,7 +175,7 @@ function drawSetup() {
       b.appendChild(prev);
       b.appendChild(h('span', 'pick-name', L.name));
       b.appendChild(h('span', 'pick-desc', L.desc));
-      b.appendChild(h('span', 'pick-meta', 'Muat ' + slotCount(id) + ' foto · 40 halaman'));
+      b.appendChild(h('span', 'pick-meta', t('Fits {n} photos · 40 pages', { n: slotCount(id) })));
       var tk = h('span', 'pick-tick'); tk.appendChild(icon('check')); b.appendChild(tk);
       b.addEventListener('click', function () {
         S.layout = id;
@@ -197,27 +198,27 @@ function drawSetup() {
     var need = slotCount(S.layout), have = S.photos.length;
     var drop = h('div', 'drop'); drop.id = 'drop';
     var dic = h('span', 'drop-ic'); dic.appendChild(icon('upload')); drop.appendChild(dic);
-    drop.appendChild(h('h2', null, have ? 'Kamu sudah punya ' + have + ' foto di rak.' : 'Pilih foto dari perangkatmu'));
-    drop.appendChild(h('p', null, noWidow(have ? 'Lanjut menyusun dengan foto itu, atau tambah foto lain dulu.' : 'Gaya ini memuat ' + need + ' foto. Kurang atau lebih dari itu juga boleh, nanti bisa diatur.')));
+    drop.appendChild(h('h2', null, have ? t('You already have {n} photos on the shelf.', { n: have }) : 'Choose photos from your device'));
+    drop.appendChild(h('p', null, noWidow(have ? 'Keep arranging with those photos, or add more first.' : t('This layout holds {n} photos. A few more or fewer is fine; you can adjust later.', { n: need }))));
     var pickBtn = h('button', 'btn btn-lg ' + (have ? 'btn-line' : 'btn-warm')); pickBtn.type = 'button'; pickBtn.id = 'pick-files';
-    pickBtn.appendChild(icon(have ? 'plus' : 'photo')); pickBtn.appendChild(h('span', null, have ? 'Tambah foto' : 'Pilih foto'));
+    pickBtn.appendChild(icon(have ? 'plus' : 'photo')); pickBtn.appendChild(h('span', null, have ? 'Add photos' : 'Choose photos'));
     pickBtn.addEventListener('click', function () { $('#file-first').click(); });
     if (have) {
-      var cont = h('button', 'btn btn-warm btn-lg', 'Lanjut menyusun'); cont.type = 'button';
+      var cont = h('button', 'btn btn-warm btn-lg', 'Keep arranging'); cont.type = 'button';
       cont.addEventListener('click', function () { enterStudio(true); });
       drop.appendChild(cont);
     }
     drop.appendChild(pickBtn);
-    drop.appendChild(h('p', 'drop-or', 'JPG, PNG, atau WEBP. Di komputer, fotonya juga bisa ditarik ke kotak ini.'));
+    drop.appendChild(h('p', 'drop-or', 'JPG, PNG, WEBP, or HEIC. On a computer, you can also drag photos into this box.'));
     if (!have) {
-      var demoBtn = h('button', 'linkish', 'Belum ada fotonya? Coba dulu pakai foto contoh'); demoBtn.type = 'button'; demoBtn.id = 'use-samples';
+      var demoBtn = h('button', 'linkish', 'No photos yet? Try it with sample photos'); demoBtn.type = 'button'; demoBtn.id = 'use-samples';
       demoBtn.addEventListener('click', useSamples);
       drop.appendChild(demoBtn);
     }
     var msg = h('p', 'msg'); msg.id = 'upl-msg'; msg.hidden = true; msg.setAttribute('role', 'alert');
     body.appendChild(drop); body.appendChild(msg);
     var facts = h('ul', 'upl-facts');
-    [['Tersusun otomatis', 'Foto dipasang urut tanggal, dari yang paling lama.'], ['Tanggal kamu yang tentukan', 'Keterangan di samping nomor foto kamu isi sendiri, atau biarkan kosong.'], ['Tetap bisa diatur', 'Geser, perbesar, tukar, atau ganti fotonya kapan saja.']].forEach(function (f) {
+    [['Laid out for you', 'Photos are placed by date, oldest first.'], ['You decide the dates', 'You write the caption next to each photo number, or leave it empty.'], ['Still yours to adjust', 'Move, zoom, swap, or replace photos any time.']].forEach(function (f) {
       var li = h('li'); li.appendChild(h('b', null, f[0])); li.appendChild(document.createTextNode(f[1])); facts.appendChild(li);
     });
     body.appendChild(facts);
@@ -242,202 +243,385 @@ function coverArt(cat, cv, label, size) {
   else { el.removeAttribute('role'); el.removeAttribute('aria-label'); el.setAttribute('aria-hidden', 'true'); }
   return el;
 }
-function drawCoverPick() { var p = $('#setup-pick'); p.textContent = ''; p.appendChild(document.createTextNode('Sampul: ')); p.appendChild(h('b', null, curCover().name)); }
+function drawCoverPick() { var p = $('#setup-pick'); p.textContent = ''; p.appendChild(document.createTextNode('Cover: ')); p.appendChild(h('b', null, curCover().name)); p.appendChild(document.createTextNode(' · ' + catOf(S.cat).name)); }
 function drawHeroCover(hero, cat, cv) {
   hero.textContent = '';
-  var art = h('div', 'cvp-art'); art.appendChild(coverArt(cat, cv, 'Sampul ' + cv.name, 720)); hero.appendChild(art);
+  var art = h('div', 'cvp-art'); art.appendChild(coverArt(cat, cv, 'Cover ' + cv.name, 720)); hero.appendChild(art);
   var tx = h('div', 'cvp-tx');
-  tx.appendChild(h('p', 'cvp-k', 'Sampul terpilih'));
+  tx.appendChild(h('p', 'cvp-k', 'Your cover'));
   tx.appendChild(h('h2', 'cvp-nm', cv.name));
   if (cv.note) tx.appendChild(h('p', 'cvp-d', cv.note));
   tx.appendChild(h('p', 'cvp-m', cv.g + ' · ' + cat.name));
   hero.appendChild(tx);
 }
-/* Editor Cover Majalah: unggah foto sampul (otomatis dinaikkan ke Full HD), atur posisi, ubah teks. Muncul hanya saat sampul majalah dipilih. */
+/* Petunjuk singkat di bawah kanvas (24 Nov 2026): apa saja yang bisa digeser, diketuk, dan di-zoom. */
+function howTo(items) {
+  var ul = h('ul', 'howto'); ul.setAttribute('aria-label', 'How to edit');
+  items.forEach(function (it) { var li = h('li', 'howto-' + it[0], it[1]); ul.appendChild(li); });
+  return ul;
+}
+/* Editor Cover Majalah, langsung di sampul (24 Nov 2026, permintaan user: "kayak di Canva", tanpa slider):
+   - geser foto dengan jari/mouse, cubit (atau ctrl + scroll / tombol − +) untuk zoom
+   - ketuk teks di sampul untuk mengetik di tempat; sampul digambar ulang sambil mengetik
+   - ketuk judul untuk menaruhnya di belakang atau di depan orang di foto
+   Kotak teks dan foto dicatat oleh magDraw (c.hits, c.photoBox) dalam grid 1000 satuan. */
 function magEditor(cat) {
   var el = h('section', 'mag-ed'); el.setAttribute('aria-labelledby', 'mag-h'); el.hidden = true;
-  var hd = h('h3', null, 'Fotomu di sampul majalah'); hd.id = 'mag-h'; el.appendChild(hd);
-  el.appendChild(h('p', 'mag-sub', 'Satu foto dipakai untuk kelima gaya majalah, jadi kamu bisa ganti gaya tanpa mengunggah lagi. Foto otomatis dinaikkan ke Full HD (1920 px) supaya tajam.'));
-  var up = h('div', 'mag-up'), pick = h('button', 'btn btn-warm', 'Unggah foto sampul'); pick.type = 'button'; pick.setAttribute('data-mag-pick', '');
-  var inp = h('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.hidden = true; inp.setAttribute('aria-label', 'Foto untuk sampul majalah');
-  var info = h('p', 'mag-info'); info.setAttribute('role', 'status'); info.setAttribute('aria-live', 'polite');
-  up.appendChild(pick); up.appendChild(inp); up.appendChild(info); el.appendChild(up);
-  var ctl = h('div', 'mag-ctl');
-  var fitTip = h('p', 'mag-note mag-fit'); fitTip.setAttribute('role', 'status'); ctl.appendChild(fitTip);
-  var sl = {};
-  [['z', 'Perbesar', 1, 2.5], ['fx', 'Geser kiri–kanan', 0, 1], ['fy', 'Geser atas–bawah', 0, 1]].forEach(function (d) {
-    var lb = h('label', 'mag-sl'), t = h('span', null, d[1]), r = h('input'); r.type = 'range'; r.min = d[2]; r.max = d[3]; r.step = 0.01; r.value = S.mag[d[0]];
-    r.addEventListener('input', function () { S.mag[d[0]] = +r.value; S.mag.touched = true; magChanged(); drawFit(); });
-    lb.appendChild(t); lb.appendChild(r); ctl.appendChild(lb); sl[d[0]] = r;
+  var hd = h('h3', null, 'Edit your cover'); hd.id = 'mag-h'; el.appendChild(hd);
+  var work = h('div', 'mag-work'), stage = h('div', 'mag-stage'), cv = h('canvas', 'mag-cv'), hitsEl = h('div', 'mag-hits'), selEl = h('div', 'mag-sel');
+  stage.tabIndex = 0; stage.setAttribute('role', 'group'); stage.setAttribute('aria-label', 'Cover editor. Arrow keys move the photo, plus and minus zoom.');
+  cv.setAttribute('aria-hidden', 'true'); selEl.hidden = true;
+  stage.appendChild(cv); stage.appendChild(selEl); stage.appendChild(hitsEl);
+  var addPh = h('button', 'mag-add'); addPh.type = 'button'; addPh.appendChild(icon('upload')); addPh.appendChild(h('span', null, 'Use your own photo')); stage.appendChild(addPh);
+  var pop = h('div', 'mag-pop'); pop.hidden = true; pop.setAttribute('role', 'dialog');
+  work.appendChild(stage); work.appendChild(pop); el.appendChild(work);
+  /* bilah alat foto, tepat di bawah sampul */
+  var bar = h('div', 'mag-bar'), pick = h('button', 'btn btn-sm btn-warm', 'Upload cover photo'); pick.type = 'button'; pick.setAttribute('data-mag-pick', '');
+  var zm = h('div', 'mag-zoom'), zOut = h('button', 'btn btn-icon btn-icon-s'), zVal = h('span', 'num mag-zv'), zIn = h('button', 'btn btn-icon btn-icon-s');
+  zOut.type = zIn.type = 'button'; zOut.appendChild(icon('minus')); zIn.appendChild(icon('plus')); zOut.setAttribute('aria-label', 'Zoom out'); zIn.setAttribute('aria-label', 'Zoom in');
+  zm.appendChild(zOut); zm.appendChild(zVal); zm.appendChild(zIn);
+  var fitBtn = h('button', 'btn btn-sm btn-line', 'Automatic position'); fitBtn.type = 'button';
+  bar.appendChild(pick); bar.appendChild(zm); bar.appendChild(fitBtn); el.appendChild(bar);
+  var inp = h('input'); inp.type = 'file'; inp.accept = 'image/*,.heic,.heif'; inp.hidden = true; inp.setAttribute('aria-label', 'Photo for the magazine cover'); el.appendChild(inp);
+  var how = howTo([['photo', 'Drag the photo to move it.'], ['zoom', 'Pinch, use Ctrl + scroll, or press − and + to zoom the photo in or out.'], ['move', 'Drag any text to move it left, right, up, or down.'], ['text', 'Tap or click a text to change what it says.']]);
+  var howMast = h('li', null, 'Tap the big title to put it behind or in front of the person.'); how.appendChild(howMast);
+  el.appendChild(how);
+  var info = h('p', 'mag-info'); info.setAttribute('role', 'status'); info.setAttribute('aria-live', 'polite'); el.appendChild(info);
+  var segNote = h('p', 'mag-note'); segNote.setAttribute('role', 'status'); el.appendChild(segNote);
+  var note = h('p', 'mag-note'); el.appendChild(note);
+
+  var last = null, sel = null, style = null, fontsOk = false, raf = 0, fast = false, hiT = 0, moving = null;
+  /* posisi kelompok teks yang digeser pembeli, per gaya: [dx, dy] dalam satuan grid 1000 */
+  function moves() { var m = S.mag.moves || (S.mag.moves = {}); return m[style] || (m[style] = {}); }
+  function groupOf(k) { var b = hitOf(k); return b ? b.g : null; }
+  function moveGroup(g, nx, ny) {
+    var mv = moves(), cur = mv[g] || [0, 0], box = null;
+    last.hits.forEach(function (b) { if (b.g !== g) return; var r = [b.x - cur[0], b.y - cur[1], b.x - cur[0] + b.w, b.y - cur[1] + b.h]; box = box ? [Math.min(box[0], r[0]), Math.min(box[1], r[1]), Math.max(box[2], r[2]), Math.max(box[3], r[3])] : r; });
+    if (box) {   /* tetap di dalam sampul: paling tidak separuh kotaknya terlihat */
+      var cx = (box[0] + box[2]) / 2, cy = (box[1] + box[3]) / 2;
+      nx = clamp(nx, -cx, 1000 - cx); ny = clamp(ny, -cy, last.HU - cy);
+    }
+    nx = Math.round(nx * 10) / 10; ny = Math.round(ny * 10) / 10;
+    if (Math.abs(nx) < 0.5 && Math.abs(ny) < 0.5) delete mv[g]; else mv[g] = [nx, ny];
+    paint(true); magChanged();
+  }
+  function fields() { return MAG_FIELDS[style] || []; }
+  function fieldOf(k) { var f = fields().filter(function (x) { return x[0] === k; })[0]; return f || null; }
+  function canMast() { return style !== 'krem' && (S.mag.photo ? !!S.mag.photo.cut : !!magSample(catOf(S.cat).id)); }   /* foto contoh sudah membawa masker subjek */
+
+  /* ---- menggambar: cepat (resolusi rendah) selama digeser/diketik, tajam sesudah berhenti ---- */
+  function paint(quick) {
+    fast = !!quick;
+    if (!raf) raf = requestAnimationFrame(draw);
+    clearTimeout(hiT);
+    if (quick) hiT = setTimeout(function () { paint(false); }, 220);
+  }
+  function draw() {
+    raf = 0;
+    if (!style || el.hidden) return;
+    var ready = fontsOk && (S.mag.photo || !MAG_SAMPLE_FIT[catOf(S.cat).id] || magSample(catOf(S.cat).id));
+    if (!ready) { Promise.all([magFonts(), magSampleReady(catOf(S.cat).id)]).then(function () { fontsOk = true; paint(false); }); return; }
+    var cssW = stage.clientWidth || 360, dpr = Math.min(window.devicePixelRatio || 1, 2), W = Math.round(cssW * dpr * (fast ? 0.6 : 1));
+    W = clamp(W, 240, fast ? 640 : 1300);
+    var c = magDraw(style, catOf(S.cat).id, W);
+    if (cv.width !== c.width || cv.height !== c.height) { cv.width = c.width; cv.height = c.height; }
+    cv.getContext('2d').drawImage(c, 0, 0);
+    last = c; layoutHits(); place();
+  }
+  function pctX(v) { return (v / 10).toFixed(3) + '%'; }
+  function pctY(v) { return (v / last.HU * 100).toFixed(3) + '%'; }
+  function boxCss(b, e) { e.style.left = pctX(b.x); e.style.top = pctY(b.y); e.style.width = pctX(b.w); e.style.height = pctY(b.h); }
+  function layoutHits() {
+    hitsEl.textContent = '';
+    var seen = {};
+    last.hits.forEach(function (b) {
+      var f = b.k === 'mast' ? [b.k, 'Title'] : b.k === 'logo' ? [b.k, 'Small logo'] : fieldOf(b.k); if (!f) return;
+      var bt = h('button', 'mag-hit' + (sel === b.k || moving && moving === b.g ? ' is-sel' : '')); bt.type = 'button'; bt.dataset.k = b.k; if (b.g) bt.dataset.g = b.g;
+      bt.setAttribute('aria-label', t(b.k === 'logo' ? 'Move: {what}' : 'Edit: {what}', { what: t(f[1]) }) + (b.g ? t('. Drag or use the arrow keys to move it.') : ''));
+      if (seen[b.k]) bt.tabIndex = -1; seen[b.k] = true;
+      boxCss(b, bt); hitsEl.appendChild(bt);
+    });
+    addPh.hidden = !!S.mag.photo; stage.classList.toggle('has-photo', !!S.mag.photo);
+    if (sel === 'photo') { boxCss(last.photoBox, selEl); selEl.hidden = false; } else selEl.hidden = true;
+  }
+  function hitOf(k) { var r = null; if (last) last.hits.forEach(function (b) { if (b.k === k && (!r || b.y > r.y)) r = b; }); return r; }
+
+  /* ---- teks: kotak ketik mengambang tepat di bawah (atau di atas) teks yang diketuk ---- */
+  function openText(k) {
+    sel = k; drawBar();
+    var f = k === 'mast' || k === 'logo' ? null : fieldOf(k);
+    pop.textContent = ''; pop.hidden = false;
+    if (k === 'mast' || k === 'logo') {
+      pop.setAttribute('aria-label', k === 'mast' ? 'Title' : 'Small logo');
+      pop.appendChild(h('p', 'mag-pop-l', k === 'mast' ? 'Title' : 'Small logo'));
+      if (k === 'logo' || !canMast()) pop.appendChild(h('p', 'mag-pop-t', 'Drag it to move it anywhere on the cover.'));
+      var seg = h('div', 'seg mag-seg'); if (k === 'logo' || !canMast()) seg.hidden = true;
+      [[true, 'Behind the person'], [false, 'In front of the person']].forEach(function (o) {
+        var b = h('button', 'seg-b', o[1]); b.type = 'button'; b.setAttribute('aria-pressed', S.mag.front === o[0] ? 'true' : 'false');
+        b.addEventListener('click', function () { S.mag.front = o[0]; magChanged(); paint(false); openText('mast'); });
+        seg.appendChild(b);
+      });
+      pop.appendChild(seg);
+    } else {
+      pop.setAttribute('aria-label', t(f[1]));
+      /* tanpa batas jumlah huruf (permintaan user 24 Nov 2026): teks panjang dibungkus atau dikecilkan saat digambar */
+      var row = h('div', 'mag-pop-r'), lb = h('label', 'mag-pop-l', f[1]);
+      var long = f[2] > 30, r = h(long ? 'textarea' : 'input', 'in'); if (!long) r.type = 'text'; else r.rows = 2;
+      r.id = 'mag-in-' + k; lb.htmlFor = r.id; r.autocomplete = 'off'; r.spellcheck = false;
+      r.value = magText(style, catOf(S.cat).id, k);
+      r.addEventListener('input', function () {
+        (S.mag.ed[style] = S.mag.ed[style] || {})[k] = r.value.replace(/\n/g, ' ');
+        magChanged(); paint(true);
+      });
+      r.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); closePop(true); } });
+      row.appendChild(lb); pop.appendChild(row); pop.appendChild(r);
+    }
+    var acts = h('div', 'mag-pop-a'), g = groupOf(k);
+    if (g && moves()[g]) {
+      var rs = h('button', 'btn btn-sm btn-quiet', 'Back to original position'); rs.type = 'button';
+      rs.addEventListener('click', function () { delete moves()[g]; magChanged(); paint(false); openText(k); });
+      acts.appendChild(rs);
+    }
+    var done = h('button', 'btn btn-sm btn-primary mag-pop-ok', 'Done'); done.type = 'button';
+    done.addEventListener('click', function () { closePop(true); });
+    acts.appendChild(done); pop.appendChild(acts);
+    layoutHits(); place();
+    var fi = $('.in', pop) || $('.seg-b', pop); if (fi) { fi.focus({ preventScroll: true }); if (fi.select) fi.select(); }
+  }
+  function place() {
+    if (pop.hidden || !last || !sel || sel === 'photo') return;
+    var b = hitOf(sel); if (!b) return;
+    var sw = stage.clientWidth, sh = stage.clientHeight, pw = Math.min(sw, 320);
+    pop.style.width = pw + 'px';
+    var x0 = b.x / 1000 * sw, y1 = (b.y + b.h) / last.HU * sh, y0 = b.y / last.HU * sh, ph = pop.offsetHeight;
+    pop.style.left = clamp(x0, 0, sw - pw) + 'px';
+    pop.style.top = (y1 + 8 + ph <= sh || y0 - ph - 8 < 0 ? y1 + 8 : y0 - ph - 8) + 'px';
+  }
+  function closePop(focusBack) {
+    var k = sel; pop.hidden = true; sel = null; layoutHits(); drawBar();
+    if (focusBack && k) { var b = $('.mag-hit[data-k="' + k + '"]', hitsEl); (b || stage).focus({ preventScroll: true }); }
+  }
+
+  /* ---- foto: geser dan zoom ---- */
+  function crop() {
+    var ph = S.mag.photo, b = last.photoBox, ar = b.w / b.h, sw = ph.w, sh = ph.h, cw, ch;
+    if (sw / sh > ar) { ch = sh / S.mag.z; cw = ch * ar; } else { cw = sw / S.mag.z; ch = cw / ar; }
+    return { sw: sw, sh: sh, cw: cw, ch: ch };
+  }
+  function moved() { S.mag.touched = true; drawBar(); paint(true); magChanged(); }
+  function panBy(dxCss, dyCss) {
+    var k = crop(), b = last.photoBox, bw = b.w / 1000 * stage.clientWidth, bh = b.h / last.HU * stage.clientHeight;
+    if (k.sw - k.cw > 0.5) S.mag.fx = clamp(S.mag.fx - dxCss / bw * k.cw / (k.sw - k.cw), 0, 1);
+    if (k.sh - k.ch > 0.5) S.mag.fy = clamp(S.mag.fy - dyCss / bh * k.ch / (k.sh - k.ch), 0, 1);
+  }
+  /* zoom dengan titik di bawah jari/kursor tetap di tempat (px, py = posisi dalam kotak foto, 0..1) */
+  function zoomTo(z, px, py) {
+    if (!S.mag.photo || !last) return;
+    px = px == null ? 0.5 : px; py = py == null ? 0.5 : py;
+    var a = crop(), sx = (a.sw - a.cw) * S.mag.fx + px * a.cw, sy = (a.sh - a.ch) * S.mag.fy + py * a.ch;
+    S.mag.z = clamp(z, 1, 2.5);
+    var b2 = crop();
+    S.mag.fx = b2.sw - b2.cw > 0.5 ? clamp((sx - px * b2.cw) / (b2.sw - b2.cw), 0, 1) : 0.5;
+    S.mag.fy = b2.sh - b2.ch > 0.5 ? clamp((sy - py * b2.ch) / (b2.sh - b2.ch), 0, 1) : 0.5;
+    moved();
+  }
+  function inBox(cx, cy) {
+    var r = stage.getBoundingClientRect(), b = last.photoBox;
+    return { px: clamp(((cx - r.left) / r.width * 1000 - b.x) / b.w, 0, 1), py: clamp(((cy - r.top) / r.height * last.HU - b.y) / b.h, 0, 1) };
+  }
+  var pts = {}, drag = null, dragged = false;
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.button > 0 || !last) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(pts);
+    if (ids.length === 2 && S.mag.photo) {   /* dua jari: cubit untuk zoom */
+      var a = pts[ids[0]], b = pts[ids[1]];
+      drag = { pinch: true, d0: Math.hypot(a.x - b.x, a.y - b.y) || 1, z0: S.mag.z };
+      dragged = true; try { stage.setPointerCapture(e.pointerId); } catch (er) {}
+      return;
+    }
+    dragged = false;
+    var hb = e.target.closest('.mag-hit');
+    if (hb && hb.dataset.g) { var m0 = moves()[hb.dataset.g] || [0, 0]; drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, id: e.pointerId, g: hb.dataset.g, m0: m0.slice() }; return; }
+    drag = S.mag.photo ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
   });
-  var fitBtn = h('button', 'btn btn-sm btn-line', 'Kembalikan ke posisi otomatis'); fitBtn.type = 'button'; ctl.appendChild(fitBtn);
-  el.appendChild(ctl);
-  /* Posisi otomatis: begitu subjek terdeteksi, foto langsung dipaskan ke bingkai sampul. Slider tetap ada untuk penyesuaian. */
+  stage.addEventListener('pointermove', function (e) {
+    if (!pts[e.pointerId]) return;
+    pts[e.pointerId] = { x: e.clientX, y: e.clientY };
+    if (!drag) return;
+    if (drag.pinch) {
+      var ids = Object.keys(pts); if (ids.length < 2) return;
+      var a = pts[ids[0]], b = pts[ids[1]], m = inBox((a.x + b.x) / 2, (a.y + b.y) / 2);
+      zoomTo(drag.z0 * Math.hypot(a.x - b.x, a.y - b.y) / drag.d0, m.px, m.py);
+      return;
+    }
+    if (e.pointerId !== drag.id) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!dragged && Math.hypot(dx, dy) < 5) return;
+    if (!dragged) { dragged = true; stage.classList.add('is-drag'); if (!pop.hidden) closePop(false); sel = drag.g ? null : 'photo'; moving = drag.g || null; try { stage.setPointerCapture(e.pointerId); } catch (er) {} }
+    if (drag.g) { moveGroup(drag.g, drag.m0[0] + (e.clientX - drag.x0) / stage.clientWidth * 1000, drag.m0[1] + (e.clientY - drag.y0) / stage.clientHeight * last.HU); return; }
+    panBy(dx, dy); drag.x = e.clientX; drag.y = e.clientY; moved();
+  });
+  function up(e) {
+    delete pts[e.pointerId];
+    if (!Object.keys(pts).length) { drag = null; stage.classList.remove('is-drag'); if (moving) { moving = null; paint(false); } }
+    else if (drag && drag.pinch) drag = null;
+  }
+  stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+  stage.addEventListener('click', function (e) {
+    if (dragged) { dragged = false; return; }
+    if (e.target.closest('.mag-add')) return inp.click();
+    var b = e.target.closest('.mag-hit');
+    if (b) return openText(b.dataset.k);
+    if (!S.mag.photo) return inp.click();   /* belum ada foto sendiri: ketuk foto contoh = unggah */
+    if (!pop.hidden) closePop(false);
+    sel = sel === 'photo' ? null : 'photo'; layoutHits(); drawBar();
+  });
+  stage.addEventListener('wheel', function (e) {   /* cubit di trackpad (ctrlKey) atau ctrl + scroll */
+    if (!e.ctrlKey || !S.mag.photo || !last) return;
+    e.preventDefault();
+    var m = inBox(e.clientX, e.clientY); zoomTo(S.mag.z * Math.exp(-clamp(e.deltaY, -25, 25) * 0.008), m.px, m.py);
+  }, { passive: false });
+  stage.addEventListener('keydown', function (e) {
+    var hb = e.target.closest && e.target.closest('.mag-hit');
+    if (hb && hb.dataset.g && last && /^Arrow/.test(e.key)) {   /* teks terpilih + tombol panah: geser teks */
+      e.preventDefault();
+      var st2 = e.shiftKey ? 20 : 5, m = moves()[hb.dataset.g] || [0, 0], k2 = hb.dataset.k;
+      moveGroup(hb.dataset.g, m[0] + (e.key === 'ArrowLeft' ? -st2 : e.key === 'ArrowRight' ? st2 : 0), m[1] + (e.key === 'ArrowUp' ? -st2 : e.key === 'ArrowDown' ? st2 : 0));
+      requestAnimationFrame(function () { requestAnimationFrame(function () { var nb = $('.mag-hit[data-k="' + k2 + '"]', hitsEl); if (nb) nb.focus({ preventScroll: true }); }); });
+      return;
+    }
+    if (e.target !== stage || !S.mag.photo || !last) return;
+    var st = e.shiftKey ? 30 : 8, k = e.key;
+    if (k === 'ArrowLeft') panBy(st, 0); else if (k === 'ArrowRight') panBy(-st, 0); else if (k === 'ArrowUp') panBy(0, st); else if (k === 'ArrowDown') panBy(0, -st);
+    else if (k === '+' || k === '=') return e.preventDefault(), zoomTo(S.mag.z + 0.1);
+    else if (k === '-') return e.preventDefault(), zoomTo(S.mag.z - 0.1);
+    else return;
+    e.preventDefault(); moved();
+  });
+  document.addEventListener('pointerdown', function (e) {   /* ketuk di luar sampul: lepas pilihan */
+    if (!el.isConnected || el.hidden || work.contains(e.target) || bar.contains(e.target)) return;
+    if (!pop.hidden) closePop(false); else if (sel) { sel = null; layoutHits(); drawBar(); }
+  });
+  pop.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); closePop(true); } });
+  zOut.addEventListener('click', function () { zoomTo(S.mag.z - 0.15); });
+  zIn.addEventListener('click', function () { zoomTo(S.mag.z + 0.15); });
+  if (window.ResizeObserver) new ResizeObserver(function () { if (stage.clientWidth && last && Math.abs(stage.clientWidth * (window.devicePixelRatio || 1) - cv.width) > 40) paint(false); place(); }).observe(stage);
+
+  /* Posisi otomatis: begitu subjek terdeteksi, foto langsung dipaskan ke bingkai sampul. */
   function autoFit() {
     var ph = S.mag.photo, f = ph && ph.cut ? magAutoFit(ph.cut, ph.w, ph.h) : null;
     if (!f) return false;
     S.mag.fx = f.fx; S.mag.fy = f.fy; S.mag.z = f.z; S.mag.touched = false;
-    sl.z.value = f.z; sl.fx.value = f.fx; sl.fy.value = f.fy;
     return true;
   }
-  function drawFit() {
-    var auto = !!(S.mag.photo && S.mag.photo.cut);
-    fitBtn.hidden = !auto || !S.mag.touched;
-    fitTip.textContent = auto ? (S.mag.touched ? 'Posisi foto sudah kamu atur sendiri.' : 'Posisi foto sudah diatur otomatis mengikuti orang di foto. Geser slider di bawah hanya kalau perlu.') : 'Atur bagian foto yang tampil di sampul dengan slider di bawah.';
+  function drawBar() {
+    var has = !!S.mag.photo;
+    zm.hidden = !has; zVal.textContent = Math.round(S.mag.z * 100) + '%';
+    zOut.disabled = S.mag.z <= 1.001; zIn.disabled = S.mag.z >= 2.499;
+    fitBtn.hidden = !(has && S.mag.photo.cut && S.mag.touched);
+    pick.textContent = has ? 'Change photo' : 'Upload cover photo';
   }
-  fitBtn.addEventListener('click', function () { if (autoFit()) { magChanged(); drawFit(); } });
-  function check(label, get, set) {
-    var lb = h('label', 'mag-co'), cb = h('input'); cb.type = 'checkbox'; cb.checked = get();
-    lb.appendChild(cb); lb.appendChild(h('span', null, label));
-    cb.addEventListener('change', function () { set(cb.checked); magChanged(); });
-    return { el: lb, cb: cb };
-  }
-  var cFront = check('Foto di depan judul (teks di belakang subjek)', function () { return S.mag.front; }, function (v) { S.mag.front = v; });
-  el.appendChild(cFront.el);
-  var segNote = h('p', 'mag-note'); segNote.setAttribute('role', 'status'); el.appendChild(segNote);
-  var tx = h('div', 'mag-tx'); el.appendChild(tx);
-  var note = h('p', 'mag-note'); el.appendChild(note);
+  fitBtn.addEventListener('click', function () { if (autoFit()) { magChanged(); drawBar(); paint(false); } });
   function drawInfo() {
     var m = S.mag.photo;
-    if (!m) { info.textContent = 'Belum ada foto. Contoh di atas memakai siluet.'; return; }
-    info.textContent = m.name + ' · ' + m.ow + '×' + m.oh + ' px' + (m.w > m.ow || m.h > m.oh ? ' → dinaikkan ke ' + m.w + '×' + m.h + ' px (Full HD).' : ' (sudah cukup besar, tidak diubah).');
+    if (!m) { info.textContent = 'No photo yet. The sample above uses an AI-made photo; upload yours to replace it.'; return; }
+    info.textContent = m.name + ' · ' + m.ow + '×' + m.oh + ' px' + (m.w > m.ow || m.h > m.oh ? t(' → enlarged to {w}×{h} px (Full HD).', { w: m.w, h: m.h }) : t(' (already large enough, not changed).'));
   }
   function sync() {
-    var cv = curCover(); el.hidden = !cv.mag;
-    if (!cv.mag) return;
-    if (cv.mag !== 'krem' && typeof magSegmenter === 'function') magSegmenter().catch(function () { });   /* unduh pemisah subjek dari sekarang, sambil pembeli memilih foto */
-    drawInfo(); ctl.hidden = !S.mag.photo; drawFit();
-    var ok = !!(S.mag.photo && S.mag.photo.cut), none = cv.mag === 'krem' || !S.mag.photo;
-    cFront.el.hidden = !ok || none;
-    cFront.cb.checked = S.mag.front;
-    segNote.hidden = !S.mag.photo || cv.mag === 'krem' || ok && !segNote.textContent;
-    if (S.mag.photo && !ok && cv.mag !== 'krem' && !segNote.textContent) { segNote.textContent = 'Pemisah subjek tidak bisa dimuat (perlu internet). Judul tetap di atas foto.'; segNote.hidden = false; }
-    tx.textContent = '';
-    MAG_FIELDS[cv.mag].forEach(function (f, i) {
-      var lb = h('label', 'mag-f'), t = h('span', null, f[1]), r = h('input', 'in'); r.type = 'text'; r.maxLength = f[2]; r.autocomplete = 'off'; r.spellcheck = false;
-      r.value = magText(cv.mag, cat.id, f[0]);
-      r.addEventListener('input', function () { (S.mag.ed[cv.mag] = S.mag.ed[cv.mag] || {})[f[0]] = r.value; magChanged(); });
-      lb.appendChild(t); lb.appendChild(r); tx.appendChild(lb);
-    });
-    note.textContent = cv.mag === 'lukis' ? 'Efek lukisan dibuat di perangkatmu dengan filter cat minyak, bukan AI. Hasilnya bergantung pada foto.' : '';
+    var cvr = curCover(); cat = catOf(S.cat); el.hidden = !cvr.mag;
+    if (!cvr.mag) return;
+    if (style !== cvr.mag) { style = cvr.mag; sel = null; pop.hidden = true; }
+    if (cvr.mag !== 'krem' && typeof magSegmenter === 'function') magSegmenter().catch(function () { });   /* unduh pemisah subjek dari sekarang, sambil pembeli memilih foto */
+    drawInfo(); drawBar();
+    var ok = !!(S.mag.photo && S.mag.photo.cut);
+    segNote.hidden = !S.mag.photo || cvr.mag === 'krem' || ok && !segNote.textContent;
+    if (S.mag.photo && !ok && cvr.mag !== 'krem' && !segNote.textContent) { segNote.textContent = 'The title-behind-person effect needs an internet connection and couldn’t load. The title still shows over the photo.'; segNote.hidden = false; }
+    howMast.hidden = !canMast();
+    note.textContent = cvr.mag === 'lukis' ? 'The painted look is made on your device with an oil-paint filter, not AI. Results depend on the photo.' : '';
     note.hidden = !note.textContent;
+    paint(false);
   }
   pick.addEventListener('click', function () { inp.click(); });
   inp.addEventListener('change', async function () {
     var f = inp.files && inp.files[0]; inp.value = '';
     if (!f) return;
-    info.textContent = 'Memproses foto…'; pick.disabled = true;
+    info.textContent = 'Processing photo…'; pick.disabled = true;
     try {
       S.mag.photo = await magLoadFile(f); S.mag.fx = 0.5; S.mag.fy = 0.3; S.mag.z = 1; S.mag.touched = false;
-      sl.z.value = 1; sl.fx.value = 0.5; sl.fy.value = 0.3;
-      magChanged(); segNote.textContent = 'Memisahkan subjek dari latar…'; sync(); pick.textContent = 'Ganti foto sampul';
+      magChanged(); segNote.textContent = 'Finding the person in your photo…'; sync();
       var ph = S.mag.photo; ph.cut = await magSegment(ph.canvas); segNote.textContent = '';
       if (S.mag.photo === ph) { if (!S.mag.touched) autoFit(); magChanged(); sync(); }
-    } catch (e) { if (window.console) console.warn('Cover Majalah:', e); info.textContent = 'Fotonya belum bisa dibuka. Pilih file JPG, PNG, atau WEBP.'; }
+    } catch (e) { if (window.console) console.warn('Cover Majalah:', e); info.textContent = 'We couldn’t open this photo. Try a JPG, PNG, WEBP, or HEIC file.'; }
     finally { pick.disabled = false; }
   });
   sync();
   return { el: el, sync: sync };
 }
-/* The cover step: the chosen cover large on top, every cover of the theme on shelves below, like a bookstore app.
-   A shelf scrolls sideways; searching or picking one shelf lays the covers out as a grid. The covers are one radio group. */
-function coverShelf(cat) {
-  var all = pickableCovers(cat), groups = [], q = '', grp = '';
-  all.forEach(function (cv) { if (groups.indexOf(cv.g) < 0) groups.push(cv.g); });
+/* The cover step, first step of the flow: the chosen cover large on top, then one shelf per theme
+   (its magazine covers with the theme's sample photo, plus its illustrated cover). Picking a cover also picks the theme.
+   All covers are one radio group. */
+function coverShelf() {
+  if (!curCover().mag) S.cover = 'mag-segar';   /* album lama dengan sampul ilustrasi: pindah ke Cover Majalah */
   var wrap = h('div', 'cvs'), hero = h('div', 'cvp'); hero.id = 'cover-hero';
-  drawHeroCover(hero, cat, curCover()); wrap.appendChild(hero);
-  var magEd = magEditor(cat); wrap.appendChild(magEd.el);
-  var tools = h('div', 'cvs-tools');
-  var qw = h('div', 'find-q'), lab = h('label', 'sr', 'Cari sampul ' + cat.name), inp = h('input', 'in');
-  inp.type = 'search'; inp.id = 'cover-q'; lab.htmlFor = 'cover-q'; inp.autocomplete = 'off'; inp.enterKeyHint = 'search'; inp.spellcheck = false;
-  inp.placeholder = cat.id === 'travel' ? 'Cari kota atau negara' : cat.id === 'event' ? 'Cari acara, misalnya Wisuda' : 'Cari tema, misalnya Keluarga';
-  qw.appendChild(lab); qw.appendChild(icon('search')); qw.appendChild(inp); tools.appendChild(qw);
-  var seg = h('div', 'seg'); seg.setAttribute('role', 'group'); seg.setAttribute('aria-label', 'Tampilkan rak');
-  [''].concat(groups).forEach(function (g) { var b = h('button', 'seg-b', g || 'Semua'); b.type = 'button'; b.dataset.g = g; b.setAttribute('aria-pressed', g ? 'false' : 'true'); seg.appendChild(b); });
-  tools.appendChild(seg); wrap.appendChild(tools);
-  tools.hidden = all.length <= 8;   /* pencarian dan filter rak hanya berguna kalau sampulnya banyak */
-  var count = h('p', 'find-n cvs-n'); count.setAttribute('role', 'status'); count.setAttribute('aria-live', 'polite'); wrap.appendChild(count);
-  var shelves = h('div', 'shelves'); shelves.setAttribute('role', 'radiogroup'); shelves.setAttribute('aria-label', 'Sampul ' + cat.name);
-  function book(cv) {
-    var b = h('button', 'book'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.id = cv.id; b.setAttribute('data-nowidow', ''); b.setAttribute('aria-label', cv.name);
+  drawHeroCover(hero, catOf(S.cat), curCover()); wrap.appendChild(hero);
+  var magEd = magEditor(catOf(S.cat));
+  var shelves = h('div', 'shelves'); shelves.setAttribute('role', 'radiogroup'); shelves.setAttribute('aria-label', 'Album cover');
+  function book(cat, cv) {
+    var b = h('button', 'book'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.id = cv.id; b.dataset.cat = cat.id; b.setAttribute('data-nowidow', ''); b.setAttribute('aria-label', t('{cover}, {theme} theme', { cover: t(cv.name), theme: cat.name }));
     var art = h('span', 'book-art'); art.appendChild(coverArt(cat, cv)); b.appendChild(art);
     b.appendChild(h('span', 'book-nm', cv.name)); b.appendChild(h('span', 'book-st'));
     return b;
   }
-  var secs = groups.map(function (g, gi) {
-    var sec = h('section', 'shelf'), hd = h('div', 'shelf-h'), t = h('h3', null, g + ' '), nav = h('div', 'shelf-nav'), row = h('div', 'shelf-row');
-    sec.dataset.g = g; t.id = 'shelf-' + cat.id + '-' + gi; sec.setAttribute('aria-labelledby', t.id);
-    t.appendChild(h('span', 'shelf-n')); hd.appendChild(t);
-    [['left', -1, 'kiri'], ['right', 1, 'kanan']].forEach(function (d) {
-      var b = h('button', 'btn btn-icon btn-icon-s shelf-go'); b.type = 'button'; b.dataset.d = d[1]; b.setAttribute('aria-label', 'Geser rak ' + g + ' ke ' + d[2]); b.appendChild(icon(d[0])); nav.appendChild(b);
+  var secs = [catOf(S.cat)].map(function (cat) {   /* the theme was chosen on the home page: only its covers */
+    var sec = h('section', 'shelf'), hd = h('div', 'shelf-h'), tw = h('div', 'shelf-tw'), t = h('h3', null, cat.name), nav = h('div', 'shelf-nav'), row = h('div', 'shelf-row');
+    t.id = 'shelf-' + cat.id; sec.setAttribute('aria-labelledby', t.id);
+    tw.appendChild(t); tw.appendChild(h('p', 'shelf-d', cat.desc)); hd.appendChild(tw);
+    [['left', -1, 'Scroll the {theme} shelf left'], ['right', 1, 'Scroll the {theme} shelf right']].forEach(function (d) {
+      var b = h('button', 'btn btn-icon btn-icon-s shelf-go'); b.type = 'button'; b.dataset.d = d[1]; b.setAttribute('aria-label', _t(d[2], { theme: cat.name })); b.appendChild(icon(d[0])); nav.appendChild(b);
     });
     hd.appendChild(nav); sec.appendChild(hd);
-    all.filter(function (cv) { return cv.g === g; }).forEach(function (cv) { row.appendChild(book(cv)); });
+    pickableCovers(cat).forEach(function (cv) { row.appendChild(book(cat, cv)); });
     row.addEventListener('scroll', function () { nav_(); }, { passive: true });
     sec.appendChild(row); shelves.appendChild(sec);
     return sec;
   });
-  wrap.appendChild(shelves);
-  var empty = h('div', 'find-empty cvs-empty'); empty.hidden = true; wrap.appendChild(empty);
-  function visible() { return $$('.book', shelves).filter(function (b) { return !b.hidden && !b.closest('.shelf').hidden; }); }
-  function rove() {                      /* one tab stop: the chosen cover, or the first one shown when it is filtered out */
-    var vis = visible(), on = vis.filter(function (b) { return b.dataset.id === S.cover; })[0] || vis[0];
-    $$('.book', shelves).forEach(function (b) { b.tabIndex = b === on ? 0 : -1; });
-  }
+  wrap.appendChild(shelves); wrap.appendChild(magEd.el);   /* pilihan cover dulu, editor foto di bawahnya */
+  function isOn(b) { return b.dataset.cat === S.cat && b.dataset.id === S.cover; }
   function mark() {
     $$('.book', shelves).forEach(function (b) {
-      var on = b.dataset.id === S.cover, st = $('.book-st', b);
-      b.setAttribute('aria-checked', on ? 'true' : 'false'); st.textContent = '';
-      if (on) { st.appendChild(icon('check')); st.appendChild(document.createTextNode('Terpilih')); } else st.textContent = coverOf(cat, b.dataset.id).note;
+      var on = isOn(b), st = $('.book-st', b);
+      b.setAttribute('aria-checked', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; st.textContent = '';
+      if (on) { st.appendChild(icon('check')); st.appendChild(document.createTextNode('Selected')); } else st.textContent = coverOf(catOf(b.dataset.cat), b.dataset.id).note;
     });
-    rove();
   }
   function nav_() {
-    var grid = wrap.classList.contains('is-grid');
     secs.forEach(function (sec) {
       var row = $('.shelf-row', sec), max = row.scrollWidth - row.clientWidth, x = row.scrollLeft, bs = $$('.shelf-go', sec);
-      $('.shelf-nav', sec).hidden = grid || max < 4;
+      $('.shelf-nav', sec).hidden = max < 4;
       bs[0].disabled = x < 4; bs[1].disabled = x > max - 4;
-      row.classList.toggle('fade-l', !grid && x > 4); row.classList.toggle('fade-r', !grid && x < max - 4);
+      row.classList.toggle('fade-l', x > 4); row.classList.toggle('fade-r', x < max - 4);
     });
   }
   function choose(b, animate) {
-    var id = b.dataset.id; if (id === S.cover) return;
-    var cv = coverOf(cat, id), src = $('.book-art > *', b), old = $('.cvp-art > *', hero), r = hero.getBoundingClientRect();
+    if (isOn(b)) return;
+    var catId = b.dataset.cat, id = b.dataset.id, cat = catOf(catId), cv = coverOf(cat, id), src = $('.book-art > *', b), old = $('.cvp-art > *', hero), r = hero.getBoundingClientRect();
     var fly = animate && document.startViewTransition && !calm.matches && r.bottom > 80 && r.top < innerHeight - 120;   /* fly only when the big cover is on screen */
-    var run = function () { S.cover = id; if (src) src.style.viewTransitionName = ''; drawHeroCover(hero, cat, cv); mark(); drawCoverPick(); magEd.sync(); };
+    /* pilihan disimpan langsung, bukan sesudah animasi: tombol lanjut yang ditekan cepat harus memakai cover yang baru diklik */
+    if (S.cat !== catId) { var same = S.album && S.album.cat === catId; S.cat = catId; S.layout = same ? S.album.tpl.id : null; }
+    S.cover = id;
+    var run = function () {
+      if (src) src.style.viewTransitionName = ''; drawHeroCover(hero, cat, cv); mark(); drawCoverPick(); magEd.sync();
+    };
     if (!fly) return run();
     if (old) old.style.viewTransitionName = 'none';
     if (src) src.style.viewTransitionName = 'album-cover';
     vtRun(run);
   }
-  function apply() {
-    var f = fold(q.trim()), total = 0;
-    wrap.classList.toggle('is-grid', !!(f || grp));
-    secs.forEach(function (sec) {
-      var n = 0;
-      $$('.book', sec).forEach(function (b) {
-        var cv = coverOf(cat, b.dataset.id), ok = (!grp || sec.dataset.g === grp) && (!f || [cv.name, cv.note, cv.g].some(function (x) { return x && fold(x).indexOf(f) > -1; }));
-        b.hidden = !ok; if (ok) n++;
-      });
-      sec.hidden = !n; total += n; $('.shelf-n', sec).textContent = n;
-    });
-    count.textContent = f && total ? total + ' sampul cocok dengan “' + q.trim() + '”.' : '';
-    empty.hidden = !!total; empty.textContent = '';
-    if (!total) {
-      empty.appendChild(h('b', null, 'Belum ada sampul untuk “' + q.trim() + '”.'));
-      empty.appendChild(h('p', null, cat.id === 'travel' ? 'Coba nama kota atau negara lain.' : 'Coba nama acara atau momen lain.'));
-      var clr = h('button', 'btn btn-line', 'Hapus pencarian'); clr.type = 'button';
-      clr.addEventListener('click', function () { inp.value = ''; q = ''; apply(); inp.focus(); });
-      empty.appendChild(clr);
-    }
-    rove(); nav_();
-  }
   shelves.addEventListener('click', function (e) { var b = e.target.closest('.book'); if (b) choose(b, true); });
   shelves.addEventListener('keydown', function (e) {
     var b = e.target.closest('.book'); if (!b) return;
-    var rows = secs.filter(function (s) { return !s.hidden; }).map(function (s) { return $$('.book', s).filter(function (x) { return !x.hidden; }); });
-    var flat = [].concat.apply([], rows), k = flat.indexOf(b), r = -1, i = 0, to = null;
+    var rows = secs.map(function (s) { return $$('.book', s); }), flat = [].concat.apply([], rows), k = flat.indexOf(b), r = -1, i = 0, to = null;
     rows.forEach(function (l, ri) { if (l.indexOf(b) > -1) { r = ri; i = l.indexOf(b); } });
     if (e.key === 'ArrowRight') to = flat[k + 1]; else if (e.key === 'ArrowLeft') to = flat[k - 1];
     else if (e.key === 'ArrowDown') to = rows[r + 1] && rows[r + 1][Math.min(i, rows[r + 1].length - 1)];
@@ -451,20 +635,15 @@ function coverShelf(cat) {
     var b = e.target.closest('.shelf-go'); if (!b) return;
     var row = $('.shelf-row', b.closest('.shelf')); row.scrollBy({ left: row.clientWidth * 0.8 * +b.dataset.d, behavior: calm.matches ? 'auto' : 'smooth' });
   });
-  inp.addEventListener('input', function () { q = inp.value; apply(); });
-  seg.addEventListener('click', function (e) {
-    var b = e.target.closest('.seg-b'); if (!b) return;
-    grp = b.dataset.g; $$('.seg-b', seg).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); apply();
-  });
-  mark(); apply();
+  mark();
   /* the step is drawn before its view is shown, so sizes are only known once the shelves get a width:
-     then open the shelf where the chosen cover sits, and keep the arrows right on every resize */
+     then scroll the chosen cover into its shelf, and keep the arrows right on every resize */
   var opened = false;
   if (window.ResizeObserver) {
     var ro = new ResizeObserver(function () {
       if (!shelves.isConnected) return ro.disconnect();
       if (!shelves.clientWidth) return;
-      if (!opened) { opened = true; var b = $('.book[aria-checked="true"]', shelves); if (b && !b.hidden) { var row = b.parentNode; row.scrollLeft = Math.max(0, b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2); } }
+      if (!opened) { opened = true; var b = $('.book[aria-checked="true"]', shelves); if (b) { var row = b.parentNode; row.scrollLeft = Math.max(0, b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2); } }
       nav_();
     });
     ro.observe(shelves);
@@ -477,27 +656,30 @@ function drawSetupFoot() {
   foot.hidden = false;
   pick.textContent = '';
   if (S.layout) {
-    pick.appendChild(document.createTextNode('Gaya: '));
+    pick.appendChild(document.createTextNode(t('Layout: ')));
     pick.appendChild(h('b', null, LAYOUTS[S.layout].name));
-    pick.appendChild(document.createTextNode(' · muat ' + slotCount(S.layout) + ' foto'));
-  } else pick.textContent = 'Pilih satu gaya untuk lanjut.';
-  $('#setup-next').textContent = S.album ? 'Pakai gaya ini' : 'Lanjut masukkan foto';
+    pick.appendChild(document.createTextNode(t(' · fits {n} photos', { n: slotCount(S.layout) })));
+  } else pick.textContent = 'Choose a layout to continue.';
+  $('#setup-next').textContent = S.album ? 'Use this layout' : 'Continue to photos';
   $('#setup-next').disabled = !S.layout;
 }
 $('#setup-back').addEventListener('click', function () {
-  if (S.step === 'tema') return go('home');
-  S.step = S.step === 'sampul' ? 'tema' : S.step === 'gaya' ? 'sampul' : 'gaya';
+  if (S.step === 'sampul' && S.coverFrom) { S.cover = S.coverFrom.cover; S.coverFrom = null; return backToPreview(); }   /* batal: cover lama tetap */
+  if (S.step === 'sampul' && S.album) { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; return go('studio'); }
+  if (S.step === 'sampul') return go('home', null, function () { requestAnimationFrame(function () { toThemes(true); }); });
+  S.step = S.step === 'gaya' ? 'sampul' : 'gaya';
   drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true });
 });
 $('#setup-next').addEventListener('click', function (e) {
-  if (S.step === 'sampul' && curCover().mag && !S.mag.photo) { toast('Unggah foto untuk sampul majalah dulu.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
+  if (S.step === 'sampul' && curCover().mag && !S.mag.photo) { toast('Upload a photo for the magazine cover first.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
+  if (S.step === 'sampul' && S.coverFrom) { S.album.cover = curCover().id; S.coverFrom = null; S.dirty = true; backToPreview(true); return; }
   if (S.step === 'sampul') { S.step = 'gaya'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); return; }
   if (S.step !== 'gaya' || !S.layout) return;
-  if (S.album && S.album.tpl.id === S.layout && S.album.cat === S.cat) return go('studio');
+  if (S.album && S.album.tpl.id === S.layout && S.album.cat === S.cat) { S.album.cover = curCover().id; return go('studio'); }
   if (S.album && S.dirty) {
-    return openDialog({ trigger: e.currentTarget, title: 'Ganti ke gaya ' + LAYOUTS[S.layout].name + '?',
-      body: 'Fotomu tetap ada di rak. Tapi susunan foto dan teks yang sudah kamu atur akan dimulai ulang mengikuti gaya baru.',
-      actions: [{ label: 'Ganti gaya', kind: 'primary', fn: function () { enterStudio(true); } }, { label: 'Tetap pakai gaya sekarang', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
+    return openDialog({ trigger: e.currentTarget, title: t('Switch to the {name} layout?', { name: LAYOUTS[S.layout].name }),
+      body: 'Your photos stay on the shelf. But the photo arrangement and text you’ve set up will start over with the new layout.',
+      actions: [{ label: 'Switch and start over', kind: 'primary', fn: function () { enterStudio(true); } }, { label: 'Keep the current layout', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
   }
   if (S.photos.length) return enterStudio(true);
   S.step = 'foto'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true });
@@ -506,27 +688,28 @@ $('#setup-next').addEventListener('click', function (e) {
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
   if (!files || !files.length) return;
+  if (ADMIN_NO) { toast('New photos can’t be added to a submitted order. Use the photos already on the shelf.'); return; }
   var room = MAX_PHOTOS - S.photos.length;
-  if (room <= 0) { toast('Satu album maksimal ' + MAX_PHOTOS + ' foto.'); return; }
+  if (room <= 0) { toast(t('Your photo shelf is full: one album holds up to {n} photos.', { n: MAX_PHOTOS })); return; }
   INTAKE_LIMIT = room;
   busy(true, 0, Math.min(files.length, INTAKE_LIMIT));
   var res;
   try { res = await intake(files, function (d, of) { busy(true, d, of); }); }
   finally { busy(false); }
   if (!res.photos.length) {
-    var m = 'Fotonya belum bisa dibuka. Pilih file JPG, PNG, atau WEBP, lalu coba lagi.';
+    var m = 'We couldn’t open this photo. Try a JPG, PNG, WEBP, or HEIC file.';
     if (first && $('#upl-msg')) { $('#upl-msg').textContent = m; $('#upl-msg').hidden = false; } else toast(m);
     return;
   }
   var from = S.photos.length;
   res.photos.forEach(function (p) { S.photos.push(p); });
   var fresh = res.photos.map(function (p, i) { return from + i; });
-  var tail = (res.failed ? ' ' + res.failed + ' foto lain tidak bisa dibuka.' : '') + (res.skipped ? ' ' + res.skipped + ' foto terakhir tidak ikut karena satu album maksimal ' + MAX_PHOTOS + ' foto.' : '') + (S.photos.length < MIN_PHOTOS ? ' Minimal ' + MIN_PHOTOS + ' foto supaya albumnya bisa dipesan, baru ada ' + S.photos.length + '.' : '');
+  var tail = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '') + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
   if (first || !S.album) { enterStudio(true, tail); return; }
   var placed = pourPhotos(S.album, fresh);
   S.dirty = true;
   drawStudio();
-  toast((placed ? fresh.length + ' foto ditambahkan, ' + placed + ' bingkai kosong langsung terisi.' : fresh.length + ' foto masuk ke rak foto.') + tail);
+  toast((placed ? t('{n} photos added, {m} empty frames filled right away.', { n: fresh.length, m: placed }) : t('{n} photos added to the shelf.', { n: fresh.length })) + tail);
 }
 async function useSamples() {
   var n = slotCount(S.layout) - 9;
@@ -544,10 +727,15 @@ document.addEventListener('click', function (e) {
   else if (e.target.closest('[data-go="home"]')) leaveToHome(e.target.closest('[data-go]'));
 });
 function leaveToHome(trigger) {
+  if (ADMIN_NO) {   /* admin: the logo leads back to the order, not to the shop */
+    if (!S.dirty) { allowUnload = true; return location.assign(ADMIN_BASE); }
+    return openDialog({ trigger: trigger, title: 'Leave without saving?', body: 'Your changes to this album haven’t been saved yet.',
+      actions: [{ label: 'Stay here', kind: 'primary' }, { label: 'Leave without saving', fn: function () { allowUnload = true; location.assign(ADMIN_BASE); } }] });
+  }
   if (S.view === 'home') return window.scrollTo(0, 0);
   if (!S.album || S.view === 'done') return go('home');
-  openDialog({ trigger: trigger, title: 'Kembali ke beranda?', body: 'Albummu aman selama halaman ini tidak ditutup. Untuk kembali menyusun, pilih Lanjutkan album di beranda.',
-    actions: [{ label: 'Ke beranda', kind: 'primary', fn: function () { labelStart(); go('home'); } }, { label: 'Tetap di sini' }] });
+  openDialog({ trigger: trigger, title: 'Go back to the home page?', body: 'Your album is safe as long as this page stays open. To keep arranging, choose Continue your album on the home page.',
+    actions: [{ label: 'Go home', kind: 'primary', fn: function () { labelStart(); go('home'); } }, { label: 'Stay here' }] });
 }
 
 /* ---------- studio ---------- */
@@ -560,8 +748,8 @@ function enterStudio(rebuild, tail) {
   }
   S.album.cover = curCover().id;
   drawStudio();
-  var t = totals(S.album), extra = S.photos.length - t.filled;
-  go('studio', null, !rebuild ? null : function () { toast((t.empty ? t.filled + ' foto terpasang. ' + t.empty + ' bingkai masih kosong.' : extra > 0 ? t.filled + ' foto terpasang. ' + extra + ' foto lainnya ada di rak foto.' : 'Semua ' + t.filled + ' bingkai terisi. Tinggal dirapikan.') + (tail || '')); });
+  var tt = totals(S.album), extra = S.photos.length - tt.filled;
+  go('studio', null, !rebuild ? null : function () { toast((tt.empty ? t('{n} photos placed. {m} frames still empty.', { n: tt.filled, m: tt.empty }) : extra > 0 ? t('{n} photos placed. {m} more photos are on the shelf.', { n: tt.filled, m: extra }) : t('All {n} frames filled. Just tidy up.', { n: tt.filled })) + (tail || '')); });
 }
 function viewPages(p) {                       /* which pages share the screen with page p */
   if (!wide.matches) return [p];
@@ -576,12 +764,12 @@ function viewList() {
 }
 function pageLabel(v) {
   var real = v.filter(function (x) { return x != null; }).map(function (x) { return x + 1; });
-  return 'Halaman ' + real.join('–') + ' dari ' + S.album.pages.length;
+  return t('Page {p} of {n}', { p: real.join('–'), n: S.album.pages.length });
 }
 function drawStudio() {
   var cat = catOf(S.cat);
   $('#st-name').textContent = curCover().name;
-  $('#st-meta').textContent = 'Gaya ' + LAYOUTS[S.layout].name + ' · A4 · 40 halaman';
+  $('#st-meta').textContent = t('{name} layout · A4 · 40 pages', { name: LAYOUTS[S.layout].name });
   $('.studio').dataset.tab = S.tab;
   drawProgress(); drawPages(); drawStage(); drawTabs(); drawTray(); drawSlotTool(); drawTextFields(); drawHint();
   fixWidows($('#st-panel'));
@@ -593,7 +781,7 @@ function drawProgress() {
   $('#st-prog').classList.toggle('is-full', !t.empty);
   var note = $('#st-note');
   note.hidden = !t.empty;
-  if (t.empty) $('#st-note-t').textContent = t.empty + ' bingkai foto masih kosong.';
+  if (t.empty) $('#st-note-t').textContent = _t('{n} photo frames still empty.', { n: t.empty });
 }
 function emptyOnPage(p) { return S.album.pages[p].slots.filter(function (s) { return s.photo == null; }).length; }
 function drawPages() {
@@ -609,7 +797,7 @@ function drawPages() {
     var real = v.filter(function (x) { return x != null; }).map(function (x) { return x + 1; });
     b.appendChild(h('span', 'pt-n num', real.join('–')));
     if (miss) { var bd = h('span', 'pt-badge num', String(miss)); b.appendChild(bd); }
-    b.setAttribute('aria-label', pageLabel(v) + (miss ? ', ' + miss + ' bingkai kosong' : ''));
+    b.setAttribute('aria-label', pageLabel(v) + (miss ? t(', {n} empty frames', { n: miss }) : ''));
     if (v.indexOf(S.page) > -1) b.setAttribute('aria-current', 'true');
     b.addEventListener('click', function () { gotoPage(v[0] != null ? v[0] : v[1]); });
     nav.appendChild(b);
@@ -622,14 +810,14 @@ function refreshNavFor(p) {
   v.forEach(function (q) { if (q == null) { sp.appendChild(h('span', 'pt-blank')); return; } sp.appendChild(renderPage(S.album, q, 'thumb')); miss += emptyOnPage(q); });
   var bd = $('.pt-badge', b);
   if (miss) { if (!bd) { bd = h('span', 'pt-badge num'); b.appendChild(bd); } bd.textContent = miss; } else if (bd) bd.remove();
-  b.setAttribute('aria-label', pageLabel(v) + (miss ? ', ' + miss + ' bingkai kosong' : ''));
+  b.setAttribute('aria-label', pageLabel(v) + (miss ? t(', {n} empty frames', { n: miss }) : ''));
 }
 function drawStage() {
   var sp = $('#spread'), v = viewPages(S.page);
   sp.textContent = '';
   sp.classList.toggle('is-single', v.length === 1);
   v.forEach(function (p, i) {
-    if (p == null) { sp.appendChild(h('div', 'spread-blank', i === 0 ? 'Bagian dalam sampul depan' : 'Bagian dalam sampul belakang')); return; }
+    if (p == null) { sp.appendChild(h('div', 'spread-blank', i === 0 ? 'Inside front cover' : 'Inside back cover')); return; }
     sp.appendChild(decorate(renderPage(S.album, p, 'edit'), p));
   });
   $('#pg-label').textContent = pageLabel(v);
@@ -640,13 +828,11 @@ function drawStage() {
 /* post-process an edit page: small slots, selection frame, selected text */
 function decorate(pg, p) {
   var P = S.album.tpl.pages[p];
-  $$('.slot', pg).forEach(function (el) { var g = P.ph[+el.dataset.s]; if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); });
+  $$('.slot', pg).forEach(function (el) { var g = slotGeo(S.album, p, +el.dataset.s); if (g[2] < 150 || g[3] < 150) el.classList.add('is-tiny'); });
   var s = S.sel;
   if (s && s.p === p) {
     if (s.t === 'slot') {
-      var g2 = P.ph[s.i], fr = h('div', 'sel-frame');
-      fr.style.cssText = 'left:' + pct(g2[0], 1000) + ';top:' + pct(g2[1], PAGE_H) + ';width:' + pct(g2[2], 1000) + ';height:' + pct(g2[3], PAGE_H) + (g2[4] ? ';transform:rotate(' + g2[4] + 'deg)' : '');
-      pg.appendChild(fr);
+      pg.appendChild(selFrame(p, s.i));
     } else { var el2 = $('[data-' + s.t + '="' + s.i + '"]', pg); if (el2) el2.classList.add('is-sel'); }
   }
   return pg;
@@ -703,12 +889,12 @@ function drawTray() {
   byDate(S.photos, S.photos.map(function (p, i) { return i; })).forEach(function (i) {
     var p = S.photos[i], b = h('button', 'th' + (S.armed === i ? ' is-armed' : '')); b.type = 'button'; b.dataset.ph = i; b.draggable = true;
     var im = new Image(); im.src = p.thumb; im.alt = ''; im.loading = 'lazy'; im.draggable = false; b.appendChild(im);
-    if (p.date) b.appendChild(h('span', 'th-date num', p.date.getDate() + ' ' + MONTHS[p.date.getMonth()]));
+    if (p.date) b.appendChild(h('span', 'th-date num', p.date.getDate() + ' ' + months()[p.date.getMonth()]));
     if (u[i]) b.appendChild(h('span', 'th-used num', u[i] > 1 ? u[i] + '×' : '✓'));
-    b.setAttribute('aria-label', 'Foto' + (p.date ? ' ' + fmtDate(p.date) : '') + (u[i] ? ', dipakai ' + u[i] + ' kali' : ', belum dipakai') + '. Pilih untuk memasang');
+    b.setAttribute('aria-label', t('Photo') + (p.date ? ' ' + fmtDate(p.date) : '') + (u[i] ? t(', used {n} times', { n: u[i] }) : t(', not used yet')) + t('. Pick to place it'));
     tray.appendChild(b);
   });
-  $('#tray-tip').textContent = S.sel && S.sel.t === 'slot' ? 'Pilih foto di bawah untuk memasangnya di bingkai yang sedang dipilih.' : 'Pilih bingkai di halaman, lalu pilih fotonya di sini. Urutannya dari foto paling lama.';
+  $('#tray-tip').textContent = S.sel && S.sel.t === 'slot' ? 'Pick a photo below to put it in the selected frame.' : 'Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.';
 }
 $('#tray').addEventListener('click', function (e) {
   var b = e.target.closest('.th'); if (!b) return;
@@ -740,39 +926,63 @@ function drawSlotTool() {
   var tool = $('#slot-tool'), s = selSlot();
   tool.hidden = !s;
   $('.studio').classList.toggle('has-sel', !!s);
-  if (!s) { $('#tray-tip').textContent = 'Pilih bingkai di halaman, lalu pilih fotonya di sini. Urutannya dari foto paling lama.'; return; }
+  drawPhBar();
+  if (!s) { $('#tray-tip').textContent = 'Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.'; return; }
   var filled = s.photo != null;
-  $('#slot-tool-h').textContent = 'Foto ' + (S.sel.i + 1) + ' di halaman ' + (S.sel.p + 1) + (filled ? '' : ' · kosong');
+  $('#slot-tool-h').textContent = t('Photo {i} on page {p}', { i: S.sel.i + 1, p: S.sel.p + 1 }) + (filled ? '' : t(' · empty'));
   $('#slot-tool-filled').hidden = !filled;
   $('#slot-tool-empty').hidden = filled;
-  if (filled) { $('#zoom').value = Math.round(s.z * 100); $('#zoom-o').textContent = Math.round(s.z * 100) + '%'; }
   var ci = capOfSlot(S.sel.p, S.sel.i), capBox = $('#slot-cap');
   capBox.hidden = ci < 0 || !filled;
   if (ci > -1 && filled) {
     var inp = $('#slot-cap-in'), val = captionValue(S.album, S.sel.p, ci), ph = S.photos[s.photo];
     if (document.activeElement !== inp) inp.value = val;
-    inp.maxLength = capLimit(S.album.tpl.pages[S.sel.p].cp[ci]);
     var chip = $('#slot-cap-date'), dateStr = ph.date ? fmtDate(ph.date) : '';
     chip.hidden = !dateStr || val === dateStr;
-    chip.textContent = 'Pakai tanggal di file foto: ' + dateStr;
+    chip.textContent = t('Use the date from the photo file: {d}', { d: dateStr });
     $('#slot-cap-x').hidden = !val;
   }
-  $('#tray-tip').textContent = 'Pilih foto di bawah untuk memasangnya di bingkai yang sedang dipilih.';
+  $('#tray-tip').textContent = 'Pick a photo below to put it in the selected frame.';
 }
-$('#zoom').addEventListener('input', function (e) {
-  var s = selSlot(); if (!s || s.photo == null) return;
-  s.z = +e.target.value / 100; S.dirty = true;
+/* Bilah alat foto yang mengambang di atas bingkai terpilih, langsung di halaman (24 Nov 2026, ganti slider zoom di panel). */
+function drawPhBar() {
+  var bar = $('#ph-bar'), s = selSlot(), fr = s && s.photo != null ? $('#spread .sel-frame') : null;
+  if (!fr || pan && panned) { bar.hidden = true; return; }
+  bar.hidden = false;
   $('#zoom-o').textContent = Math.round(s.z * 100) + '%';
-  var el = $('.slot[data-s="' + S.sel.i + '"] img', pageNode(S.sel.p)), g = S.album.tpl.pages[S.sel.p].ph[S.sel.i];
-  if (el) placeImg(el, S.photos[s.photo], g[2], g[3], s);
-});
-$('#zoom').addEventListener('change', function () { if (S.sel) refreshNavFor(S.sel.p); });
+  $('#ph-zout').disabled = s.z <= 1.001; $('#ph-zin').disabled = s.z >= 2.999;
+  $('#slot-size').hidden = !s.g;
+  var st = $('#st-stage').getBoundingClientRect(), r = fr.getBoundingClientRect(), bw = bar.offsetWidth, bh = bar.offsetHeight;
+  var top = r.top - st.top - bh - 10;
+  if (top < 4) top = r.bottom - st.top + 10;
+  if (top + bh > st.height - 4) top = Math.max(4, r.top - st.top + 10);   /* bingkai setinggi halaman: bilah di dalam bingkai, di atas */
+  bar.style.left = clamp(r.left - st.left + r.width / 2 - bw / 2, 4, st.width - bw - 4) + 'px';
+  bar.style.top = top + 'px';
+}
+window.addEventListener('resize', function () { if (S.view === 'studio') drawPhBar(); });
+var zoomNav = 0;
+function zoomSlot(p, i, z, px, py) {
+  var s = S.album.pages[p].slots[i]; if (s.photo == null) return;
+  var g = slotGeo(S.album, p, i), ph = S.photos[s.photo], a = imgBox(ph, g[2], g[3], s);
+  px = px == null ? 0.5 : px; py = py == null ? 0.5 : py;
+  var ix = (px * 100 - a.L) / a.W, iy = (py * 100 - a.T) / a.H;   /* titik foto di bawah jari/kursor tetap di tempat */
+  s.z = clamp(z, 1, 3);
+  var b = imgBox(ph, g[2], g[3], s);
+  if (b.W - 100 > 0.01) s.fx = clamp((ix * b.W - px * 100) / (b.W - 100), 0, 1);
+  if (b.H - 100 > 0.01) s.fy = clamp((iy * b.H - py * 100) / (b.H - 100), 0, 1);
+  S.dirty = true;
+  var el = $('.slot[data-s="' + i + '"] img', pageNode(p)); if (el) placeImg(el, ph, g[2], g[3], s);
+  drawPhBar();
+  clearTimeout(zoomNav); zoomNav = setTimeout(function () { refreshNavFor(p); }, 300);
+}
+$('#ph-zout').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z - 0.15); });
+$('#ph-zin').addEventListener('click', function () { var s = selSlot(); if (s) zoomSlot(S.sel.p, S.sel.i, s.z + 0.15); });
 $('#slot-clear').addEventListener('click', function () {
   if (!S.sel) return;
   var p = S.sel.p, i = S.sel.i, prev = Object.assign({}, S.album.pages[p].slots[i]);
   setSlot(S.album, p, i, null); S.dirty = true;
   redrawPage(p); refreshNavFor(p); drawProgress(); drawTray(); drawSlotTool();
-  toast('Bingkai dikosongkan.', { label: 'Urungkan', fn: function () { Object.assign(S.album.pages[p].slots[i], prev); redrawPage(p); refreshNavFor(p); drawProgress(); drawTray(); drawSlotTool(); } });
+  toast('Frame cleared.', { label: 'Undo', fn: function () { Object.assign(S.album.pages[p].slots[i], prev); redrawPage(p); refreshNavFor(p); drawProgress(); drawTray(); drawSlotTool(); } });
 });
 $('#slot-swap').addEventListener('click', function () { if (!S.sel) return; S.swap = { p: S.sel.p, i: S.sel.i }; S.armed = null; drawHint(); });
 function setCaption(p, ci, val) { S.album.pages[p].cp[ci] = val; S.dirty = true; redrawTexts(p); }
@@ -793,7 +1003,7 @@ $('#slot-cap-x').addEventListener('click', function () {
 function drawHint() {
   var hint = $('#st-hint'), on = S.swap || S.armed != null;
   hint.hidden = !on;
-  if (on) $('#st-hint-t').textContent = S.swap ? 'Pilih bingkai lain untuk menukar fotonya' : 'Pilih bingkai untuk foto ini';
+  if (on) $('#st-hint-t').textContent = S.swap ? 'Pick another frame to swap photos' : 'Pick a frame for this photo';
 }
 $('#st-hint-x').addEventListener('click', function () { S.swap = null; S.armed = null; drawHint(); drawTray(); });
 
@@ -808,20 +1018,20 @@ function drawTextFields() {
     var P = S.album.tpl.pages[p], st = S.album.pages[p], items = [], minor = [];
     P.tx.forEach(function (t, i) {
       var it = { t: 'tx', i: i, y: t.y, x: t.x };
-      if (t.k === 'e') { it.label = t.pre ? 'Teks setelah “' + t.pre.trim() + '”' : t.z >= 40 ? 'Judul' : 'Teks pendek'; it.val = st.tx[i] || ''; it.max = 60; it.ph = t.z >= 40 ? 'Tulis judulnya' : 'Tulis teksnya'; items.push(it); }
-      else { it.label = 'Label “' + t.t + '”'; it.val = st.tx[i] != null ? st.tx[i] : t.t; it.max = 24; it.ph = 'Kosong'; minor.push(it); }
+      if (t.k === 'e') { it.label = t.pre ? _t('Text after “{s}”', { s: t.pre.trim() }) : t.z >= 40 ? 'Title' : 'Short text'; it.val = st.tx[i] || ''; it.max = 60; it.ph = t.z >= 40 ? 'Write the title' : 'Write the text'; items.push(it); }
+      else { it.label = _t('Label “{s}”', { s: t.t }); it.val = st.tx[i] != null ? st.tx[i] : t.t; it.max = 24; it.ph = 'Empty'; minor.push(it); }
     });
-    P.pa.forEach(function (pa, i) { items.push({ t: 'pa', i: i, y: pa.y, x: pa.x, label: 'Paragraf', val: st.pa[i] || '', max: paraLimit(pa), area: true, ph: 'Ceritakan momennya' }); });
+    P.pa.forEach(function (pa, i) { items.push({ t: 'pa', i: i, y: pa.y, x: pa.x, label: 'Paragraph', val: st.pa[i] || '', max: paraLimit(pa), area: true, ph: 'Tell the story of this moment' }); });
     P.cp.forEach(function (cp, i) {
       if (!cp.bar && !captionValue(S.album, p, i) && cp.p != null && st.slots[cp.p].photo == null) return;
-      items.push({ t: 'cp', i: i, y: cp.y, x: cp.x, label: cp.p != null ? 'Keterangan foto ' + (cp.p + 1) : 'Keterangan', val: captionValue(S.album, p, i), max: capLimit(cp), ph: CAP_HINT });
+      items.push({ t: 'cp', i: i, y: cp.y, x: cp.x, label: cp.p != null ? t('Photo caption {n}', { n: cp.p + 1 }) : 'Caption', val: captionValue(S.album, p, i), max: capLimit(cp), ph: CAP_HINT });
     });
     if (!items.length && !minor.length) return;
     any = true;
-    var grp = h('section', 'tf-g'); grp.appendChild(h('h3', 'tf-h', 'Halaman ' + (p + 1)));
+    var grp = h('section', 'tf-g'); grp.appendChild(h('h3', 'tf-h', t('Page {n}', { n: p + 1 })));
     items.sort(function (a, b) { return a.y - b.y || a.x - b.x; }).forEach(function (it) { grp.appendChild(fieldNode(p, it)); });
     if (minor.length) {
-      var more = h('details', 'tf-more'); more.appendChild(h('summary', null, 'Nomor dan label kecil (' + minor.length + ')'));
+      var more = h('details', 'tf-more'); more.appendChild(h('summary', null, t('Numbers and small labels ({n})', { n: minor.length })));
       var list = h('div', 'tf-list'); minor.sort(function (a, b) { return a.y - b.y || a.x - b.x; }).forEach(function (it) { list.appendChild(fieldNode(p, it)); });
       more.appendChild(list);
       if (S.sel && S.sel.p === p && S.sel.t === 'tx' && P.tx[S.sel.i] && P.tx[S.sel.i].k !== 'e') more.open = true;
@@ -829,7 +1039,7 @@ function drawTextFields() {
     }
     box.appendChild(grp);
   });
-  if (!any) { var em = h('div', 'empty'); em.appendChild(h('b', null, 'Halaman ini tanpa teks.')); em.appendChild(document.createTextNode('Buka halaman lain untuk menulis judul, paragraf, atau keterangan foto.')); box.appendChild(em); }
+  if (!any) { var em = h('div', 'empty'); em.appendChild(h('b', null, 'This page has no text.')); em.appendChild(document.createTextNode('Open another page to write a title, a paragraph, or photo captions.')); box.appendChild(em); }
 }
 function fieldNode(p, it) {
   var wrap = h('div', 'tf' + (S.sel && S.sel.p === p && S.sel.t === it.t && S.sel.i === it.i ? ' is-sel' : ''));
@@ -837,9 +1047,8 @@ function fieldNode(p, it) {
   lb.htmlFor = id; row.appendChild(lb);
   var inp = h(it.area ? 'textarea' : 'input', 'in');
   inp.id = id; if (!it.area) inp.type = 'text'; else inp.rows = 3;
-  inp.value = it.val; inp.maxLength = it.max; inp.placeholder = it.ph; inp.autocomplete = 'off';
+  inp.value = it.val; inp.placeholder = it.ph; inp.autocomplete = 'off';   /* tanpa batas jumlah huruf */
   var cnt = null;
-  if (it.area) { cnt = h('span', 'tf-c num', it.val.length + '/' + it.max); row.appendChild(cnt); }
   inp.addEventListener('focus', function () {
     S.sel = { t: it.t, p: p, i: it.i };
     $$('.tf.is-sel').forEach(function (n) { n.classList.remove('is-sel'); }); wrap.classList.add('is-sel');
@@ -857,24 +1066,74 @@ function fieldNode(p, it) {
   wrap.appendChild(row); wrap.appendChild(inp);
   return wrap;
 }
-function selectText(p, t, i) {
+/* Teks diketik langsung di halaman (24 Nov 2026): ketuk teks, kursor muncul di tempatnya. Tab Teks tetap ada sebagai daftar. */
+var editing = null;
+function caretEnd(n) { var r = document.createRange(), sl = window.getSelection(); r.selectNodeContents(n); r.collapse(false); sl.removeAllRanges(); sl.addRange(r); }
+function editText(p, t, i) {
+  if (editing && editing.p === p && editing.t === t && editing.i === i) return;
+  endEdit();
   S.sel = { t: t, p: p, i: i }; S.armed = null; S.swap = null;
-  setTab('teks'); drawTextFields(); drawSlotTool(); drawHint();
   $$('#spread .is-sel').forEach(function (n) { n.classList.remove('is-sel'); }); $$('#spread .sel-frame').forEach(function (n) { n.remove(); });
-  var el = $('[data-' + t + '="' + i + '"]', pageNode(p)); if (el) el.classList.add('is-sel');
-  var f = $('#' + fieldId(p, t, i));
-  if (f) { f.focus({ preventScroll: true }); f.scrollIntoView({ block: 'nearest' }); }
+  drawSlotTool(); drawHint();
+  if (S.tab === 'teks') drawTextFields();
+  var box = $('[data-' + t + '="' + i + '"]', pageNode(p)); if (!box) return;
+  var node = $(t === 'pa' ? '.pa-t' : '.tx-v', box); if (!node) return;
+  var st = S.album.pages[p], cur = t === 'tx' ? (st.tx[i] != null ? st.tx[i] : (S.album.tpl.pages[p].tx[i].k === 'e' ? '' : S.album.tpl.pages[p].tx[i].t)) : t === 'pa' ? st.pa[i] || '' : captionValue(S.album, p, i);
+  box.classList.add('is-sel', 'is-editing');
+  if (box.classList.contains('is-empty')) { box.classList.remove('is-empty'); node.textContent = cur; }
+  try { node.contentEditable = 'plaintext-only'; } catch (e) { }
+  if (node.contentEditable !== 'plaintext-only') node.contentEditable = 'true';
+  node.spellcheck = false; node.setAttribute('role', 'textbox'); node.setAttribute('aria-label', t === 'pa' ? 'Paragraph' : t === 'cp' ? 'Photo caption' : 'Text');
+  if (t === 'pa') node.setAttribute('aria-multiline', 'true');
+  editing = { p: p, t: t, i: i, node: node, nav: 0 };
+  node.focus({ preventScroll: true }); caretEnd(node);
 }
+function readEdit() {
+  var e = editing, v = e.node.innerText.replace(/\u00a0/g, ' ');
+  if (e.t !== 'pa') v = v.replace(/\n+/g, ' ');
+  else v = v.replace(/\n$/, '');
+  var st = S.album.pages[e.p];
+  if (e.t === 'tx') st.tx[e.i] = v; else if (e.t === 'pa') st.pa[e.i] = v; else st.cp[e.i] = v;
+  S.dirty = true; syncField(e.p, e.t, e.i, v);
+  if (e.t === 'cp' && S.sel && S.sel.t === 'slot') drawSlotTool();
+  clearTimeout(e.nav); e.nav = setTimeout(function () { refreshNavFor(e.p); }, 400);
+}
+function endEdit() {
+  var e = editing; if (!e) return;
+  editing = null; clearTimeout(e.nav);
+  e.node.removeAttribute('contenteditable');
+  redrawTexts(e.p); refreshNavFor(e.p);
+}
+$('#spread').addEventListener('input', function (e) { if (editing && e.target === editing.node) readEdit(); });
+$('#spread').addEventListener('keydown', function (e) {
+  if (!editing || e.target !== editing.node) return;
+  if (e.key === 'Escape' || e.key === 'Enter' && (editing.t !== 'pa' || e.metaKey || e.ctrlKey)) { e.preventDefault(); endEdit(); }
+}, true);
+/* Selesai mengetik saat fokus pindah. Bila fokus pindah karena jari/mouse sedang menekan, teks baru digambar ulang sesudah
+   klik itu sampai, supaya klik langsung ke teks atau foto lain tidak hilang karena elemennya diganti di tengah klik. */
+var ptrDown = false, endLater = false;
+document.addEventListener('pointerdown', function () { ptrDown = true; }, true);
+['pointerup', 'pointercancel'].forEach(function (ev) {
+  document.addEventListener(ev, function () {
+    ptrDown = false;
+    if (endLater) { endLater = false; setTimeout(function () { if (editing && document.activeElement !== editing.node) endEdit(); }, 0); }
+  }, true);
+});
+$('#spread').addEventListener('focusout', function (e) { if (!editing || e.target !== editing.node) return; if (ptrDown) endLater = true; else endEdit(); });
+$('#spread').addEventListener('paste', function (e) {   /* tempel sebagai teks biasa, juga di browser tanpa plaintext-only */
+  if (!editing || e.target !== editing.node || editing.node.contentEditable === 'plaintext-only') return;
+  e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain'));
+});
 function selectSlot(p, i) {
+  endEdit();
   S.sel = { t: 'slot', p: p, i: i };
   if (S.tab !== 'foto') setTab('foto');
   viewPages(S.page).forEach(function (q) { if (q != null) { var pg = pageNode(q); $$('.sel-frame', pg).forEach(function (n) { n.remove(); }); $$('.is-sel', pg).forEach(function (n) { n.classList.remove('is-sel'); }); } });
-  var pg2 = pageNode(p), g = S.album.tpl.pages[p].ph[i], fr = h('div', 'sel-frame');
-  fr.style.cssText = 'left:' + pct(g[0], 1000) + ';top:' + pct(g[1], PAGE_H) + ';width:' + pct(g[2], 1000) + ';height:' + pct(g[3], PAGE_H) + (g[4] ? ';transform:rotate(' + g[4] + 'deg)' : '');
-  pg2.appendChild(fr);
+  pageNode(p).appendChild(selFrame(p, i));
   drawSlotTool(); drawTray();
 }
 function deselect() {
+  endEdit();
   if (!S.sel) return;
   S.sel = null;
   $$('#spread .sel-frame').forEach(function (n) { n.remove(); }); $$('#spread .is-sel').forEach(function (n) { n.classList.remove('is-sel'); });
@@ -900,35 +1159,176 @@ function slotClick(p, i) {
   if (S.armed != null) { var ph = S.armed; S.sel = { t: 'slot', p: p, i: i }; placePhoto(p, i, ph, false); return; }
   selectSlot(p, i);
 }
+/* Bingkai foto bisa di-resize di kanvas (24 Nov 2026, "kayak di Canva"): bingkai terpilih punya 8 pegangan.
+   Sudut = ukuran ikut proporsi (Shift = bebas), sisi = lebar atau tinggi saja. Foto di dalamnya tetap memenuhi bingkai. */
+var RS_H = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+function frameCss(el, g) {
+  el.style.left = pct(g[0], 1000); el.style.top = pct(g[1], PAGE_H); el.style.width = pct(g[2], 1000); el.style.height = pct(g[3], PAGE_H);
+  el.style.transform = g[4] ? 'rotate(' + g[4] + 'deg)' : '';
+}
+function selFrame(p, i) {
+  var fr = h('div', 'sel-frame'); frameCss(fr, slotGeo(S.album, p, i));
+  RS_H.forEach(function (k) { var b = h('span', 'rs-h rs-' + k); b.dataset.h = k; b.setAttribute('aria-hidden', 'true'); fr.appendChild(b); });
+  return fr;
+}
+var rs = null, dragEnd = 0;
 $('#spread').addEventListener('pointerdown', function (e) {
+  var hd = e.target.closest('.rs-h'); if (!hd || e.button > 0 || !S.sel || S.sel.t !== 'slot') return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  var p = S.sel.p, i = S.sel.i, pg = pageNode(p), g = slotGeo(S.album, p, i), s = S.album.pages[p].slots[i];
+  rs = { p: p, i: i, k: hd.dataset.h, id: e.pointerId, x0: e.clientX, y0: e.clientY, g0: g.slice(), prev: s.g ? s.g.slice() : null, w: pg.offsetWidth, hh: pg.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, slot: $('.slot[data-s="' + i + '"]', pg), fr: $('.sel-frame', pg) };
+  try { $('#spread').setPointerCapture(e.pointerId); } catch (er) {}
+  $('#ph-bar').hidden = true; $('#spread').classList.add('is-resizing');
+}, true);
+$('#spread').addEventListener('pointermove', function (e) {
+  if (!rs || e.pointerId !== rs.id) return;
+  e.stopImmediatePropagation();
+  var dx = e.clientX - rs.x0, dy = e.clientY - rs.y0, c = Math.cos(-rs.rot), sn = Math.sin(-rs.rot);
+  var du = (dx * c - dy * sn) / rs.w * 1000, dv = (dx * sn + dy * c) / rs.hh * PAGE_H;   /* geser dalam arah bingkai (bingkai miring ikut) */
+  var g0 = rs.g0, k = rs.k, MIN = 40, x = g0[0], y = g0[1], w = g0[2], hh = g0[3];
+  var E = k.indexOf('e') > -1, W = k.indexOf('w') > -1, N = k.indexOf('n') > -1, Sx = k.indexOf('s') > -1;
+  if (E) w = g0[2] + du; if (W) w = g0[2] - du;
+  if (Sx) hh = g0[3] + dv; if (N) hh = g0[3] - dv;
+  if (k.length === 2 && !e.shiftKey) {   /* sudut: proporsi tetap */
+    var f = Math.abs(w / g0[2] - 1) > Math.abs(hh / g0[3] - 1) ? w / g0[2] : hh / g0[3];
+    f = Math.max(f, MIN / Math.min(g0[2], g0[3])); w = g0[2] * f; hh = g0[3] * f;
+  }
+  w = clamp(w, MIN, 1000); hh = clamp(hh, MIN, PAGE_H);
+  if (W) x = g0[0] + g0[2] - w; if (N) y = g0[1] + g0[3] - hh;
+  if (x < 0) { if (W) w += x; x = 0; } if (y < 0) { if (N) hh += y; y = 0; }
+  if (x + w > 1000) w = 1000 - x; if (y + hh > PAGE_H) hh = PAGE_H - y;
+  var s = S.album.pages[rs.p].slots[rs.i], ng = [Math.round(x * 10) / 10, Math.round(y * 10) / 10, Math.round(w * 10) / 10, Math.round(hh * 10) / 10];
+  s.g = ng; rs.moved = true;
+  var full = ng.concat([g0[4] || 0]);
+  frameCss(rs.slot, full); if (rs.fr) frameCss(rs.fr, full);
+  var im = $('img', rs.slot); if (im && s.photo != null) placeImg(im, S.photos[s.photo], ng[2], ng[3], s);
+}, true);
+function endResize(e) {
+  if (!rs || e.pointerId !== rs.id) return;
+  var r = rs; rs = null; $('#spread').classList.remove('is-resizing');
+  if (!r.moved) { drawPhBar(); return; }
+  var s = S.album.pages[r.p].slots[r.i], t0 = S.album.tpl.pages[r.p].ph[r.i];
+  if (Math.abs(s.g[0] - t0[0]) < 0.5 && Math.abs(s.g[1] - t0[1]) < 0.5 && Math.abs(s.g[2] - t0[2]) < 0.5 && Math.abs(s.g[3] - t0[3]) < 0.5) delete s.g;
+  S.dirty = true; redrawPage(r.p); refreshNavFor(r.p); drawPhBar(); dragEnd = Date.now();   /* klik yang ikut sesudah resize tidak dihitung */
+  toast('Photo resized.', { label: 'Undo', fn: function () { if (r.prev) s.g = r.prev; else delete s.g; redrawPage(r.p); refreshNavFor(r.p); drawPhBar(); } });
+}
+$('#spread').addEventListener('pointerup', endResize, true);
+$('#spread').addEventListener('pointercancel', endResize, true);
+$('#slot-size').addEventListener('click', function () {
+  var s = selSlot(); if (!s || !s.g) return;
+  var p = S.sel.p, prev = s.g.slice(); delete s.g; S.dirty = true;
+  redrawPage(p); refreshNavFor(p); drawPhBar();
+  toast('Back to the original size.', { label: 'Undo', fn: function () { s.g = prev; redrawPage(p); refreshNavFor(p); drawPhBar(); } });
+});
+
+/* Teks di halaman bisa digeser bebas dengan mouse/jari (24 Nov 2026). Ketuk tanpa menggeser = mengetik. */
+var tmove = null, tmoved = false;
+function textBase(p, t, i) {
+  var P = S.album.tpl.pages[p];
+  if (t === 'tx') return [P.tx[i].x, P.tx[i].y - 0.847 * P.tx[i].z];
+  if (t === 'pa') return [P.pa[i].x, P.pa[i].y];
+  return [P.cp[i].x, P.cp[i].y - 0.847 * P.cp[i].z];
+}
+function unselectAll() {
+  $$('#spread .is-sel').forEach(function (n) { n.classList.toggle('is-sel', false); });
+  $$('#spread .sel-frame').forEach(function (n) { n.parentNode.removeChild(n); });
+}
+$('#spread').addEventListener('pointerdown', function (e) {
+  if (e.button > 0 || pan) return;
+  var el = e.target.closest('[data-tx],[data-pa],[data-cp]'); if (!el) return;
+  if (editing && editing.node.contains(e.target)) return;   /* sedang mengetik di teks ini: geser = pilih huruf */
+  var pg = el.closest('.pg'), t = el.dataset.tx != null ? 'tx' : el.dataset.pa != null ? 'pa' : 'cp', i = +el.dataset[t], p = +pg.dataset.p;
+  var st = S.album.pages[p], key = t + i;
+  tmoved = false;
+  tmove = { el: el, p: p, t: t, i: i, key: key, id: e.pointerId, x0: e.clientX, y0: e.clientY, m0: textMove(st, key), base: textBase(p, t, i), w: pg.offsetWidth, h: pg.offsetHeight, on: false };
+}, true);
+$('#spread').addEventListener('pointermove', function (e) {
+  if (!tmove || e.pointerId !== tmove.id) return;
+  var dx = e.clientX - tmove.x0, dy = e.clientY - tmove.y0;
+  if (!tmove.on) {
+    if (Math.hypot(dx, dy) < 5) return;
+    tmove.on = true; endEdit();
+    tmove.el = $('[data-' + tmove.t + '="' + tmove.i + '"]', pageNode(tmove.p)) || tmove.el;   /* endEdit menggambar ulang teks */
+    unselectAll(); S.sel = null; drawSlotTool();
+    tmove.el.classList.add('is-sel', 'is-moving');
+    try { $('#spread').setPointerCapture(e.pointerId); } catch (er) {}
+  }
+  var b = tmove.base, nx = clamp(tmove.m0[0] + dx / tmove.w * 1000, -b[0], 1000 - b[0] - 8), ny = clamp(tmove.m0[1] + dy / tmove.h * PAGE_H, -b[1], PAGE_H - b[1] - 12);
+  tmove.now = [Math.round(nx * 10) / 10, Math.round(ny * 10) / 10];
+  tmove.el.style.left = pct(b[0] + tmove.now[0], 1000); tmove.el.style.top = pct(b[1] + tmove.now[1], PAGE_H);
+  e.stopImmediatePropagation();
+}, true);
+function endTextMove(e) {
+  if (!tmove || e.pointerId !== tmove.id) return;
+  var m = tmove; tmove = null;
+  if (!m.on || !m.now) return;
+  dragEnd = Date.now();
+  var st = S.album.pages[m.p], prev = st.mv && st.mv[m.key] ? st.mv[m.key].slice() : null;
+  st.mv = st.mv || {};
+  if (Math.abs(m.now[0]) < 0.5 && Math.abs(m.now[1]) < 0.5) delete st.mv[m.key]; else st.mv[m.key] = m.now;
+  S.dirty = true; redrawTexts(m.p); refreshNavFor(m.p);
+  var el = $('[data-' + m.t + '="' + m.i + '"]', pageNode(m.p)); if (el) el.classList.add('is-sel');
+  S.sel = { t: m.t, p: m.p, i: m.i };
+  toast('Text moved.', { label: 'Undo', fn: function () { if (prev) st.mv[m.key] = prev; else delete st.mv[m.key]; redrawTexts(m.p); refreshNavFor(m.p); } });
+}
+$('#spread').addEventListener('pointerup', endTextMove, true);
+$('#spread').addEventListener('pointercancel', endTextMove, true);
+$('#spread').addEventListener('pointerdown', function (e) {
+  if (pan && e.pointerId !== pan.id && e.pointerType === 'touch') {   /* jari kedua di foto yang sedang digeser: cubit untuk zoom */
+    pan.f2 = { id: e.pointerId, x: e.clientX, y: e.clientY }; pan.d0 = Math.hypot(e.clientX - pan.cx, e.clientY - pan.cy) || 1; pan.z0 = pan.s.z;
+    if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); }
+    return;
+  }
   var el = e.target.closest('.slot'); if (!el || e.button > 0) return;
   var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i];
   panned = false;
   if (s.photo == null || S.swap || S.armed != null) return;
-  var g = S.album.tpl.pages[p].ph[i], b = imgBox(S.photos[s.photo], g[2], g[3], s);
+  var g = slotGeo(S.album, p, i), b = imgBox(S.photos[s.photo], g[2], g[3], s);
   pan = { el: el, img: $('img', el), p: p, i: i, s: s, g: g, x: e.clientX, y: e.clientY, fx: s.fx, fy: s.fy,
-    ox: (b.W - 100) / 100 * el.offsetWidth, oy: (b.H - 100) / 100 * el.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, id: e.pointerId };
+    ox: (b.W - 100) / 100 * el.offsetWidth, oy: (b.H - 100) / 100 * el.offsetHeight, rot: (g[4] || 0) * Math.PI / 180, id: e.pointerId, cx: e.clientX, cy: e.clientY };
   try { el.setPointerCapture(e.pointerId); } catch (err) {}
 });
 $('#spread').addEventListener('pointermove', function (e) {
-  if (!pan || e.pointerId !== pan.id) return;
+  if (!pan) return;
+  if (pan.f2) {
+    if (e.pointerId === pan.id) { pan.cx = e.clientX; pan.cy = e.clientY; } else if (e.pointerId === pan.f2.id) { pan.f2.x = e.clientX; pan.f2.y = e.clientY; } else return;
+    var r = pan.el.getBoundingClientRect();
+    zoomSlot(pan.p, pan.i, pan.z0 * Math.hypot(pan.f2.x - pan.cx, pan.f2.y - pan.cy) / pan.d0, clamp(((pan.cx + pan.f2.x) / 2 - r.left) / r.width, 0, 1), clamp(((pan.cy + pan.f2.y) / 2 - r.top) / r.height, 0, 1));
+    return;
+  }
+  if (e.pointerId !== pan.id) return;
   var dx = e.clientX - pan.x, dy = e.clientY - pan.y;
   if (!panned && Math.hypot(dx, dy) < 5) return;
-  if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); }
+  if (!panned) { panned = true; if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== pan.p || S.sel.i !== pan.i) selectSlot(pan.p, pan.i); $('#ph-bar').hidden = true; }
   var c = Math.cos(-pan.rot), sn = Math.sin(-pan.rot), rx = dx * c - dy * sn, ry = dx * sn + dy * c;
+  pan.cx = e.clientX; pan.cy = e.clientY;
   if (pan.ox > 0.5) pan.s.fx = clamp(pan.fx - rx / pan.ox, 0, 1);
   if (pan.oy > 0.5) pan.s.fy = clamp(pan.fy - ry / pan.oy, 0, 1);
   placeImg(pan.img, S.photos[pan.s.photo], pan.g[2], pan.g[3], pan.s);
 });
 function endPan(e) {
-  if (!pan || (e && e.pointerId !== pan.id)) return;
+  if (!pan) return;
+  if (e && pan.f2 && e.pointerId === pan.f2.id) { pan.f2 = null; pan.x = pan.cx; pan.y = pan.cy; pan.fx = pan.s.fx; pan.fy = pan.s.fy; recalcPan(); return; }
+  if (e && e.pointerId !== pan.id) return;
   if (panned) { S.dirty = true; refreshNavFor(pan.p); }
-  pan = null;
+  pan = null; drawPhBar();
 }
+function recalcPan() { var b = imgBox(S.photos[pan.s.photo], pan.g[2], pan.g[3], pan.s); pan.ox = (b.W - 100) / 100 * pan.el.offsetWidth; pan.oy = (b.H - 100) / 100 * pan.el.offsetHeight; }
+$('#spread').addEventListener('wheel', function (e) {   /* cubit di trackpad (ctrlKey) atau ctrl + scroll di atas foto */
+  if (!e.ctrlKey) return;
+  var el = e.target.closest('.slot'); if (!el) return;
+  var p = +el.closest('.pg').dataset.p, i = +el.dataset.s, s = S.album.pages[p].slots[i]; if (s.photo == null) return;
+  e.preventDefault();
+  if (!S.sel || S.sel.t !== 'slot' || S.sel.p !== p || S.sel.i !== i) selectSlot(p, i);
+  var r = el.getBoundingClientRect();
+  zoomSlot(p, i, s.z * Math.exp(-clamp(e.deltaY, -25, 25) * 0.008), clamp((e.clientX - r.left) / r.width, 0, 1), clamp((e.clientY - r.top) / r.height, 0, 1));
+}, { passive: false });
 $('#spread').addEventListener('pointerup', endPan);
 $('#spread').addEventListener('pointercancel', endPan);
 $('#spread').addEventListener('click', function (e) {
   if (panned) { panned = false; return; }
+  if (Date.now() - dragEnd < 400) return;   /* klik yang ikut sesudah menggeser teks atau me-resize foto */
+  if (editing && editing.node.contains(e.target)) return;
   var pg = e.target.closest('.pg'); if (!pg) { deselect(); return; }
   var p = +pg.dataset.p, slot = e.target.closest('.slot'), txt = e.target.closest('[data-tx],[data-pa],[data-cp]');
   if (!txt && !slot) {                               /* (8) tiny frames and small texts get a forgiving hit area: nearest one within 22px */
@@ -947,7 +1347,7 @@ $('#spread').addEventListener('click', function (e) {
   }
   if (txt && !(slot && slot.contains(e.target))) {
     var t = txt.dataset.tx != null ? 'tx' : txt.dataset.pa != null ? 'pa' : 'cp';
-    return selectText(p, t, +txt.dataset[t]);
+    return editText(p, t, +txt.dataset[t]);
   }
   if (slot) return slotClick(p, +slot.dataset.s);
   deselect();
@@ -963,8 +1363,8 @@ $('#spread').addEventListener('keydown', function (e) {
   else hit = false;
   if (!hit) return;
   e.preventDefault(); S.dirty = true;
-  placeImg($('img', el), S.photos[s.photo], S.album.tpl.pages[p].ph[i][2], S.album.tpl.pages[p].ph[i][3], s);
-  if (S.sel && S.sel.t === 'slot' && S.sel.p === p && S.sel.i === i) drawSlotTool();
+  var gk = slotGeo(S.album, p, i); placeImg($('img', el), S.photos[s.photo], gk[2], gk[3], s);
+  if (S.sel && S.sel.t === 'slot' && S.sel.p === p && S.sel.i === i) drawPhBar();
 });
 ['dragover', 'drop', 'dragleave'].forEach(function (ev) {
   $('#spread').addEventListener(ev, function (e) {
@@ -986,7 +1386,7 @@ $('#st-stage').addEventListener('click', function (e) { if (e.target === e.curre
 function fillWithExisting() {
   var before = emptySlots(S.album), changed = refill(S.album);
   S.dirty = true; drawStudio();
-  toast(changed.length + ' bingkai terisi dengan foto yang sudah ada. Kamu bisa menggantinya kapan saja.', { label: 'Urungkan', fn: function () {
+  toast(t('{n} frames filled with photos you’ve added. You can change them any time.', { n: changed.length }), { label: 'Undo', fn: function () {
     before.forEach(function (e) { setSlot(S.album, e[0], e[1], null); }); drawStudio();
   } });
 }
@@ -997,15 +1397,15 @@ function gotoFirstEmpty() {
 }
 $('#st-preview').addEventListener('click', function (e) {
   if (S.photos.length < MIN_PHOTOS) {
-    return openDialog({ trigger: e.currentTarget, title: 'Minimal ' + MIN_PHOTOS + ' foto',
-      body: 'Albummu baru punya ' + S.photos.length + ' foto. Tambah ' + (MIN_PHOTOS - S.photos.length) + ' foto lagi supaya albumnya bisa dipesan.',
-      actions: [{ label: 'Tambah foto', kind: 'primary', fn: function () { $('#file-more').click(); } }, { label: 'Tutup' }] });
+    return openDialog({ trigger: e.currentTarget, title: t('At least {n} photos', { n: MIN_PHOTOS }),
+      body: t('Your album has {n} photos so far. Add {m} more so it can be ordered.', { n: S.photos.length, m: MIN_PHOTOS - S.photos.length }),
+      actions: [{ label: 'Add photos', kind: 'primary', fn: function () { $('#file-more').click(); } }, { label: 'Close' }] });
   }
   var t = totals(S.album);
   if (!t.empty) return enterPreview();
-  openDialog({ trigger: e.currentTarget, title: t.empty + ' bingkai foto masih kosong',
-    body: 'Supaya tidak ada halaman yang bolong saat dicetak, semua bingkai perlu terisi dulu. Kamu bisa menambah foto, atau mengisi sisanya dengan foto yang sudah ada.',
-    actions: [{ label: 'Isi dengan foto yang sudah ada', kind: 'primary', fn: fillWithExisting }, { label: 'Tambah foto', fn: function () { $('#file-more').click(); } }, { label: 'Lihat bingkai yang kosong', kind: 'quiet', fn: gotoFirstEmpty }] });
+  openDialog({ trigger: e.currentTarget, title: _t('{n} photo frames still empty', { n: t.empty }),
+    body: 'So no page prints with gaps, every frame needs a photo first. You can add photos, or fill the rest with photos you’ve already added.',
+    actions: [{ label: 'Fill with photos you’ve added', kind: 'primary', fn: fillWithExisting }, { label: 'Add photos', fn: function () { $('#file-more').click(); } }, { label: 'Show empty frames', kind: 'quiet', fn: gotoFirstEmpty }] });
 });
 $('#st-back').addEventListener('click', function () { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; S.step = 'gaya'; drawSetup(); go('setup', 'setup-h'); });
 
@@ -1027,10 +1427,10 @@ function pvSides(v) {
 }
 function pvNode(what) {
   var cat = catOf(S.cat), cv = curCover();
-  if (what === 'cover') { var f = coverArt(cat, cv, 'Sampul depan ' + cv.name, 960); f.classList.add('pv-cover', 'is-front'); return f; }
-  if (what === 'back' && cv.back) { var im = new Image(); im.className = 'pv-cover'; im.draggable = false; im.src = IMZ_IMG[cv.back]; im.alt = 'Sampul belakang'; return im; }
+  if (what === 'cover') { var f = coverArt(cat, cv, t('Front cover {name}', { name: t(cv.name) }), 960); f.classList.add('pv-cover', 'is-front'); return f; }
+  if (what === 'back' && cv.back) { var im = new Image(); im.className = 'pv-cover'; im.draggable = false; im.src = IMZ_IMG[cv.back]; im.alt = 'Back cover'; return im; }
   if (what === 'back') {
-    var d = h('div', 'pv-backc'); d.style.background = cv.bg; d.setAttribute('role', 'img'); d.setAttribute('aria-label', 'Sampul belakang');
+    var d = h('div', 'pv-backc'); d.style.background = cv.bg; d.setAttribute('role', 'img'); d.setAttribute('aria-label', 'Back cover');
     var lg = new Image(); lg.src = relLum(cv.bg) < 0.3 ? IMZ_IMG.logo_white : IMZ_IMG.logo_black; lg.alt = ''; d.appendChild(lg); return d;
   }
   if (what === 'in' || what == null) { var blank = h('div', 'pv-blank'); blank.setAttribute('aria-hidden', 'true'); return blank; }
@@ -1061,13 +1461,13 @@ function drawPreview(dir) {
   book.dataset.pos = to.pos;
   pvNow = { sides: to, single: single };
   var real = v.filter(function (x) { return typeof x === 'number'; }).map(function (x) { return x + 1; });
-  $('#pv-label').textContent = v[0] === 'cover' ? 'Sampul depan' : v[0] === 'back' ? 'Sampul belakang' : 'Halaman ' + real.join('–') + ' dari ' + S.album.pages.length;
+  $('#pv-label').textContent = v[0] === 'cover' ? 'Front cover' : v[0] === 'back' ? 'Back cover' : _t('Page {p} of {n}', { p: real.join('–'), n: S.album.pages.length });   /* _t: t is a local variable below */
   $('#pv-prev').disabled = S.pv === 0; $('#pv-fwd').disabled = S.pv === views.length - 1;
   var t = totals(S.album), notes = $('#pv-notes'); notes.textContent = '';
-  var a = h('span'); a.appendChild(icon('check')); a.appendChild(document.createTextNode(t.filled + ' foto terpasang di 40 halaman')); notes.appendChild(a);
+  var a = h('span'); a.appendChild(icon('check')); a.appendChild(document.createTextNode(_t('{n} photos placed across 40 pages', { n: t.filled }))); notes.appendChild(a);
   if (t.blankText) {
-    notes.appendChild(h('span', null, t.blankText + ' kotak teks masih kosong dan tidak ikut dicetak.'));
-    var fix = h('button', 'linkish', 'Isi teks'); fix.type = 'button';
+    notes.appendChild(h('span', null, _t('{n} text boxes are still empty and won’t be printed.', { n: t.blankText })));
+    var fix = h('button', 'linkish', 'Fill in text'); fix.type = 'button';
     fix.addEventListener('click', function () { var p = firstBlankTextPage(); pvFinish(); go('studio'); gotoPage(p); setTab('teks'); drawTextFields(); });
     notes.appendChild(fix);
   }
@@ -1087,7 +1487,23 @@ function pvStep(d) {
 $('#pv-prev').addEventListener('click', function () { pvStep(-1); });
 $('#pv-fwd').addEventListener('click', function () { pvStep(1); });
 $('#pv-back').addEventListener('click', function () { pvFinish(); go('studio'); });
-$('#pv-next').addEventListener('click', function () { pvFinish(); drawCheckout(); go('checkout', 'co-h'); });
+/* Ganti cover langsung dari preview: album (foto, layout, caption) tidak disentuh, lalu kembali ke preview di halaman cover. */
+$('#pv-cover').addEventListener('click', function () {
+  pvFinish();
+  S.cat = S.album.cat; S.layout = S.album.tpl.id; S.coverFrom = { cover: S.album.cover };
+  S.step = 'sampul'; drawSetup(); go('setup', 'setup-h');
+});
+/* Edit halaman dari preview: kembali ke editor di halaman yang sedang dilihat (sampul/sampul belakang: halaman 1/terakhir). */
+$('#pv-edit').addEventListener('click', function () {
+  var v = pvViews()[S.pv] || [0], n = S.album.pages.length, p = v.filter(function (x) { return typeof x === 'number'; })[0];
+  if (p == null) p = v[0] === 'back' ? n - 1 : 0;
+  pvFinish(); go('studio'); gotoPage(p);
+});
+function backToPreview(changed) {
+  S.pv = 0; pvNow = null; drawPreview(null); go('preview', 'pv-h');
+  if (changed) toast('Cover changed. Your photos and captions are still there.');
+}
+$('#pv-next').addEventListener('click', function () { pvFinish(); if (ADMIN_NO) return adminSave(); drawCheckout(); go('checkout', 'co-h'); });
 var swipe = null;
 $('#pv-book').addEventListener('pointerdown', function (e) { swipe = { x: e.clientX, y: e.clientY }; });
 $('#pv-book').addEventListener('pointerup', function (e) {
@@ -1101,10 +1517,17 @@ $('#pv-book').addEventListener('pointerup', function (e) {
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
-  $('#h-mail').textContent = PAY ? 'Pakai email yang sama saat membayar di Mayar. Dari email ini kami tahu pembayaran itu milik albummu.' : 'Untuk mengirim kabar tentang albummu.';
+  $('#h-mail').textContent = PAY ? 'Use the same email when you pay on Mayar. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
   if (S.view === 'checkout' && S.album) drawCheckout();
 }
 var cfgLoaded = false, MIN_PHOTOS = 20, MAX_PHOTOS = 240, PAY_MIN = 120;   /* nilai asli dari server: /api/imazine/config */
+function payMinText() { return PAY_MIN % 60 ? t('{n} minutes', { n: PAY_MIN }) : t('{n} hours', { n: PAY_MIN / 60 }); }
+/* Bahasa diganti (tombol EN/ID di beranda): teks yang dirakit dengan t() digambar ulang; teks biasa sudah diurus i18n.js. */
+function onLang() {
+  labelStart(); applyPay();
+  var pm = $('#pay-min'); if (pm) pm.textContent = payMinText();
+  if (S.view === 'setup') drawSetup();
+}
 function loadConfig() {
   if (cfgLoaded) return; cfgLoaded = true;
   fetch('/api/imazine/config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
@@ -1113,20 +1536,20 @@ function loadConfig() {
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
     if (c.maxPhotos >= MIN_PHOTOS) MAX_PHOTOS = c.maxPhotos;
-    if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = PAY_MIN % 60 ? PAY_MIN + ' menit' : (PAY_MIN / 60) + ' jam'; }
+    if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = payMinText(); }
     if (S.view === 'checkout' && S.album) drawCheckout();
   }).catch(function () { /* tanpa server: pakai angka bawaan */ });
 }
 function drawCheckout() {
   loadConfig();
   var cat = catOf(S.cat), t = totals(S.album), total = PRICE * S.qty;
-  var cv = curCover(), co = $('#co-cover'); co.textContent = ''; co.appendChild(coverArt(cat, cv, 'Sampul ' + cv.name));
+  var cv = curCover(), co = $('#co-cover'); co.textContent = ''; co.appendChild(coverArt(cat, cv, 'Cover ' + cv.name));
   $('#co-name').textContent = cv.name;
-  $('#co-spec-a').textContent = 'Gaya ' + LAYOUTS[S.layout].name;
-  $('#co-spec-b').textContent = 'A4 · 40 halaman · Art Paper 260 gsm · Softcover · ' + t.filled + ' foto';
+  $('#co-spec-a').textContent = _t('{name} layout', { name: LAYOUTS[S.layout].name });
+  $('#co-spec-b').textContent = _t('A4 · 20 sheets, 40 pages · Art Paper 260 gsm · Soft cover · Binding · {n} photos', { n: t.filled });
   $('#qty-n').textContent = S.qty; $('#qty-dn').disabled = S.qty <= 1; $('#qty-up').disabled = S.qty >= 20;
   $('#sum-total').textContent = rupiah(total);
-  $('#co-pay').textContent = PAY ? 'Lanjut bayar' : 'Kirim album';
+  $('#co-pay').textContent = PAY ? 'Continue to payment' : 'Send album';
 }
 /* Mengubah isian setelah percobaan gagal berarti pesanan di server sudah tidak sesuai: mulai pesanan baru. */
 $('#co-form').addEventListener('input', function () { subState = null; });
@@ -1134,9 +1557,9 @@ $('#qty-dn').addEventListener('click', function () { S.qty = clamp(S.qty - 1, 1,
 $('#qty-up').addEventListener('click', function () { S.qty = clamp(S.qty + 1, 1, 20); subState = null; drawCheckout(); });
 $('#co-back').addEventListener('click', function () { subState = null; go('preview', 'pv-h'); });
 var RULES = {
-  name: function (v) { return v.trim().length >= 2 ? '' : 'Nama belum diisi.'; },
-  whatsapp: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : 'Nomor WhatsApp belum benar. Contoh: 081234567890.'; },
-  email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Email belum benar. Contoh: nama@email.com.'; }
+  name: function (v) { return v.trim().length >= 2 ? '' : 'Please write your name first.'; },
+  whatsapp: function (v) { return v.replace(/\D/g, '').length >= 9 ? '' : 'That WhatsApp number looks incomplete. Example: 081234567890.'; },
+  email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'That email looks incomplete. Example: name@email.com.'; }
 };
 var FIELD = { name: 'f-name', whatsapp: 'f-wa', email: 'f-mail' }, ERR = { name: 'e-name', whatsapp: 'e-wa', email: 'e-mail' }, HINT = { name: 'h-name', whatsapp: 'h-wa', email: 'h-mail' };
 function activeFields() { return PAY ? ['email'] : ['name', 'whatsapp', 'email']; }
@@ -1172,11 +1595,11 @@ async function putPhoto(i) {
       if (r.ok) { subState.up[i] = 1; return; }
       if (photoMethod === 'PUT' && (r.status === 403 || r.status === 405 || r.status === 501)) { photoMethod = 'POST'; a--; continue; }
       var j = await apiJson(r);
-      if (r.status < 500) { var er = new Error((p.name || ('Foto ' + (i + 1))) + ': ' + (j.error || 'ditolak.')); er.final = true; throw er; }
+      if (r.status < 500) { var er = new Error((p.name || t('Photo {n}', { n: i + 1 })) + ': ' + (j.error || 'rejected.')); er.final = true; throw er; }
     } catch (e) { if (e.final || a === 3) throw e; }
     await new Promise(function (res) { setTimeout(res, 1500 * (a + 1)); });
   }
-  throw new Error('Foto ' + (i + 1) + ' gagal terunggah.');
+  throw new Error(t('Photo {n} didn’t upload. Your photos are still safe here, so please try sending again.', { n: i + 1 }));
 }
 /* Sampul majalah: file jadi Full HD (JPEG) dan foto aslinya ikut dikirim, supaya tim bisa mencetak dari sumber, bukan dari pratinjau. */
 async function putCoverFile(kind, body, name) {
@@ -1188,15 +1611,15 @@ async function putCoverFile(kind, body, name) {
       if (r.ok) return;
       if (photoMethod === 'PUT' && (r.status === 403 || r.status === 405 || r.status === 501)) { photoMethod = 'POST'; a--; continue; }
       var j = await apiJson(r);
-      if (r.status < 500) { var er = new Error('Sampul: ' + (j.error || 'ditolak.')); er.final = true; throw er; }
+      if (r.status < 500) { var er = new Error('Cover: ' + (j.error || 'we couldn’t accept it.')); er.final = true; throw er; }
     } catch (e) { if (e.final || a === 3) throw e; }
     await new Promise(function (res) { setTimeout(res, 1500 * (a + 1)); });
   }
-  throw new Error('Sampul gagal terunggah.');
+  throw new Error('The cover didn’t upload. Please try sending again.');
 }
 async function putCover() {
   var cv = curCover(), blob = await magBlob(cv.mag, S.cat, MAG_W, 0.93);
-  if (!blob) throw new Error('Sampul majalah belum bisa dibuat. Coba lagi.');
+  if (!blob) throw new Error('We couldn’t create the magazine cover. Please try sending again.');
   await putCoverFile('render', blob, 'sampul-majalah.jpg');
   await putCoverFile('photo', S.mag.photo.file, S.mag.photo.name);
   subState.coverUp = 1;
@@ -1205,20 +1628,20 @@ function magOrderInfo(cat) {
   var cv = curCover(), m = S.mag, texts = {};
   MAG_FIELDS[cv.mag].forEach(function (f) { texts[f[0]] = magText(cv.mag, cat.id, f[0]); });
   return { style: cv.mag, photoName: m.photo ? m.photo.name : null, original: m.photo ? { width: m.photo.ow, height: m.photo.oh } : null, enhanced: m.photo ? { width: m.photo.w, height: m.photo.h } : null,
-           focusX: +m.fx.toFixed(3), focusY: +m.fy.toFixed(3), zoom: +m.z.toFixed(2), texts: texts, render: { width: MAG_W, height: Math.round(MAG_W * MAG_RATIO) } };
+           focusX: +m.fx.toFixed(3), focusY: +m.fy.toFixed(3), zoom: +m.z.toFixed(2), texts: texts, moves: (m.moves && m.moves[cv.mag]) || {}, render: { width: MAG_W, height: Math.round(MAG_W * MAG_RATIO) } };
 }
 async function sendOrder(order, used) {
   var title = $('#busy-t'), old = title.textContent, leaving = false;
   try {
-    title.textContent = 'Mengirim pesanan…'; busy(true, 0, 0);
+    title.textContent = 'Sending your order…'; busy(true, 0, 0);
     if (!subState) {
       var r = await fetch('/api/imazine/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });
       var j = await apiJson(r);
-      if (!r.ok) throw new Error(j.error || 'Pesanan belum bisa dikirim.');
+      if (!r.ok) throw new Error(j.error || 'Your album wasn’t sent. Your photos are still safe here, so please try again.');
       subState = { orderNo: j.orderNo, token: j.token, up: {}, used: used };
     }
     var n = subState.used ? subState.used.length : S.photos.length, done = Object.keys(subState.up).length, next = 0, fail = null;
-    title.textContent = 'Mengunggah foto asli…'; busy(true, done, n);
+    title.textContent = 'Uploading original photos…'; busy(true, done, n);
     async function worker() {
       while (!fail && next < n) {
         var i = next++;
@@ -1228,22 +1651,22 @@ async function sendOrder(order, used) {
     }
     await Promise.all([worker(), worker(), worker()]);
     if (fail) throw fail;
-    if (curCover().mag && !subState.coverUp) { title.textContent = 'Mengunggah sampul majalah…'; await putCover(); }
-    title.textContent = PAY ? 'Menyiapkan pembayaran…' : 'Mengirim album ke tim…'; busy(true, n, n);
+    if (curCover().mag && !subState.coverUp) { title.textContent = 'Uploading magazine cover…'; await putCover(); }
+    title.textContent = PAY ? 'Preparing payment…' : 'Sending your album to our team…'; busy(true, n, n);
     var r2 = await fetch('/api/imazine/orders/' + subState.orderNo + '/checkout?t=' + subState.token, { method: 'POST' });
     var j2 = await apiJson(r2);
     if (r2.ok && j2.submitted && j2.next) {   /* tanpa pembayaran: album sudah masuk ke tim */
       try { localStorage.setItem('imz_last', JSON.stringify({ no: subState.orderNo, t: subState.token })); } catch (e) { /* tanpa localStorage */ }
-      leaving = true; allowUnload = true; title.textContent = 'Album terkirim…';
+      leaving = true; allowUnload = true; title.textContent = 'Album sent!';
       window.location.assign(j2.next); return;
     }
-    if (!r2.ok || !j2.payUrl) throw new Error(j2.missing ? 'Beberapa foto belum terunggah. Coba kirim lagi.' : (j2.error || 'Pembayaran belum bisa dibuat.'));
+    if (!r2.ok || !j2.payUrl) throw new Error(j2.missing ? 'Some photos didn’t upload. Please try sending again.' : (j2.error || 'We couldn’t create the payment link. Please try again in a moment.'));
     try { localStorage.setItem('imz_last', JSON.stringify({ no: subState.orderNo, t: subState.token })); } catch (e) { /* tanpa localStorage */ }
     leaving = true; allowUnload = true;
-    title.textContent = 'Mengarahkan ke Mayar…'; busy(true, n, n);
+    title.textContent = 'Taking you to Mayar…'; busy(true, n, n);
     window.location.assign(j2.payUrl);
   } catch (e) {
-    toast((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message : 'Koneksi terputus. Fotomu belum hilang, coba kirim lagi.');
+    toast((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message : 'The connection dropped. Your photos aren’t lost, so please try sending again.');
   } finally {
     if (!leaving) { title.textContent = old; busy(false); }
     $('#co-pay').disabled = leaving;
@@ -1259,11 +1682,11 @@ $('#co-form').addEventListener('submit', function (e) {
   S.album.pages.forEach(function (pg) { pg.slots.forEach(function (sl) { if (sl.photo != null && used.indexOf(sl.photo) < 0) used.push(sl.photo); }); });
   used.sort(function (a, b) { return a - b; });
   var remap = {}; used.forEach(function (old, k) { remap[old] = k; });
-  if (used.length < MIN_PHOTOS) { toast('Minimal ' + MIN_PHOTOS + ' foto berbeda di album. Albummu baru memakai ' + used.length + '.'); return; }
+  if (used.length < MIN_PHOTOS) { toast(t('Your album needs at least {min} different photos. You have {n} now, so add {m} more.', { min: MIN_PHOTOS, n: used.length, m: MIN_PHOTOS - used.length })); return; }
   /* Foto contoh hanya untuk mencoba. Pesanan sungguhan harus memakai foto pembeli (kecuali uji di localhost). */
   if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && used.some(function (i) { return S.photos[i].sample; })) {
-    openDialog({ trigger: $('#co-pay'), title: 'Albummu masih memakai foto contoh', body: 'Foto contoh hanya untuk mencoba. Ganti dengan fotomu sendiri di langkah menyusun, lalu pesan.',
-      actions: [{ label: 'Kembali ke preview', kind: 'primary', fn: function () { go('preview', 'pv-h'); } }, { label: 'Tutup' }] });
+    openDialog({ trigger: $('#co-pay'), title: 'Your album still uses sample photos', body: 'Sample photos are just for trying things out. Replace them with your own photos, then order again.',
+      actions: [{ label: 'Replace sample photos', kind: 'primary', fn: function () { go('studio'); } }, { label: 'Close' }] });
     return;
   }
   $('#co-pay').disabled = true;
@@ -1273,14 +1696,14 @@ $('#co-form').addEventListener('submit', function (e) {
       email: $('#f-mail').value.trim(), note: $('#f-note').value.trim(),
       name: PAY ? undefined : $('#f-name').value.trim(), whatsapp: PAY ? undefined : $('#f-wa').value.trim()
     },
-    product: { size: 'A4', pages: 40, paper: 'Art Paper 260 gsm', cover: 'Softcover', binding: 'Binding', qty: S.qty },
+    product: { size: 'A4', pages: 40, paper: 'Art Paper 260 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
     category: cat.id, cover: curCover().id, coverName: curCover().name, template: S.layout,
     magCover: curCover().mag ? magOrderInfo(cat) : undefined,
     photos: used.map(function (old, i) { var p = S.photos[old]; return { id: i, file: p.name, width: p.w, height: p.h, date: p.date ? p.date.toISOString().slice(0, 10) : null }; }),
     pages: S.album.pages.map(function (pg, pi) {
       var P = S.album.tpl.pages[pi], cps = {};
       P.cp.forEach(function (c, i) { var v = captionValue(S.album, pi, i); if (v) cps[i] = v; });
-      return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo != null ? remap[s.photo] : null, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2) }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps };
+      return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo != null ? remap[s.photo] : null, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {} };
     })
   };
   sendOrder(order, used);
@@ -1302,8 +1725,8 @@ window.addEventListener('popstate', function () {
   try { history.pushState({ imz: 1 }, ''); } catch (e) { /* tanpa riwayat */ }
   if (!$('#dlg').hidden) return;
   if (S.view === 'home') {
-    openDialog({ trigger: null, title: 'Tinggalkan Imazine?', body: 'Albummu belum tersimpan dan akan hilang kalau kamu keluar dari halaman ini.',
-      actions: [{ label: 'Tetap di sini', kind: 'primary' }, { label: 'Keluar', fn: function () { allowUnload = true; history.go(-2); } }] });
+    openDialog({ trigger: null, title: 'Leave Imazine?', body: 'Your album isn’t saved and will be lost if you leave this page.',
+      actions: [{ label: 'Stay here', kind: 'primary' }, { label: 'Leave and delete album', fn: function () { allowUnload = true; history.go(-2); } }] });
   } else leaveToHome(null);
 });
 

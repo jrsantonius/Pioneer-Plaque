@@ -4,13 +4,13 @@ require __DIR__ . '/../includes/header.php';
 ?>
 
 <div id="loadingView" class="min-h-screen flex items-center justify-center bg-premium">
-  <div class="animate-pulse text-gray-500 text-lg">Loading...</div>
+  <div class="animate-pulse text-gray-500 text-lg">Loading your plaque...</div>
 </div>
 
 <div id="errorView" class="min-h-screen flex items-center justify-center bg-premium hidden">
   <div class="text-center">
-    <h1 class="text-2xl font-bold text-gray-700 mb-2">Not Found</h1>
-    <p class="text-gray-500">Pioneer plaque not found.</p>
+    <h1 class="text-2xl font-bold text-gray-700 mb-2">We can't find this plaque</h1>
+    <p class="text-gray-500">This link doesn't match any Pioneer plaque. Try scanning the QR code on your plaque again.</p>
   </div>
 </div>
 
@@ -123,7 +123,7 @@ require __DIR__ . '/../includes/header.php';
 
         <div class="text-center mb-8">
           <h2 class="text-lg font-semibold text-gray-700 mb-1">Welcome, Pioneer!</h2>
-          <p class="text-sm text-gray-500">Your exclusive access credentials</p>
+          <p class="text-sm text-gray-500">Everything you need to get in</p>
         </div>
 
         <!-- Unique Code Card -->
@@ -140,7 +140,7 @@ require __DIR__ . '/../includes/header.php';
               </svg>
             </button>
           </div>
-          <p class="text-xs text-gray-400 text-center mt-2">Use this code to login to the TIS website</p>
+          <p class="text-xs text-gray-400 text-center mt-2">Use this code to log in on the TIS website</p>
         </div>
 
         <!-- Action Buttons -->
@@ -153,13 +153,13 @@ require __DIR__ . '/../includes/header.php';
           <a href="<?= BASE_URL ?>/login"
             class="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-gray-800 hover:bg-gray-900 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-            Go to TIS Website
+            Log in to the TIS website
           </a>
         </div>
 
         <div class="mt-6 p-3 bg-gray-800/5 rounded-lg border border-gray-200/50">
           <p class="text-xs text-gray-500 text-center leading-relaxed">
-            Login to the TIS website using your unique code to activate your membership and access exclusive benefits.
+            Log in with your unique code to activate your membership and unlock your Pioneer benefits.
           </p>
         </div>
       </div>
