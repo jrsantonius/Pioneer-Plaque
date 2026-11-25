@@ -408,6 +408,41 @@ function imzMatchPayment(array $payload, array $d): array {
     return [null, null, 'Tidak ada pesanan menunggu bayar dengan email "' . $email . '". Mungkin pesanan sudah dihapus (lewat ' . (int) IMAZINE_PAY_MINUTES . ' menit), atau pembeli memakai email berbeda di Mayar. Hubungi pembeli.', true, null];
 }
 
+/**
+ * Alamat kirim dari webhook Mayar (produk fisik). Terbukti 25 Nov 2026: payment.received membawa data.orderVariant[]
+ * berisi consigneeName, consigneePhoneNumber, destinationAddress, consigneePostcode, expeditionName (jne), rateName
+ * (layanan), rateAmount (ongkir + asuransi), expeditionPrice, insurancePrice, qty. Null bila tidak ada.
+ */
+function imzShipFromRaw(?string $raw): ?array {
+    $p = json_decode((string) $raw, true);
+    $v = $p['data']['orderVariant'][0] ?? null;
+    if (!is_array($v) || trim((string) ($v['destinationAddress'] ?? '')) === '') return null;
+    $qty = 0;
+    foreach ($p['data']['orderVariant'] as $x) $qty += (int) ($x['qty'] ?? 0);
+    return [
+        'name' => trim((string) ($v['consigneeName'] ?? '')),
+        'phone' => trim((string) ($v['consigneePhoneNumber'] ?? '')),
+        'address' => trim((string) $v['destinationAddress']),
+        'postcode' => trim((string) ($v['consigneePostcode'] ?? '')),
+        'courier' => strtoupper(trim((string) ($v['expeditionName'] ?? ''))),
+        'service' => trim((string) ($v['rateName'] ?? '')),
+        'ongkir' => (int) ($v['expeditionPrice'] ?? $v['rateAmount'] ?? 0),
+        'insurance' => (int) ($v['insurancePrice'] ?? 0),
+        'qty' => $qty,
+    ];
+}
+
+/** Alamat kirim sebuah pesanan: dari pembayaran yang cocok, kalau belum ada dari pembayaran yang masih perlu dicek. */
+function imzOrderShipping(string $orderNo): ?array {
+    $st = imzDb()->prepare("SELECT status, raw FROM imazine_payments WHERE order_no = ? AND status IN ('cocok','perlu_cek') ORDER BY status = 'cocok' DESC, id DESC");
+    $st->execute([$orderNo]);
+    foreach ($st->fetchAll() as $r) {
+        $s = imzShipFromRaw($r['raw']);
+        if ($s) { $s['confirmed'] = $r['status'] === 'cocok'; return $s; }
+    }
+    return null;
+}
+
 /** Salin nama dan HP pembayar dari Mayar ke pesanan (form kita hanya menanyakan email). */
 function imzAdoptPayer(string $orderNo, ?string $name, ?string $mobile): void {
     $name = trim((string) $name); $mobile = trim((string) $mobile);

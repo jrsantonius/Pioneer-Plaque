@@ -269,6 +269,7 @@ var I18N_ID = {
 "Mayar payment and shipping form": "Form pembayaran dan pengiriman Mayar",
 "Waiting for your payment. This page moves on by itself once Mayar confirms it.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah Mayar mengonfirmasi.",
 "Payment received. Opening your order…": "Pembayaran diterima. Membuka pesananmu…",
+"We’ve received your payment. Our team is confirming it and will update you by email or WhatsApp.": "Pembayaranmu sudah kami terima. Tim kami sedang mengonfirmasinya dan akan mengabarimu lewat email atau WhatsApp.",
 "Form not loading, or your e-wallet app didn’t bring you back?": "Form tidak muncul, atau aplikasi e-wallet tidak kembali ke sini?",
 "Open the payment on Mayar’s page": "Buka pembayaran di halaman Mayar",
 ". Keep this page open, it still updates after you pay.": ". Biarkan halaman ini terbuka, halaman ini tetap diperbarui setelah kamu bayar.",

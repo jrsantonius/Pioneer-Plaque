@@ -173,10 +173,14 @@ function imzSlipHtml(array $o): string {
       <p class="slip-k">Untuk</p>
       <p class="slip-n"><?= e($o['name']) ?></p>
       <p class="slip-c"><?= e($o['whatsapp']) ?><br><?= e($o['email']) ?></p>
+      <?php $sship = imzOrderShipping($o['order_no']); if ($sship): ?>
+      <p class="slip-k">Kirim ke</p>
+      <p class="slip-f"><strong><?= e($sship['name']) ?></strong><?= $sship['phone'] !== '' ? ' &middot; ' . e($sship['phone']) : '' ?><br><?= e($sship['address']) ?><br><?= e($sship['courier']) ?> <?= e($sship['service']) ?></p>
+      <?php endif; ?>
       <p class="slip-k">Isi paket</p>
       <p class="slip-f">Album foto cetak A4, 20 lembar (40 halaman bolak-balik), Art Paper 260 gsm, soft cover, jilid binding &times; <?= (int) $o['qty'] ?><br>Sampul: <?= e((string) $o['cover_name']) ?></p>
       <?php if ($o['note']): ?><p class="slip-k">Catatan pembeli</p><p class="slip-f"><?= e($o['note']) ?></p><?php endif; ?>
-      <p class="slip-w">Sebelum paket ditutup, pastikan nama dan HP di label JNE (dari Mayar) sama dengan di atas.</p>
+      <p class="slip-w">Sebelum paket ditutup, pastikan nama dan alamat di label JNE (dari Mayar) sama dengan di atas.</p>
     </section><?php
     return (string) ob_get_clean();
 }
@@ -340,7 +344,12 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
       <dt>Pembeli</dt><dd><?= $o['name'] !== '' ? e($o['name']) : '<span class="muted">belum ada (diambil dari Mayar setelah bayar)</span>' ?></dd>
       <dt>WhatsApp</dt><dd><?= $o['whatsapp'] !== '' ? '<a href="https://wa.me/' . e(ltrim(preg_replace('/^0/', '62', $o['whatsapp']), '+')) . '">' . e($o['whatsapp']) . '</a>' : '<span class="muted">belum ada</span>' ?></dd>
       <dt>Email</dt><dd><?= e($o['email']) ?></dd>
-      <dt>Alamat kirim</dt><dd class="muted">Diisi pembeli di Mayar. Lihat di dashboard Mayar, menu Order (alamat, label JNE, pickup, resi).</dd>
+      <?php $ship = imzOrderShipping($o['order_no']); ?>
+      <dt>Alamat kirim</dt><dd><?php if ($ship): ?>
+        <strong><?= e($ship['name']) ?></strong><?= $ship['phone'] !== '' ? ' &middot; ' . e($ship['phone']) : '' ?><br>
+        <?= e($ship['address']) ?><?= $ship['postcode'] !== '' && strpos($ship['address'], $ship['postcode']) === false ? ' ' . e($ship['postcode']) : '' ?><br>
+        <span class="muted"><?= e($ship['courier'] ?: 'Kurir') ?><?= $ship['service'] !== '' ? ' ' . e($ship['service']) : '' ?> &middot; ongkir <?= e(imzRupiah($ship['ongkir'])) ?><?= $ship['insurance'] ? ' + asuransi ' . e(imzRupiah($ship['insurance'])) : '' ?> &middot; dari Mayar<?= $ship['confirmed'] ? '' : ', pembayaran belum dicocokkan' ?>. Label, pickup, dan resi di dashboard Mayar (menu Order).</span>
+      <?php else: ?><span class="muted">Belum ada. Muncul otomatis setelah pembeli membayar di Mayar (label, pickup, dan resi di dashboard Mayar, menu Order).</span><?php endif; ?></dd>
       <dt>Catatan</dt><dd><?= $o['note'] !== '' && $o['note'] !== null ? nl2br(e($o['note'])) : '<span class="muted">-</span>' ?></dd>
       <dt>Sampul / gaya</dt><dd><?= e((string) $o['cover_name']) ?> &middot; <?= e((string) ($json['template'] ?? '-')) ?></dd>
       <dt>Jumlah</dt><dd><?= (int) $o['qty'] ?> album &times; <?= e(imzRupiah((int) $o['unit_price'])) ?> = <strong><?= e(imzRupiah((int) $o['total'])) ?></strong> <span class="muted">(belum termasuk ongkir JNE)</span></dd>
@@ -451,6 +460,7 @@ if ($need): ?>
   <div class="card" style="margin-bottom:10px">
     <p style="margin:0 0 6px"><strong><?= e($pay['customer_name'] ?: '(tanpa nama)') ?></strong> &middot; <?= e(imzRupiah((int) $pay['amount'])) ?> &middot; <span class="muted"><?= e($pay['created_at']) ?></span></p>
     <p class="muted" style="margin:0 0 10px"><?= e($pay['customer_email']) ?> &middot; <?= e($pay['customer_mobile']) ?><br><?= e((string) $pay['note']) ?></p>
+    <?php $pship = imzShipFromRaw($pay['raw']); if ($pship): ?><p style="margin:0 0 10px;font-size:14px">Kirim ke: <strong><?= e($pship['name']) ?></strong> &middot; <?= e($pship['address']) ?> &middot; <?= e($pship['courier']) ?> <?= e($pship['service']) ?></p><?php endif; ?>
     <?php $sg = $pay['order_no'] ? imzOrder($pay['order_no']) : null; if ($sg): ?>
       <p style="margin:0 0 10px;font-size:14px">Dugaan pesanan: <a href="/imazine/admin/pesanan/<?= e($sg['order_no']) ?>"><?= e($sg['order_no']) ?></a> &middot; <strong><?= e($sg['email']) ?></strong> &middot; sampul <?= e((string) $sg['cover_name']) ?> &middot; <?= (int) $sg['photo_count'] ?> foto &middot; dibuat <?= e($sg['created_at']) ?> &middot; <?= e(imzRupiah((int) $sg['total'])) ?></p>
     <?php endif; ?>

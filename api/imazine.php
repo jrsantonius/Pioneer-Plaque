@@ -200,6 +200,8 @@ function imzStatus(string $orderNo): void {
         'qty' => (int) $o['qty'], 'total' => (int) $o['total'], 'noPay' => $o['paid_method'] === 'tanpa_bayar', 'paidAt' => $o['paid_at'], 'paidAmount' => $o['paid_amount'] !== null ? (int) $o['paid_amount'] : null,
         'payUrl' => $o['status'] === 'menunggu_bayar' && IMAZINE_MAYAR_URL !== '' ? IMAZINE_MAYAR_URL : null,
         'payBefore' => $o['status'] === 'menunggu_bayar' && $o['pay_deadline'] ? (int) $o['pay_deadline'] : null,
+        // Pembayaran sudah masuk tapi belum bisa dicocokkan otomatis (mis. nominal beda): tim mengeceknya.
+        'checking' => $o['status'] !== 'lunas' && (bool) imzDb()->query("SELECT 1 FROM imazine_payments WHERE status = 'perlu_cek' AND order_no = " . imzDb()->quote($o['order_no']) . ' LIMIT 1')->fetchColumn(),
     ]);
 }
 
@@ -232,6 +234,8 @@ function imzWebhook(string $token): void {
 
     $productId = (string) ($d['productId'] ?? $d['product_id'] ?? '');
     $amount = (int) ($d['amount'] ?? 0);
+    // amount = total yang dibayar (album + ongkir + biaya); paymentLinkAmount = harga produk x jumlah, itu yang dibandingkan dengan pesanan.
+    $albumPaid = isset($d['paymentLinkAmount']) && is_numeric($d['paymentLinkAmount']) ? (int) $d['paymentLinkAmount'] : $amount;
     $key = (string) ($d['id'] ?? '') !== '' ? (string) $d['id'] : 'raw-' . sha1($raw);
     $ins = imzDb()->prepare("INSERT OR IGNORE INTO imazine_payments (payment_key, product_id, customer_name, customer_email, customer_mobile, amount, raw, status) VALUES (?,?,?,?,?,?,?, 'perlu_cek')");
     $ins->execute([$key, $productId, (string) ($d['customerName'] ?? ''), (string) ($d['customerEmail'] ?? ''), (string) ($d['customerMobile'] ?? ''), $amount, $raw]);
@@ -243,9 +247,9 @@ function imzWebhook(string $token): void {
         // Pesanan yang sudah lunas: biasanya webhook yang dikirim ulang Mayar. Nominal sama = duplikat, abaikan senyap.
         if ($amount === (int) $o['paid_amount']) { $status = 'duplikat'; $note = 'Webhook ulang untuk ' . $o['order_no']; }
         else $note = 'Pesanan ' . $o['order_no'] . ' sudah lunas dengan nominal berbeda (' . imzRupiah((int) $o['paid_amount']) . ' vs ' . imzRupiah($amount) . '). Dibayar dobel?';
-    } elseif ($o && $amount < (int) $o['total']) {
-        // Nominal kurang dari harga album (ongkir belum dihitung). Jangan lunaskan otomatis.
-        $note = 'Nominal ' . imzRupiah($amount) . ' kurang dari harga album ' . imzRupiah((int) $o['total']) . ' untuk ' . $o['order_no'];
+    } elseif ($o && $albumPaid < (int) $o['total']) {
+        // Harga album yang dibayar kurang dari pesanan (harga produk Mayar beda, atau jumlah album beda). Jangan lunaskan otomatis.
+        $note = 'Harga album yang dibayar di Mayar ' . imzRupiah($albumPaid) . ($albumPaid !== $amount ? ' (total ' . imzRupiah($amount) . ' termasuk ongkir dan biaya)' : '') . ' kurang dari harga album ' . imzRupiah((int) $o['total']) . ' untuk ' . $o['order_no'];
     } elseif ($o) {
         imzAdoptPayer($o['order_no'], $d['customerName'] ?? '', $d['customerMobile'] ?? '');   // sebelum notifikasi dikirim
         imzMarkPaid($o['order_no'], $amount, $method);

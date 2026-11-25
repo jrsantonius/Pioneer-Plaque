@@ -1841,6 +1841,7 @@ function openPay(no, tok, url, email) {
     fetch(statusUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : (r.status === 404 ? { gone: true } : null); }).then(function (j) {
       if (!j) return;
       if (j.gone) { clearInterval(payPoll); $('#pay-wait-t').textContent = 'This order was deleted because it wasn’t paid in time. Please make your album again.'; return; }
+      if (j.checking && j.status !== 'lunas') { $('#pay-wait').classList.add('is-ok'); $('#pay-wait-t').textContent = 'We’ve received your payment. Our team is confirming it and will update you by email or WhatsApp.'; }
       if (j.status === 'lunas') {
         clearInterval(payPoll);
         $('#pay-wait').classList.add('is-ok'); $('#pay-wait-t').textContent = 'Payment received. Opening your order…';
