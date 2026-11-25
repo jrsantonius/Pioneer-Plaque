@@ -76,7 +76,7 @@ function imzAdminHead(string $title): void {
   .top { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
   table { width:100%; border-collapse:collapse; } th,td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--ink2); font-weight:500; font-size:13px; }
   .pill { display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; border:1px solid var(--line); }
-  .pill.lunas { color:var(--ok); border-color:var(--ok); } .pill.menunggu_bayar { color:var(--warn); border-color:var(--warn); }
+  .pill.lunas { color:var(--ok); border-color:var(--ok); } .pill.menunggu_bayar { color:var(--warn); border-color:var(--warn); } .pill.uji { color:#fff; background:#d97706; border-color:#d97706; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
   dl { margin:0; display:grid; grid-template-columns:150px 1fr; gap:8px 16px; } dt { color:var(--ink2); } dd { margin:0; word-break:break-word; }
   .btn { display:inline-block; padding:9px 16px; border-radius:999px; background:var(--accent); color:#1a0f06; font-weight:600; text-decoration:none; border:0; cursor:pointer; font-size:14px; }
@@ -334,7 +334,8 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
     imzAdminHead('Pesanan ' . $o['order_no']);
     $json = json_decode($o['order_json'], true) ?: [];
     ?>
-    <div class="top"><div><a href="/imazine/admin">&larr; Semua pesanan</a><h1><?= e($o['order_no']) ?> <span class="pill <?= e($o['status']) ?>"><?= e($o['status']) ?></span></h1></div></div>
+    <div class="top"><div><a href="/imazine/admin">&larr; Semua pesanan</a><h1><?= e($o['order_no']) ?> <span class="pill <?= e($o['status']) ?>"><?= e($o['status']) ?></span><?php if (!empty($json['test'])): ?> <span class="pill uji">UJI</span><?php endif; ?></h1></div></div>
+    <?php if (!empty($json['test'])): ?><div class="card" style="border-color:#d97706;background:rgba(217,119,6,.16);color:inherit;margin-bottom:12px"><strong>Pesanan uji.</strong> Album ini memakai foto contoh, jangan dicetak atau dikirim.</div><?php endif; ?>
     <div class="card"><dl>
       <dt>Pembeli</dt><dd><?= $o['name'] !== '' ? e($o['name']) : '<span class="muted">belum ada (diambil dari Mayar setelah bayar)</span>' ?></dd>
       <dt>WhatsApp</dt><dd><?= $o['whatsapp'] !== '' ? '<a href="https://wa.me/' . e(ltrim(preg_replace('/^0/', '62', $o['whatsapp']), '+')) . '">' . e($o['whatsapp']) . '</a>' : '<span class="muted">belum ada</span>' ?></dd>
@@ -430,7 +431,7 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
 imzPurgeStale();
 $filter = $_GET['status'] ?? '';
 $allowed = ['draf', 'menunggu_bayar', 'lunas', 'perlu_dikemas'];
-$sql = 'SELECT order_no, status, name, email, cover_name, qty, total, photo_count, created_at, paid_at, shipped_at FROM imazine_orders';
+$sql = 'SELECT order_no, status, name, email, cover_name, qty, total, photo_count, created_at, paid_at, shipped_at, (order_json LIKE \'%"test":true%\') AS is_test FROM imazine_orders';
 $args = [];
 if ($filter === 'perlu_dikemas') { $sql .= " WHERE status = 'lunas' AND shipped_at IS NULL"; }
 elseif (in_array($filter, $allowed, true)) { $sql .= ' WHERE status = ?'; $args[] = $filter; }
@@ -470,7 +471,7 @@ if ($need): ?>
 <?php foreach ($rows as $r): ?>
   <tr>
     <td class="c-no"><a href="/imazine/admin/pesanan/<?= e($r['order_no']) ?>"><?= e($r['order_no']) ?></a></td>
-    <td class="c-st"><span class="pill <?= e($r['status']) ?>"><?= e($r['status']) ?></span></td>
+    <td class="c-st"><span class="pill <?= e($r['status']) ?>"><?= e($r['status']) ?></span><?php if ($r['is_test']): ?> <span class="pill uji" title="Memakai foto contoh. Jangan dicetak.">UJI</span><?php endif; ?></td>
     <td class="c-buyer fname"><?= e($r['name'] !== '' ? $r['name'] : $r['email']) ?></td>
     <td class="c-cover hide-s"><?= e((string) $r['cover_name']) ?></td>
     <td class="c-photos hide-s"><?= (int) $r['photo_count'] ?></td>

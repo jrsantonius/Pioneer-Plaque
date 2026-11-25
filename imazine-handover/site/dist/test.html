@@ -3570,7 +3570,7 @@ $('#setup-back').addEventListener('click', function () {
   drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true });
 });
 $('#setup-next').addEventListener('click', function (e) {
-  if (S.step === 'sampul' && curCover().mag && !S.mag.photo) { toast('Upload a photo for the magazine cover first.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
+  if (S.step === 'sampul' && curCover().mag && !S.mag.photo && !(ALLOW_SAMPLE && magSample(S.cat))) { toast('Upload a photo for the magazine cover first.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
   if (S.step === 'sampul' && S.coverFrom) { S.album.cover = curCover().id; S.coverFrom = null; S.dirty = true; backToPreview(true); return; }
   if (S.step === 'sampul') { S.step = 'gaya'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); return; }
   if (S.step !== 'gaya' || !S.layout) return;
@@ -4548,6 +4548,9 @@ $('#pv-book').addEventListener('pointerup', function (e) {
 });
 
 /* ---------- checkout ---------- */
+/* Foto contoh boleh dipesan? Selalu di localhost; di situs asli hanya saat server mengizinkan (IMAZINE_ALLOW_SAMPLES, untuk uji).
+   Pesanan seperti itu ditandai UJI di admin. */
+var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
@@ -4568,6 +4571,7 @@ function loadConfig() {
     if (!c) return;
     if (c.price > 0) PRICE = c.price;
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
+    if (c.samples === true) ALLOW_SAMPLE = true;
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
     if (c.maxPhotos >= MIN_PHOTOS) MAX_PHOTOS = c.maxPhotos;
     if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = payMinText(); }
@@ -4655,14 +4659,19 @@ async function putCover() {
   var cv = curCover(), blob = await magBlob(cv.mag, S.cat, MAG_W, 0.93);
   if (!blob) throw new Error('We couldn’t create the magazine cover. Please try sending again.');
   await putCoverFile('render', blob, 'sampul-majalah.jpg');
-  await putCoverFile('photo', S.mag.photo.file, S.mag.photo.name);
+  if (S.mag.photo) await putCoverFile('photo', S.mag.photo.file, S.mag.photo.name);
+  else {   /* pesanan uji: cover masih memakai foto contoh tema */
+    var sr = await fetch(MAG_SAMPLE_DIR + 'sample-' + S.cat + '.webp');
+    if (!sr.ok) throw new Error('The sample cover photo didn’t load. Please try sending again.');
+    await putCoverFile('photo', await sr.blob(), 'contoh-sampul.webp');
+  }
   subState.coverUp = 1;
 }
 function magOrderInfo(cat) {
   var cv = curCover(), m = S.mag, texts = {};
   MAG_FIELDS[cv.mag].forEach(function (f) { texts[f[0]] = magText(cv.mag, cat.id, f[0]); });
   return { style: cv.mag, photoName: m.photo ? m.photo.name : null, original: m.photo ? { width: m.photo.ow, height: m.photo.oh } : null, enhanced: m.photo ? { width: m.photo.w, height: m.photo.h } : null,
-           focusX: +m.fx.toFixed(3), focusY: +m.fy.toFixed(3), zoom: +m.z.toFixed(2), texts: texts, moves: (m.moves && m.moves[cv.mag]) || {}, render: { width: MAG_W, height: Math.round(MAG_W * MAG_RATIO) } };
+           focusX: +m.fx.toFixed(3), focusY: +m.fy.toFixed(3), zoom: +m.z.toFixed(2), texts: texts, moves: (m.moves && m.moves[cv.mag]) || {}, render: { width: MAG_W, height: Math.round(MAG_W * MAG_RATIO) }, sample: m.photo ? undefined : true };
 }
 async function sendOrder(order, used) {
   var title = $('#busy-t'), old = title.textContent, leaving = false;
@@ -4718,7 +4727,7 @@ $('#co-form').addEventListener('submit', function (e) {
   var remap = {}; used.forEach(function (old, k) { remap[old] = k; });
   if (used.length < MIN_PHOTOS) { toast(t('Your album needs at least {min} different photos. You have {n} now, so add {m} more.', { min: MIN_PHOTOS, n: used.length, m: MIN_PHOTOS - used.length })); return; }
   /* Foto contoh hanya untuk mencoba. Pesanan sungguhan harus memakai foto pembeli (kecuali uji di localhost). */
-  if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && used.some(function (i) { return S.photos[i].sample; })) {
+  if (!ALLOW_SAMPLE && (used.some(function (i) { return S.photos[i].sample; }) || (curCover().mag && !S.mag.photo))) {
     openDialog({ trigger: $('#co-pay'), title: 'Your album still uses sample photos', body: 'Sample photos are just for trying things out. Replace them with your own photos, then order again.',
       actions: [{ label: 'Replace sample photos', kind: 'primary', fn: function () { go('studio'); } }, { label: 'Close' }] });
     return;
@@ -4733,7 +4742,7 @@ $('#co-form').addEventListener('submit', function (e) {
     product: { size: 'A4', pages: 40, paper: 'Art Paper 260 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
     category: cat.id, cover: curCover().id, coverName: curCover().name, template: S.layout,
     magCover: curCover().mag ? magOrderInfo(cat) : undefined,
-    photos: used.map(function (old, i) { var p = S.photos[old]; return { id: i, file: p.name, width: p.w, height: p.h, date: p.date ? p.date.toISOString().slice(0, 10) : null }; }),
+    photos: used.map(function (old, i) { var p = S.photos[old]; return { id: i, file: p.name, width: p.w, height: p.h, date: p.date ? p.date.toISOString().slice(0, 10) : null, sample: p.sample ? true : undefined }; }),
     pages: S.album.pages.map(function (pg, pi) {
       var P = S.album.tpl.pages[pi], cps = {};
       P.cp.forEach(function (c, i) { var v = captionValue(S.album, pi, i); if (v) cps[i] = v; });

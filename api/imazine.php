@@ -15,7 +15,7 @@ require_once __DIR__ . '/../includes/imazine.php';
 
 function imazineApi(string $uri, string $method): void {
     if ($uri === '/api/imazine/config' && $method === 'GET') {
-        jsonResponse(['price' => IMAZINE_PRICE, 'maxQty' => IMAZINE_MAX_QTY, 'minPhotos' => IMAZINE_MIN_PHOTOS, 'maxPhotos' => IMAZINE_MAX_PHOTOS, 'payMinutes' => IMAZINE_PAY_MINUTES, 'payment' => (bool) IMAZINE_PAYMENT]);
+        jsonResponse(['price' => IMAZINE_PRICE, 'maxQty' => IMAZINE_MAX_QTY, 'minPhotos' => IMAZINE_MIN_PHOTOS, 'maxPhotos' => IMAZINE_MAX_PHOTOS, 'payMinutes' => IMAZINE_PAY_MINUTES, 'payment' => (bool) IMAZINE_PAYMENT, 'samples' => (bool) IMAZINE_ALLOW_SAMPLES]);
     }
     if ($uri === '/api/imazine/orders' && $method === 'POST') imzCreateOrder();
     if (preg_match('#^/api/imazine/orders/(IMZ-[A-Z0-9]{6})/photos/(\d{1,3})$#', $uri, $m) && ($method === 'PUT' || $method === 'POST')) imzUploadPhoto($m[1], (int) $m[2]);
@@ -60,6 +60,10 @@ function imzCreateOrder(): void {
     if (count($photos) < IMAZINE_MIN_PHOTOS) $err['photos'] = 'Minimal ' . IMAZINE_MIN_PHOTOS . ' foto';
     elseif (count($photos) > IMAZINE_MAX_PHOTOS) $err['photos'] = 'Maksimal ' . IMAZINE_MAX_PHOTOS . ' foto';
     if ($err) jsonResponse(['error' => 'Data belum lengkap', 'fields' => $err], 422);
+    // Foto contoh hanya untuk uji: ditolak kecuali IMAZINE_ALLOW_SAMPLES menyala, dan pesanannya ditandai 'test'.
+    $isTest = !empty($in['magCover']['sample']);
+    foreach ($photos as $ph) if (is_array($ph) && !empty($ph['sample'])) $isTest = true;
+    if ($isTest && !IMAZINE_ALLOW_SAMPLES) jsonResponse(['error' => 'Album ini masih memakai foto contoh. Ganti dengan fotomu sendiri dulu.'], 422);
 
     imzPurgeStale();
     // Pembatasan laju: satu alamat IP tidak boleh membuat pesanan tanpa batas (mencegah disk penuh).
@@ -77,6 +81,7 @@ function imzCreateOrder(): void {
     $in['createdAt'] = date('c');
     $in['product'] = ['size' => 'A4', 'pages' => 40, 'paper' => 'Art Paper 260 gsm', 'cover' => 'Soft Cover', 'binding' => 'Jilid binding', 'unitPrice' => $unit, 'qty' => $qty, 'total' => $total];
     $in['customer']['whatsapp'] = $wa;
+    if ($isTest) $in['test'] = true; else unset($in['test']);
     unset($in['customer']['address']);   // alamat hanya ada di Mayar
 
     imzDb()->prepare('INSERT INTO imazine_orders

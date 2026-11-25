@@ -34,7 +34,8 @@ foreach ([
     'IMAZINE_NOTIFY_EMAIL'     => '',                // penerima notifikasi pesanan lunas / pembayaran perlu dicek
     'IMAZINE_ADMIN_PASSWORD'   => '',                // kosong = halaman admin mati
     'IMAZINE_WEBHOOK_TOKEN'    => '',                // rahasia di URL webhook
-    'IMAZINE_PAYMENT'          => false,             // false = pembayaran disembunyikan: pembeli kirim album, langsung masuk ke tim (status lunas, paid_method tanpa_bayar)
+    'IMAZINE_PAYMENT'          => true,              // true = bayar dan kirim lewat Mayar (dinyalakan lagi 25 Nov 2026); false = album langsung masuk ke tim tanpa bayar (paid_method tanpa_bayar)
+    'IMAZINE_ALLOW_SAMPLES'    => true,              // SEMENTARA untuk uji: boleh pesan memakai foto contoh. Pesanan itu ditandai UJI di admin. Ubah ke false sebelum jualan.
 ] as $k => $v) {
     if (!defined($k)) define($k, $v);
 }
