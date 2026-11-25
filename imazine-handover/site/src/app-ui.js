@@ -3,7 +3,7 @@ var S = { view: 'home', step: 'sampul', cat: null, cover: null, layout: null, ph
   mag: { photo: null, fx: 0.5, fy: 0.3, z: 1, front: true, ed: {}, moves: {}, rev: 0 } };   /* Cover Majalah: satu foto + teks per gaya, dipakai semua gaya majalah */
 var wide = window.matchMedia('(min-width: 1000px)');
 var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
-var SCENE = { home: 'dark', setup: 'desk', studio: 'desk', preview: 'dark', checkout: 'desk', done: 'dark' };
+var SCENE = { home: 'dark', setup: 'desk', studio: 'desk', preview: 'dark', checkout: 'desk', pay: 'desk', done: 'dark' };
 var STEP_ORDER = ['setup', 'studio', 'preview', 'checkout'];
 var vt = null, toastTimer = 0;
 
@@ -14,7 +14,7 @@ function go(view, focusId, after) {
     $$('.view').forEach(function (v) { v.hidden = v.dataset.view !== view; });
     document.body.dataset.view = view;
     document.body.dataset.scene = SCENE[view];
-    var at = view === 'setup' && S.step === 'foto' ? 1 : STEP_ORDER.indexOf(view);
+    var at = view === 'setup' && S.step === 'foto' ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
     $$('.steps li').forEach(function (li, i) {
       li.classList.toggle('is-on', i === at);
       li.classList.toggle('is-done', at > -1 && i < at);
@@ -1807,8 +1807,9 @@ async function sendOrder(order, used) {
     if (!r2.ok || !j2.payUrl) throw new Error(j2.missing ? 'Some photos didn’t upload. Please try sending again.' : (j2.error || 'We couldn’t create the payment link. Please try again in a moment.'));
     try { localStorage.setItem('imz_last', JSON.stringify({ no: subState.orderNo, t: subState.token })); } catch (e) { /* tanpa localStorage */ }
     leaving = true; allowUnload = true;
-    title.textContent = 'Taking you to Mayar…'; busy(true, n, n);
-    window.location.assign(j2.payUrl);
+    title.textContent = 'Opening the payment form…'; busy(true, n, n);
+    openPay(subState.orderNo, subState.token, j2.payUrl, order.customer.email);
+    busy(false); title.textContent = old;
   } catch (e) {
     toast((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message : 'The connection dropped. Your photos aren’t lost, so please try sending again.');
   } finally {
@@ -1816,6 +1817,47 @@ async function sendOrder(order, used) {
     $('#co-pay').disabled = leaving;
   }
 }
+/* ---------- bayar di dalam Imazine (25 Nov 2026) ----------
+   Form checkout produk fisik Mayar (nama, HP, alamat, ongkir JNE, metode bayar) dibuka di iframe pada langkah ini.
+   Halaman kita tidak bisa membaca isi form itu (beda domain): tanda lunas tetap datang dari webhook Mayar, jadi status
+   pesanan ditanya ke server tiap beberapa detik. Tautan cadangan membuka Mayar di tab baru (e-wallet / iframe macet). */
+var payPoll = null;
+function openPay(no, tok, url, email) {
+  $('#pay-no').textContent = no;
+  $('#pay-mail').textContent = email;
+  $('#pay-out').href = url;
+  $('#pay-min2').textContent = payMinText();
+  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once Mayar confirms it.';
+  $('#pay-wait').classList.remove('is-ok');
+  var fr = $('#pay-if'), ld = $('#pay-load');
+  ld.hidden = false; fr.classList.remove('is-in');
+  fr.onload = function () { ld.hidden = true; fr.classList.add('is-in'); };
+  if (fr.getAttribute('src') !== url) fr.src = url;
+  go('pay', 'pay-h');
+  clearInterval(payPoll);
+  var statusUrl = '/api/imazine/orders/' + no + '/status?t=' + tok, busyPoll = false;
+  function check() {
+    if (busyPoll) return; busyPoll = true;
+    fetch(statusUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : (r.status === 404 ? { gone: true } : null); }).then(function (j) {
+      if (!j) return;
+      if (j.gone) { clearInterval(payPoll); $('#pay-wait-t').textContent = 'This order was deleted because it wasn’t paid in time. Please make your album again.'; return; }
+      if (j.status === 'lunas') {
+        clearInterval(payPoll);
+        $('#pay-wait').classList.add('is-ok'); $('#pay-wait-t').textContent = 'Payment received. Opening your order…';
+        allowUnload = true;
+        setTimeout(function () { window.location.assign('/imazine/pesanan/' + no + '?t=' + tok); }, 900);
+      }
+    }).catch(function () { /* jaringan putus sebentar: coba lagi di putaran berikutnya */ }).then(function () { busyPoll = false; });
+  }
+  payPoll = setInterval(check, 5000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && S.view === 'pay') check(); });
+}
+$('#pay-copy').addEventListener('click', function () {
+  var b = this, v = $('#pay-mail').textContent;
+  function done() { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(done, function () {});
+  else { var r = document.createRange(); r.selectNodeContents($('#pay-mail')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
+});
 $('#co-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var bad = activeFields().filter(function (k) { return !checkField(k); });

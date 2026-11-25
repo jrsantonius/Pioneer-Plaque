@@ -663,3 +663,26 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
 .adm-bar { position: sticky; top: 0; z-index: 60; padding: 6px 16px; background: #cf7a3c; color: #1a0f06; font-size: 13px; text-align: center; }
 .adm-bar a { color: inherit; font-weight: 700; }
 .admin-edit [data-add-photos], .admin-edit .tray-add, .admin-edit #st-add { display: none !important; }
+
+/* ---------- bayar di dalam Imazine: form checkout Mayar di iframe ---------- */
+.pay-wrap { max-width: 880px; gap: 18px; }
+.pay-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 12px 14px; border-radius: var(--r-s); background: var(--warm-wash); color: var(--warm-ink); border: 1px solid var(--line); }
+.pay-mail-l { font-size: 14px; }
+.pay-mail-v { font-weight: 700; word-break: break-all; }
+.pay-copy { min-height: 36px; padding: 0 14px; margin-left: auto; }
+.pay-frame { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: #ffffff; min-height: 70vh; }
+.pay-frame iframe { display: block; width: 100%; height: max(1100px, 80vh); border: 0; opacity: 0; transition: opacity var(--d-2) var(--ease); }
+.pay-frame iframe.is-in { opacity: 1; }
+.pay-load { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #6a6a6a; font-size: 15px; }
+.pay-load[hidden] { display: none; }
+.pay-foot { display: grid; gap: 8px; }
+.pay-wait { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
+.pay-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tangerine); flex: none; animation: payPulse 1.4s var(--ease) infinite; }
+.pay-wait.is-ok .pay-dot { background: #2e9e57; animation: none; }
+.pay-foot a { color: var(--accent-text); font-weight: 600; }
+@keyframes payPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .pay-dot { animation: none; } }
+@media (max-width: 600px) {
+  .pay-frame iframe { height: max(1300px, 90vh); }
+  .pay-copy { margin-left: 0; }
+}

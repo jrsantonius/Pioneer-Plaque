@@ -43,6 +43,7 @@ header('X-Robots-Tag: noindex');
 <script>
 (function () {
   try {
+    if (window.top !== window.self) { try { window.top.location.replace(location.href); return; } catch (e) { /* bukan dari Imazine */ } }
     var last = JSON.parse(localStorage.getItem('imz_last') || 'null');
     if (last && /^IMZ-[A-Z0-9]{6}$/.test(last.no) && /^[a-f0-9]{32}$/.test(last.t)) {
       location.replace('/imazine/pesanan/' + last.no + '?t=' + last.t);

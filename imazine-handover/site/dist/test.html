@@ -668,6 +668,29 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
 .adm-bar { position: sticky; top: 0; z-index: 60; padding: 6px 16px; background: #cf7a3c; color: #1a0f06; font-size: 13px; text-align: center; }
 .adm-bar a { color: inherit; font-weight: 700; }
 .admin-edit [data-add-photos], .admin-edit .tray-add, .admin-edit #st-add { display: none !important; }
+
+/* ---------- bayar di dalam Imazine: form checkout Mayar di iframe ---------- */
+.pay-wrap { max-width: 880px; gap: 18px; }
+.pay-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 12px 14px; border-radius: var(--r-s); background: var(--warm-wash); color: var(--warm-ink); border: 1px solid var(--line); }
+.pay-mail-l { font-size: 14px; }
+.pay-mail-v { font-weight: 700; word-break: break-all; }
+.pay-copy { min-height: 36px; padding: 0 14px; margin-left: auto; }
+.pay-frame { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: #ffffff; min-height: 70vh; }
+.pay-frame iframe { display: block; width: 100%; height: max(1100px, 80vh); border: 0; opacity: 0; transition: opacity var(--d-2) var(--ease); }
+.pay-frame iframe.is-in { opacity: 1; }
+.pay-load { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: #6a6a6a; font-size: 15px; }
+.pay-load[hidden] { display: none; }
+.pay-foot { display: grid; gap: 8px; }
+.pay-wait { display: flex; align-items: center; gap: 10px; margin: 0; font-weight: 600; }
+.pay-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tangerine); flex: none; animation: payPulse 1.4s var(--ease) infinite; }
+.pay-wait.is-ok .pay-dot { background: #2e9e57; animation: none; }
+.pay-foot a { color: var(--accent-text); font-weight: 600; }
+@keyframes payPulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.8); } }
+@media (prefers-reduced-motion: reduce) { .pay-dot { animation: none; } }
+@media (max-width: 600px) {
+  .pay-frame iframe { height: max(1300px, 90vh); }
+  .pay-copy { margin-left: 0; }
+}
 /* ---------- template page ---------- */
 .pg{position:relative;aspect-ratio:1000/1416;container-type:inline-size;overflow:hidden;background:#fff;isolation:isolate}
 .pg-l{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -1036,7 +1059,7 @@ html.pay [data-nopay]{display:none!important}
       <button class="btn btn-quiet back" type="button" id="co-back"><svg class="ic"><use href="#i-left"/></svg><span>Back to preview</span></button>
       <p class="eyebrow">Step 4 of 4</p>
       <h1 class="h1 nw" id="co-h" tabindex="-1">Just one more step.</h1>
-      <p class="sub nw" data-pay>Just enter your email, then pay on Mayar. Your name, phone, address, and JNE shipping go there.</p>
+      <p class="sub nw" data-pay>Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.</p>
       <p class="sub nw" data-nopay>Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.</p>
     </div>
     <div class="co-grid">
@@ -1062,7 +1085,7 @@ html.pay [data-nopay]{display:none!important}
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay><strong>Important:</strong> when you pay on Mayar, use the same email as above so your payment is matched automatically. You haven’t paid anything on this page. After you press the button, you’ll go straight to Mayar. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form (by Mayar) opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -1079,10 +1102,34 @@ html.pay [data-nopay]{display:none!important}
         </div>
         <dl class="sum" data-pay>
           <div><dt>Album price</dt><dd class="num" id="sum-total"></dd></div>
-          <div><dt>JNE shipping</dt><dd>Calculated on Mayar</dd></div>
-          <div class="sum-now"><dt>Total on Mayar</dt><dd>Album price + shipping</dd></div>
+          <div><dt>JNE shipping</dt><dd>Calculated in the payment form</dd></div>
+          <div class="sum-now"><dt>Total to pay</dt><dd>Album price + shipping</dd></div>
         </dl>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section class="view scene-desk" data-view="pay" hidden>
+  <div class="wrap co pay-wrap">
+    <div class="co-head">
+      <p class="eyebrow">Step 4 of 4</p>
+      <h1 class="h1 nw" id="pay-h" tabindex="-1">Pay and choose shipping.</h1>
+      <p class="sub"><span>Your order</span> <b class="num" id="pay-no" data-noi18n></b> <span>is saved.</span> <span>Fill in your name, phone, address, and JNE shipping in the form below, then pay.</span></p>
+    </div>
+    <div class="pay-mail">
+      <span class="pay-mail-l">Use this email on the form</span>
+      <b class="pay-mail-v" id="pay-mail" data-noi18n></b>
+      <button class="btn btn-quiet pay-copy" type="button" id="pay-copy">Copy</button>
+    </div>
+    <div class="pay-foot">
+      <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once Mayar confirms it.</span></p>
+      <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment on Mayar’s page</a>. Keep this page open, it still updates after you pay.</p>
+      <p class="hint">Complete the payment within <span id="pay-min2">2 hours</span>. After that, unpaid orders are deleted.</p>
+    </div>
+    <div class="pay-frame" id="pay-frame">
+      <p class="pay-load" id="pay-load">Loading the payment form…</p>
+      <iframe id="pay-if" title="Mayar payment and shipping form" allow="payment; clipboard-write"></iframe>
     </div>
   </div>
 </section>
@@ -1368,6 +1415,28 @@ var I18N_ID = {
 "Some photos didn’t upload. Please try sending again.": "Beberapa foto belum ter-upload. Coba kirim lagi, ya.",
 "We couldn’t create the payment link. Please try again in a moment.": "Link pembayaran belum bisa dibuat. Coba lagi sebentar lagi.",
 "Taking you to Mayar…": "Mengarahkan ke Mayar…",
+"Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup isi emailmu. Di layar berikutnya kamu isi nama, HP, alamat, dan ongkir JNE, lalu bayar, tanpa keluar dari Imazine.",
+"use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form (by Mayar) opens on this page. Complete the payment within": "pakai email yang sama di form pembayaran supaya pembayaranmu terdeteksi otomatis. Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran (dari Mayar) terbuka di halaman ini. Selesaikan pembayaran dalam",
+"Calculated in the payment form": "Dihitung di form pembayaran",
+"Total to pay": "Total dibayar",
+"Pay and choose shipping.": "Bayar dan pilih pengiriman.",
+"Your order": "Pesananmu",
+"is saved.": "sudah tersimpan.",
+"Fill in your name, phone, address, and JNE shipping in the form below, then pay.": "Isi nama, HP, alamat, dan ongkir JNE di form di bawah, lalu bayar.",
+"Use this email on the form": "Pakai email ini di form",
+"Copy": "Salin",
+"Copied": "Tersalin",
+"Loading the payment form…": "Memuat form pembayaran…",
+"Mayar payment and shipping form": "Form pembayaran dan pengiriman Mayar",
+"Waiting for your payment. This page moves on by itself once Mayar confirms it.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah Mayar mengonfirmasi.",
+"Payment received. Opening your order…": "Pembayaran diterima. Membuka pesananmu…",
+"Form not loading, or your e-wallet app didn’t bring you back?": "Form tidak muncul, atau aplikasi e-wallet tidak kembali ke sini?",
+"Open the payment on Mayar’s page": "Buka pembayaran di halaman Mayar",
+". Keep this page open, it still updates after you pay.": ". Biarkan halaman ini terbuka, halaman ini tetap diperbarui setelah kamu bayar.",
+"Complete the payment within": "Selesaikan pembayaran dalam",
+". After that, unpaid orders are deleted.": ". Lewat dari itu, pesanan yang belum dibayar dihapus.",
+"Opening the payment form…": "Membuka form pembayaran…",
+"This order was deleted because it wasn’t paid in time. Please make your album again.": "Pesanan ini dihapus karena tidak dibayar tepat waktu. Silakan buat albummu lagi.",
 "The connection dropped. Your photos aren’t lost, so please try sending again.": "Koneksi terputus. Fotomu belum hilang, coba kirim lagi.",
 "Your album still uses sample photos": "Albummu masih memakai foto contoh",
 "Sample photos are just for trying things out. Replace them with your own photos, then order again.": "Foto contoh cuma untuk mencoba. Ganti dulu dengan fotomu sendiri, lalu pesan lagi.",
@@ -2902,7 +2971,7 @@ var S = { view: 'home', step: 'sampul', cat: null, cover: null, layout: null, ph
   mag: { photo: null, fx: 0.5, fy: 0.3, z: 1, front: true, ed: {}, moves: {}, rev: 0 } };   /* Cover Majalah: satu foto + teks per gaya, dipakai semua gaya majalah */
 var wide = window.matchMedia('(min-width: 1000px)');
 var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
-var SCENE = { home: 'dark', setup: 'desk', studio: 'desk', preview: 'dark', checkout: 'desk', done: 'dark' };
+var SCENE = { home: 'dark', setup: 'desk', studio: 'desk', preview: 'dark', checkout: 'desk', pay: 'desk', done: 'dark' };
 var STEP_ORDER = ['setup', 'studio', 'preview', 'checkout'];
 var vt = null, toastTimer = 0;
 
@@ -2913,7 +2982,7 @@ function go(view, focusId, after) {
     $$('.view').forEach(function (v) { v.hidden = v.dataset.view !== view; });
     document.body.dataset.view = view;
     document.body.dataset.scene = SCENE[view];
-    var at = view === 'setup' && S.step === 'foto' ? 1 : STEP_ORDER.indexOf(view);
+    var at = view === 'setup' && S.step === 'foto' ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
     $$('.steps li').forEach(function (li, i) {
       li.classList.toggle('is-on', i === at);
       li.classList.toggle('is-done', at > -1 && i < at);
@@ -4706,8 +4775,9 @@ async function sendOrder(order, used) {
     if (!r2.ok || !j2.payUrl) throw new Error(j2.missing ? 'Some photos didn’t upload. Please try sending again.' : (j2.error || 'We couldn’t create the payment link. Please try again in a moment.'));
     try { localStorage.setItem('imz_last', JSON.stringify({ no: subState.orderNo, t: subState.token })); } catch (e) { /* tanpa localStorage */ }
     leaving = true; allowUnload = true;
-    title.textContent = 'Taking you to Mayar…'; busy(true, n, n);
-    window.location.assign(j2.payUrl);
+    title.textContent = 'Opening the payment form…'; busy(true, n, n);
+    openPay(subState.orderNo, subState.token, j2.payUrl, order.customer.email);
+    busy(false); title.textContent = old;
   } catch (e) {
     toast((e && e.message && !/Failed to fetch|NetworkError|Load failed/i.test(e.message)) ? e.message : 'The connection dropped. Your photos aren’t lost, so please try sending again.');
   } finally {
@@ -4715,6 +4785,47 @@ async function sendOrder(order, used) {
     $('#co-pay').disabled = leaving;
   }
 }
+/* ---------- bayar di dalam Imazine (25 Nov 2026) ----------
+   Form checkout produk fisik Mayar (nama, HP, alamat, ongkir JNE, metode bayar) dibuka di iframe pada langkah ini.
+   Halaman kita tidak bisa membaca isi form itu (beda domain): tanda lunas tetap datang dari webhook Mayar, jadi status
+   pesanan ditanya ke server tiap beberapa detik. Tautan cadangan membuka Mayar di tab baru (e-wallet / iframe macet). */
+var payPoll = null;
+function openPay(no, tok, url, email) {
+  $('#pay-no').textContent = no;
+  $('#pay-mail').textContent = email;
+  $('#pay-out').href = url;
+  $('#pay-min2').textContent = payMinText();
+  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once Mayar confirms it.';
+  $('#pay-wait').classList.remove('is-ok');
+  var fr = $('#pay-if'), ld = $('#pay-load');
+  ld.hidden = false; fr.classList.remove('is-in');
+  fr.onload = function () { ld.hidden = true; fr.classList.add('is-in'); };
+  if (fr.getAttribute('src') !== url) fr.src = url;
+  go('pay', 'pay-h');
+  clearInterval(payPoll);
+  var statusUrl = '/api/imazine/orders/' + no + '/status?t=' + tok, busyPoll = false;
+  function check() {
+    if (busyPoll) return; busyPoll = true;
+    fetch(statusUrl, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : (r.status === 404 ? { gone: true } : null); }).then(function (j) {
+      if (!j) return;
+      if (j.gone) { clearInterval(payPoll); $('#pay-wait-t').textContent = 'This order was deleted because it wasn’t paid in time. Please make your album again.'; return; }
+      if (j.status === 'lunas') {
+        clearInterval(payPoll);
+        $('#pay-wait').classList.add('is-ok'); $('#pay-wait-t').textContent = 'Payment received. Opening your order…';
+        allowUnload = true;
+        setTimeout(function () { window.location.assign('/imazine/pesanan/' + no + '?t=' + tok); }, 900);
+      }
+    }).catch(function () { /* jaringan putus sebentar: coba lagi di putaran berikutnya */ }).then(function () { busyPoll = false; });
+  }
+  payPoll = setInterval(check, 5000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && S.view === 'pay') check(); });
+}
+$('#pay-copy').addEventListener('click', function () {
+  var b = this, v = $('#pay-mail').textContent;
+  function done() { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(done, function () {});
+  else { var r = document.createRange(); r.selectNodeContents($('#pay-mail')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
+});
 $('#co-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var bad = activeFields().filter(function (k) { return !checkField(k); });

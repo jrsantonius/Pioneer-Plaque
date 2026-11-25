@@ -304,7 +304,7 @@
       <button class="btn btn-quiet back" type="button" id="co-back"><svg class="ic"><use href="#i-left"/></svg><span>Back to preview</span></button>
       <p class="eyebrow">Step 4 of 4</p>
       <h1 class="h1 nw" id="co-h" tabindex="-1">Just one more step.</h1>
-      <p class="sub nw" data-pay>Just enter your email, then pay on Mayar. Your name, phone, address, and JNE shipping go there.</p>
+      <p class="sub nw" data-pay>Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.</p>
       <p class="sub nw" data-nopay>Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.</p>
     </div>
     <div class="co-grid">
@@ -330,7 +330,7 @@
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay><strong>Important:</strong> when you pay on Mayar, use the same email as above so your payment is matched automatically. You haven’t paid anything on this page. After you press the button, you’ll go straight to Mayar. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form (by Mayar) opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -347,10 +347,34 @@
         </div>
         <dl class="sum" data-pay>
           <div><dt>Album price</dt><dd class="num" id="sum-total"></dd></div>
-          <div><dt>JNE shipping</dt><dd>Calculated on Mayar</dd></div>
-          <div class="sum-now"><dt>Total on Mayar</dt><dd>Album price + shipping</dd></div>
+          <div><dt>JNE shipping</dt><dd>Calculated in the payment form</dd></div>
+          <div class="sum-now"><dt>Total to pay</dt><dd>Album price + shipping</dd></div>
         </dl>
       </aside>
+    </div>
+  </div>
+</section>
+
+<section class="view scene-desk" data-view="pay" hidden>
+  <div class="wrap co pay-wrap">
+    <div class="co-head">
+      <p class="eyebrow">Step 4 of 4</p>
+      <h1 class="h1 nw" id="pay-h" tabindex="-1">Pay and choose shipping.</h1>
+      <p class="sub"><span>Your order</span> <b class="num" id="pay-no" data-noi18n></b> <span>is saved.</span> <span>Fill in your name, phone, address, and JNE shipping in the form below, then pay.</span></p>
+    </div>
+    <div class="pay-mail">
+      <span class="pay-mail-l">Use this email on the form</span>
+      <b class="pay-mail-v" id="pay-mail" data-noi18n></b>
+      <button class="btn btn-quiet pay-copy" type="button" id="pay-copy">Copy</button>
+    </div>
+    <div class="pay-foot">
+      <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once Mayar confirms it.</span></p>
+      <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment on Mayar’s page</a>. Keep this page open, it still updates after you pay.</p>
+      <p class="hint">Complete the payment within <span id="pay-min2">2 hours</span>. After that, unpaid orders are deleted.</p>
+    </div>
+    <div class="pay-frame" id="pay-frame">
+      <p class="pay-load" id="pay-load">Loading the payment form…</p>
+      <iframe id="pay-if" title="Mayar payment and shipping form" allow="payment; clipboard-write"></iframe>
     </div>
   </div>
 </section>
