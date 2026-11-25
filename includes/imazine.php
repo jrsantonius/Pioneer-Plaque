@@ -35,7 +35,7 @@ foreach ([
     'IMAZINE_ADMIN_PASSWORD'   => '',                // kosong = halaman admin mati
     'IMAZINE_WEBHOOK_TOKEN'    => '',                // rahasia di URL webhook
     'IMAZINE_PAYMENT'          => true,              // true = bayar dan kirim lewat Mayar (dinyalakan lagi 25 Nov 2026); false = album langsung masuk ke tim tanpa bayar (paid_method tanpa_bayar)
-    'IMAZINE_ALLOW_SAMPLES'    => true,              // SEMENTARA untuk uji: boleh pesan memakai foto contoh. Pesanan itu ditandai UJI di admin. Ubah ke false sebelum jualan.
+    'IMAZINE_ALLOW_SAMPLES'    => false,             // true = boleh pesan memakai foto contoh (untuk uji; pesanan ditandai UJI di admin). Dimatikan 25 Nov 2026.
 ] as $k => $v) {
     if (!defined($k)) define($k, $v);
 }
