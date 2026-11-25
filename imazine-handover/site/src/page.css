@@ -21,3 +21,18 @@
 /* Mode pembayaran: tanpa kelas .pay di <html> (bawaan) pembayaran disembunyikan; /api/imazine/config payment:true menambahkan .pay */
 html:not(.pay) [data-pay]{display:none!important}
 html.pay [data-nopay]{display:none!important}
+
+/* ---------- sampul belakang dan punggung ---------- */
+.bk{position:relative;width:100%;height:100%;background:#fff;container-type:size;overflow:hidden}
+.bk>svg,.spn>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.bk-t{position:absolute;left:0;right:0;margin:0;text-align:center;white-space:nowrap;color:#2e2e2e;font-family:"Manrope","Manrope Fallback",Arial,sans-serif;font-weight:500;font-size:calc(100cqw * 4.211 / 210);line-height:1;letter-spacing:0}
+.bk-t1{top:calc(100cqh * 173.51 / 297)}
+.bk-t2{top:calc(100cqh * 180.12 / 297)}
+.spn{position:relative;width:100%;height:100%;background:#fff;container-type:size;overflow:hidden}
+.spn-cr{position:absolute;left:calc(100cqw * 2.33 / 5);top:calc(100cqh * 231.2 / 297);transform:translateX(-50%);margin:0;display:block;writing-mode:vertical-rl;white-space:nowrap;color:#707070;font-family:"Manrope","Manrope Fallback",Arial,sans-serif;font-weight:600;font-size:calc(100cqh * 1.826 / 297);line-height:1}
+/* satu lembar cetak: belakang + punggung + depan, dengan bleed 3 mm (431 x 303 mm) */
+.spread{position:relative;aspect-ratio:431/303;background:#fff;overflow:hidden}
+.spread>.sp-back{position:absolute;left:calc(3 / 431 * 100%);top:calc(3 / 303 * 100%);width:calc(210 / 431 * 100%);height:calc(297 / 303 * 100%)}
+.spread>.sp-spine{position:absolute;left:calc(213 / 431 * 100%);top:calc(3 / 303 * 100%);width:calc(5 / 431 * 100%);height:calc(297 / 303 * 100%)}
+.spread>.sp-front{position:absolute;left:calc(218 / 431 * 100%);top:0;width:calc(213 / 431 * 100%);height:100%;overflow:hidden}
+.spread>.sp-front>*{width:100%;height:100%;display:block;object-fit:cover}

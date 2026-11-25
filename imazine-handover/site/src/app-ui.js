@@ -1563,11 +1563,7 @@ function pvSides(v) {
 function pvNode(what) {
   var cat = catOf(S.cat), cv = curCover();
   if (what === 'cover') { var f = coverArt(cat, cv, t('Front cover {name}', { name: t(cv.name) }), 960); f.classList.add('pv-cover', 'is-front'); return f; }
-  if (what === 'back' && cv.back) { var im = new Image(); im.className = 'pv-cover'; im.draggable = false; im.src = IMZ_IMG[cv.back]; im.alt = 'Back cover'; return im; }
-  if (what === 'back') {
-    var d = h('div', 'pv-backc'); d.style.background = cv.bg; d.setAttribute('role', 'img'); d.setAttribute('aria-label', 'Back cover');
-    var lg = new Image(); lg.src = relLum(cv.bg) < 0.3 ? IMZ_IMG.logo_white : IMZ_IMG.logo_black; lg.alt = ''; d.appendChild(lg); return d;
-  }
+  if (what === 'back') { var bk = backCover(new Date()); bk.classList.add('pv-cover'); return bk; }   /* sampul belakang tetap untuk semua album (template 25 Nov 2026) */
   if (what === 'in' || what == null) { var blank = h('div', 'pv-blank'); blank.setAttribute('aria-hidden', 'true'); return blank; }
   return renderPage(S.album, what, 'view');
 }

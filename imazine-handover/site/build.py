@@ -102,6 +102,10 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
 .sheet{width:210mm;height:297mm;max-width:calc(100vw - 32px);max-height:calc((100vw - 32px) * 297 / 210);background:#fff;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .sheet .pg{width:100%;height:100%;aspect-ratio:auto}
 .sheet .cv,.sheet.cover img{width:100%;height:100%;display:block;object-fit:cover}
+.sheet.spread{width:min(431mm, calc(100vw - 32px));height:auto;max-width:none;max-height:none;aspect-ratio:431/303}
+.spread-host{display:none}
+body.mode-spread .book{display:none}
+body.mode-spread .spread-host{display:flex;justify-content:center;padding:24px 16px 80px}
 /* tablet: bar tetap di atas, tapi lebih ringkas */
 @media (max-width:1024px){
   .bar{padding:10px 20px}
@@ -134,16 +138,20 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
      memecah bingkai itu di batas halaman cetak, lalu foto di dalamnya tidak terpotong dan meluber (PDF IMZ-BL39KY, 23 Nov 2026).
      contain:strict menjadikan tiap lembar satu kesatuan yang tidak dipecah, jadi hasil cetak sama dengan layar. */
   .sheet{width:210mm;height:297mm;max-width:none;max-height:none;box-shadow:none;contain:strict}
+  .sheet.spread{width:431mm;height:303mm}
+  body.mode-spread .spread-host{display:block;padding:0}
 }
 '''
 ALBUM_MARKUP = '''<header class="bar" id="bar"><div class="bar-in">
   <div><a id="back" href="/imazine/admin">&larr; Kembali ke pesanan</a><h1 id="t">Album</h1><p class="m" id="m"></p><p class="prog" id="prog" role="status" aria-live="polite">Menyiapkan album...</p></div>
-  <div class="act"><label><input type="checkbox" id="with-cover" checked> Sertakan sampul di halaman pertama</label><button class="btn" id="save" type="button" disabled>Simpan sebagai PDF</button></div>
+  <div class="act"><label><input type="checkbox" id="with-cover" checked> Sertakan pratinjau sampul depan dan belakang</label><button class="btn" id="save" type="button" disabled>Simpan isi album (PDF A4)</button><button class="btn btn-line" id="save-cover" type="button" disabled>Simpan file sampul (PDF 431 × 303 mm)</button></div>
 </div>
 <details class="how" id="how"><summary>Cara menyimpan PDF</summary><p id="how-t">Di dialog cetak: pilih tujuan <b>Simpan sebagai PDF</b> (Save as PDF), ukuran kertas <b>A4</b>, margin <b>Tidak ada</b> (None), skala <b>100%</b>. Paling rapi di Chrome atau Edge di komputer.</p></details>
 <p class="warn" id="warn" hidden></p>
 </header>
-<main class="book" id="book"></main>'''
+<main class="book" id="book"></main>
+<section class="spread-host" id="spread" aria-label="File cetak sampul"></section>
+<style id="pg-size"></style>'''
 album_js = '(function(){\n"use strict";\nvar IMZ_TPL=%s;\nvar IMZ_IMG=%s;\n%s\n%s\n%s\n%s\n})();' % (
     json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps({k: IMG[k] for k in ('bali', 'sol', 'journey')}), covers_js, rd('src/render.js'), rd('src/app-core.js'), rd('src/album-print.js'))
 album_js = album_js.replace('</script', '<\\/script')

@@ -58,12 +58,21 @@ function leaf(label, sheet, cls) {
   return l;
 }
 
+var spreadLeaf = null;
 function render(order, album) {
-  var coverLeaf = null, cv = coverEl(order);
+  var coverLeaf = null, cv = coverEl(order), made = order.createdAt ? new Date(order.createdAt) : new Date();
   if (cv) {
     var cs = h('div', 'sheet cover'); cs.appendChild(cv);
-    coverLeaf = leaf('Sampul (pratinjau, bukan file cetak sampul)', cs, 'leaf-cover');
+    coverLeaf = leaf('Sampul depan (pratinjau)', cs, 'leaf-cover');
   }
+  var bs = h('div', 'sheet cover'); bs.appendChild(backCover(made));
+  var backLeaf = leaf('Sampul belakang (pratinjau)', bs, 'leaf-cover');
+  /* file cetak sampul: belakang + punggung 5 mm + depan, bleed 3 mm, satu lembar 431 x 303 mm */
+  var sp = h('div', 'sheet spread');
+  var sb = h('div', 'sp-back'); sb.appendChild(backCover(made)); sp.appendChild(sb);
+  var ss = h('div', 'sp-spine'); ss.appendChild(spineEl()); sp.appendChild(ss);
+  var sf = h('div', 'sp-front'); var cv2 = coverEl(order); if (cv2) sf.appendChild(cv2); sp.appendChild(sf);
+  spreadLeaf = leaf('File cetak sampul: belakang + punggung 5 mm + depan, bleed 3 mm (431 × 303 mm)', sp, 'leaf-spread');
   var frag = document.createDocumentFragment();
   album.pages.forEach(function (st, pi) {
     var P = album.tpl.pages[pi];
@@ -80,12 +89,10 @@ function render(order, album) {
   ui.book.textContent = '';
   ui.book.appendChild(frag);
   function syncCover() {
-    if (!coverLeaf) return;
-    /* dilepas dari DOM (bukan display:none) supaya tidak ada halaman kosong di awal PDF */
-    if (ui.cover.checked) ui.book.insertBefore(coverLeaf, ui.book.firstChild);
-    else if (coverLeaf.parentNode) coverLeaf.parentNode.removeChild(coverLeaf);
+    /* dilepas dari DOM (bukan display:none) supaya tidak ada halaman kosong di awal atau akhir PDF */
+    if (ui.cover.checked) { if (coverLeaf) ui.book.insertBefore(coverLeaf, ui.book.firstChild); ui.book.appendChild(backLeaf); }
+    else [coverLeaf, backLeaf].forEach(function (l) { if (l && l.parentNode) l.parentNode.removeChild(l); });
   }
-  if (!coverLeaf) { ui.cover.checked = false; ui.cover.disabled = true; }
   ui.cover.addEventListener('change', syncCover);
   syncCover();
 }
@@ -154,7 +161,7 @@ function boot() {
     if (r.odd.length) notes.push('Foto nomor ' + r.odd.join(', ') + ' rasionya berbeda dari yang dilihat pembeli (mungkin orientasi foto). Periksa halamannya sebelum dicetak.');
     ui.prog.textContent = r.used + ' foto dimuat. Siap disimpan.';
     if (notes.length) { ui.warn.hidden = false; ui.warn.textContent = notes.join(' '); }
-    ui.save.disabled = false;
+    ui.save.disabled = false; document.getElementById('save-cover').disabled = false;
   }).catch(function (e) { fail(e.message || String(e)); });
 }
 
@@ -191,6 +198,21 @@ setupHow();
 ui.save.addEventListener('click', function () {
   if (SAFARI_MAC && !confirm('Di Safari, sebagian halaman PDF bisa kosong. Sebaiknya simpan dari Chrome atau Edge. Tetap lanjut di Safari?')) return;
   window.print();
+});
+/* File cetak sampul: halaman ganti sementara ke satu lembar 431 x 303 mm, lalu kembali setelah dialog cetak ditutup. */
+var spreadBtn = document.getElementById('save-cover'), spreadHost = document.getElementById('spread'), pageSize = document.getElementById('pg-size');
+spreadBtn.addEventListener('click', function () {
+  if (!spreadLeaf) return;
+  if (SAFARI_MAC && !confirm('Di Safari, hasil PDF bisa tidak sesuai. Sebaiknya simpan dari Chrome atau Edge. Tetap lanjut di Safari?')) return;
+  spreadHost.textContent = ''; spreadHost.appendChild(spreadLeaf);
+  document.body.classList.add('mode-spread'); pageSize.textContent = '@page{size:431mm 303mm;margin:0}';
+  document.title = NO + ' sampul';
+  setTimeout(function () { window.print(); }, 50);
+});
+window.addEventListener('afterprint', function () {
+  if (!document.body.classList.contains('mode-spread')) return;
+  document.body.classList.remove('mode-spread'); pageSize.textContent = '';
+  document.title = NO + ' album';
 });
 document.body.insertAdjacentHTML('beforeend', stampDefs());
 boot();
