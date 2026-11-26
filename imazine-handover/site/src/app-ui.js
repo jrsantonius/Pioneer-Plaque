@@ -928,7 +928,7 @@ function drawSlotTool() {
   tool.hidden = !s;
   $('.studio').classList.toggle('has-sel', !!s);
   drawPhBar();
-  if (!s) { $('#tray-tip').textContent = 'Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.'; return; }
+  if (!s) { $('#tray-tip').textContent = 'Pick a frame on the page, then pick its photo here, or drag a photo onto any empty spot. Photos are sorted oldest first.'; return; }
   var filled = s.photo != null;
   $('#slot-tool-h').textContent = t('Photo {i} on page {p}', { i: S.sel.i + 1, p: S.sel.p + 1 }) + (filled ? '' : t(' · empty'));
   $('#slot-tool-filled').hidden = !filled;
@@ -1009,7 +1009,7 @@ $('#slot-cap-x').addEventListener('click', function () {
 function drawHint() {
   var hint = $('#st-hint'), on = S.swap || S.armed != null;
   hint.hidden = !on;
-  if (on) $('#st-hint-t').textContent = S.swap ? 'Pick another frame to swap photos' : 'Pick a frame for this photo';
+  if (on) $('#st-hint-t').textContent = S.swap ? 'Pick another frame to swap photos' : 'Click a frame, or any empty spot on the page';
 }
 $('#st-hint-x').addEventListener('click', function () { S.swap = null; S.armed = null; drawHint(); drawTray(); });
 
@@ -1425,6 +1425,32 @@ function addText() {
   editText(p, 'tx', i);
   toast('Text added. Type your words, then drag it where you like.');
 }
+/* bingkai baru (opsional langsung berisi foto), paling atas di tumpukan */
+function newFrame(p, geo, photoIdx) {
+  var st = S.album.pages[p], z = topZ(p);
+  st.add = st.add || { tx: [], ph: [] };
+  st.add.ph.push(geo.map(function (v) { return Math.round(v * 10) / 10; }).concat([0]).slice(0, 5));
+  st.slots.push({ photo: null, fx: 0.5, fy: 0.5, z: 1 });
+  applyAdds(S.album, p);
+  var i = st.slots.length - 1;
+  st.z = st.z || {}; st.z['s' + i] = z;
+  if (photoIdx != null) setSlot(S.album, p, i, photoIdx);
+  S.dirty = true; S.sel = null; S.armed = null;
+  redrawPage(p); refreshNavFor(p); drawProgress();
+  selectSlot(p, i); drawHint();
+  return i;
+}
+/* foto ditaruh bebas di titik layar (drag dari rak, atau foto dipilih lalu klik ruang kosong) */
+function placeFree(p, clientX, clientY, photoIdx) {
+  var pr = pageNode(p).getBoundingClientRect(), ph = S.photos[photoIdx]; if (!ph) return;
+  var ux = (clientX - pr.left) / pr.width * 1000, uy = (clientY - pr.top) / pr.height * PAGE_H;
+  var a = ph.w / ph.h, w = a >= 1 ? 380 : 380 * a, hh = w / a;
+  if (hh > 520) { hh = 520; w = hh * a; }
+  var x = clamp(ux - w / 2, 0, 1000 - w), y = clamp(uy - hh / 2, 0, PAGE_H - hh);
+  endEdit();
+  newFrame(p, [x, y, w, hh], photoIdx);
+  toast('Photo placed. Drag it to move, or drag its corners to resize.');
+}
 function addFrame() {
   var p = addTarget(); if (p == null) return;
   endEdit();
@@ -1432,14 +1458,7 @@ function addFrame() {
   var st = S.album.pages[p], z = topZ(p), w = 360, hh = 270, sp = null;
   [[360, 270], [300, 225], [240, 180], [180, 135]].some(function (d) { var c = findSpot(p, d[0], d[1]); if (!c.ov) { sp = c; w = d[0]; hh = d[1]; return true; } return false; });
   if (!sp) { w = 360; hh = 270; sp = findSpot(p, w, hh); }
-  st.add = st.add || { tx: [], ph: [] };
-  st.add.ph.push([Math.round(sp.x), Math.round(sp.y), w, hh, 0]);
-  st.slots.push({ photo: null, fx: 0.5, fy: 0.5, z: 1 });
-  applyAdds(S.album, p);
-  var i = st.slots.length - 1;
-  st.z = st.z || {}; st.z['s' + i] = z;
-  S.dirty = true; S.sel = null; redrawPage(p); refreshNavFor(p); drawProgress();
-  selectSlot(p, i);
+  newFrame(p, [sp.x, sp.y, w, hh], null);
   toast('Photo frame added. Pick a photo for it from your photos.');
 }
 /* hapus elemen tambahan: indeks sesudahnya bergeser satu, begitu juga kunci geser/tumpukan/gaya miliknya */
@@ -1580,6 +1599,7 @@ $('#spread').addEventListener('click', function (e) {
   if (editing && editing.node.contains(e.target)) return;
   var pg = e.target.closest('.pg'); if (!pg) { deselect(); return; }
   var p = +pg.dataset.p, slot = e.target.closest('.slot'), txt = e.target.closest('[data-tx],[data-pa],[data-cp]');
+  if (S.armed != null && !slot && !S.swap) return placeFree(p, e.clientX, e.clientY, S.armed);
   if (!txt && !slot) {                               /* (8) tiny frames and small texts get a forgiving hit area: nearest one within 22px */
     var near = null, nd = 22;
     $$('.slot.is-tiny', pg).forEach(function (n) {
@@ -1625,8 +1645,17 @@ $('#spread').addEventListener('keydown', function (e) {
 });
 ['dragover', 'drop', 'dragleave'].forEach(function (ev) {
   $('#spread').addEventListener(ev, function (e) {
-    var el = e.target.closest ? e.target.closest('.slot') : null;
+    var el = e.target.closest ? e.target.closest('.slot') : null, pgEl = !el && e.target.closest ? e.target.closest('.pg') : null;
     $$('#spread .is-drop').forEach(function (n) { if (n !== el || ev !== 'dragover') n.classList.remove('is-drop'); });
+    $$('#spread .is-drop-free').forEach(function (n) { if (n !== pgEl || ev !== 'dragover') n.classList.remove('is-drop-free'); });
+    if (!el && pgEl) {   /* ruang kosong halaman: foto ditaruh bebas di titik itu sebagai bingkai baru */
+      e.preventDefault();
+      if (ev === 'dragover') { pgEl.classList.add('is-drop-free'); e.dataTransfer.dropEffect = 'copy'; return; }
+      if (ev !== 'drop') return;
+      var dd = e.dataTransfer.getData('text/plain');
+      if (dd.indexOf('imz:') === 0) placeFree(+pgEl.dataset.p, e.clientX, e.clientY, +dd.slice(4));
+      return;
+    }
     if (!el) return;
     e.preventDefault();
     if (ev === 'dragover') { el.classList.add('is-drop'); return; }

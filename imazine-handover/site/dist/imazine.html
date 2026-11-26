@@ -327,11 +327,13 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .pt-n { font-size: 12px; line-height: 1.3; color: var(--ink-3); text-align: center; }
 .pt-badge { position: absolute; top: 2px; right: 2px; min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border-radius: 10px; background: var(--tangerine); color: var(--on-accent); font-size: 12px; line-height: 1; font-weight: 500; }
 
-.st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
+.st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
 .spread { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-self: center; justify-self: center; height: min(100%, (100cqw - 40px) * .708); aspect-ratio: 2000 / 1416; box-shadow: 0 14px 28px rgba(0,0,0,.2); } /* no filter here: a filter lets cropped photos catch clicks outside the page */
 .spread.is-single { grid-template-columns: 1fr; aspect-ratio: 1000 / 1416; height: min(100%, (100cqw - 40px) * 1.416); }
 /* bilah tambah elemen di atas halaman */
-.add-bar { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }   /* kiri: notifikasi muncul di tengah atas dan tidak menutupinya */
+.add-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }   /* di panel kanan, di atas tab (feedback 26 Nov 2026) */
+.add-bar .add-btn { justify-content: center; min-height: 40px; font-weight: 700; }
+.pg.is-drop-free { outline: 3px dashed var(--tangerine); outline-offset: -3px; }
 .add-btn { background: var(--bg); color: var(--ink); border: 1px solid var(--line-strong); }
 .add-btn:hover { background: var(--surface-2); }
 .add-btn .ic { width: 18px; height: 18px; }
@@ -570,7 +572,6 @@ textarea.in { resize: vertical; min-height: 92px; }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 14px); } }
 /* in the editor and the preview the bottom edge belongs to the pager, so messages drop in from the top */
 body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto; top: calc(var(--top-h) + env(safe-area-inset-top, 0px) + 70px); animation-name: toast-top; }
-body[data-view="studio"] .toast { top: calc(var(--top-h) + env(safe-area-inset-top, 0px) + 122px); }   /* di bawah bilah Tambah teks / Tambah foto */
 @keyframes toast-top { from { opacity: 0; transform: translate(-50%, -14px); } }
 .btn-toast { background: var(--vintage); color: var(--ink); min-height: 44px; }
 .busy { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: color-mix(in srgb, var(--bg) 92%, transparent); color: var(--ink); }
@@ -602,7 +603,6 @@ body[data-view="studio"] .toast { top: calc(var(--top-h) + env(safe-area-inset-t
   .steps li.is-on .steps-t { display: inline; padding-right: 8px; }
   body[data-view="studio"] .top, body[data-view="preview"] .top { display: none; }
   body[data-view="studio"] .toast, body[data-view="preview"] .toast { top: calc(env(safe-area-inset-top, 0px) + 64px); }
-  body[data-view="studio"] .toast { top: calc(env(safe-area-inset-top, 0px) + 112px); }
   .studio, .preview { --chrome: calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)); }
   .studio { --panel-h: clamp(216px, 31dvh, 300px); grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "bar" "stage" "panel"; }
   .st-bar { gap: 8px; min-height: 56px; padding-block: 6px; }
@@ -619,6 +619,8 @@ body[data-view="studio"] .toast { top: calc(var(--top-h) + env(safe-area-inset-t
   .howto-st li.howto-short { display: block; }
   .howto-st li.howto-short::before { display: none; }
   .spread, .spread.is-single { height: min(100%, (100cqw - 4px) * 1.416); }
+  .add-bar { padding: 8px 12px; gap: 6px; }
+  .add-bar .add-btn { min-height: 36px; }
   .st-panel { border-left: 0; border-top: 1px solid var(--line); grid-template-rows: auto minmax(0, 1fr); height: var(--panel-h); padding-bottom: env(safe-area-inset-bottom, 0px); }
   .tab-hal { display: inline-flex !important; }
   .pane { padding: 10px var(--gut-r) 14px var(--gut-l); gap: 10px; }
@@ -964,10 +966,6 @@ html.pay [data-nopay]{display:none!important}
 
   <div class="st-stage" id="st-stage">
     <div class="st-hint" id="st-hint" hidden><span id="st-hint-t"></span><button class="btn btn-sm btn-line" type="button" id="st-hint-x">Cancel</button></div>
-    <div class="add-bar" role="toolbar" aria-label="Add to the page">
-      <button class="btn btn-sm add-btn" type="button" id="add-text"><svg class="ic"><use href="#i-text"/></svg><span>Add a text</span></button>
-      <button class="btn btn-sm add-btn" type="button" id="add-photo"><svg class="ic"><use href="#i-photo"/></svg><span>Add a photo</span></button>
-    </div>
     <div class="spread" id="spread"></div>
     <div class="ph-bar tx-bar" id="tx-bar" role="toolbar" aria-label="Text tools" hidden>
       <select class="tx-font" id="tx-font" aria-label="Font"></select>
@@ -1017,12 +1015,16 @@ html.pay [data-nopay]{display:none!important}
       <li class="howto-text">Click a text to type in it.</li>
       <li class="howto-layer">Photos and text can overlap: use To front or To back to choose what sits on top.</li>
       <li class="howto-style">Click a text to change its font, size, color, bold, italic, and more in the bar above it.</li>
-      <li class="howto-add">Use Add a text or Add a photo to fill empty space on the page you last touched.</li>
+      <li class="howto-add">Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.</li>
       <li class="howto-short">Drag photos and text · drag corners to resize · double-tap a photo to adjust it · To front / To back to stack.</li>
     </ul>
   </div>
 
   <aside class="st-panel" id="st-panel" aria-label="Album tools" data-safe>
+    <div class="add-bar" role="toolbar" aria-label="Add to the page">
+      <button class="btn btn-sm add-btn" type="button" id="add-text"><svg class="ic"><use href="#i-text"/></svg><span>Add a text</span></button>
+      <button class="btn btn-sm add-btn" type="button" id="add-photo"><svg class="ic"><use href="#i-photo"/></svg><span>Add a photo</span></button>
+    </div>
     <div class="tabs" role="tablist" aria-label="Tools">
       <button role="tab" type="button" id="tab-foto" aria-controls="pane-foto" aria-selected="true" data-tab="foto"><svg class="ic"><use href="#i-photo"/></svg>Photos</button>
       <button role="tab" type="button" id="tab-teks" aria-controls="pane-teks" aria-selected="false" data-tab="teks" tabindex="-1"><svg class="ic"><use href="#i-text"/></svg>Text</button>
@@ -1054,7 +1056,7 @@ html.pay [data-nopay]{display:none!important}
         <p class="tray-t">Photo shelf <span class="num" id="tray-n">0</span></p>
         <button class="btn btn-sm btn-line" type="button" data-add-photos><svg class="ic"><use href="#i-plus"/></svg>Add photos</button>
       </div>
-      <p class="tip" id="tray-tip">Pick a frame on the page, then pick its photo here.</p>
+      <p class="tip" id="tray-tip">Pick a frame on the page, then pick its photo here. Or drag a photo onto any empty spot on the page.</p>
       <div class="tray" id="tray"></div>
     </div>
 
@@ -1449,6 +1451,11 @@ var I18N_ID = {
 "Some photos didn’t upload. Please try sending again.": "Beberapa foto belum ter-upload. Coba kirim lagi, ya.",
 "We couldn’t create the payment link. Please try again in a moment.": "Link pembayaran belum bisa dibuat. Coba lagi sebentar lagi.",
 "Taking you to Mayar…": "Mengarahkan ke Mayar…",
+"Pick a frame on the page, then pick its photo here. Or drag a photo onto any empty spot on the page.": "Pilih bingkai di halaman, lalu pilih fotonya di sini. Atau drag foto ke bagian halaman mana pun yang kosong.",
+"Pick a frame on the page, then pick its photo here, or drag a photo onto any empty spot. Photos are sorted oldest first.": "Pilih bingkai di halaman lalu pilih fotonya di sini, atau drag foto ke bagian halaman yang kosong. Urutannya dari foto paling lama.",
+"Click a frame, or any empty spot on the page": "Klik bingkai, atau bagian halaman yang kosong",
+"Photo placed. Drag it to move, or drag its corners to resize.": "Foto ditaruh. Geser untuk memindahkan, tarik sudutnya untuk ubah ukuran.",
+"Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.": "Drag foto dari rak ke bagian halaman yang kosong, atau pakai Tambah teks dan Tambah foto, untuk mengisi ruang kosong.",
 "Add to the page": "Tambah ke halaman",
 "Add a text": "Tambah teks",
 "Add a photo": "Tambah foto",
@@ -4000,7 +4007,7 @@ function drawSlotTool() {
   tool.hidden = !s;
   $('.studio').classList.toggle('has-sel', !!s);
   drawPhBar();
-  if (!s) { $('#tray-tip').textContent = 'Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.'; return; }
+  if (!s) { $('#tray-tip').textContent = 'Pick a frame on the page, then pick its photo here, or drag a photo onto any empty spot. Photos are sorted oldest first.'; return; }
   var filled = s.photo != null;
   $('#slot-tool-h').textContent = t('Photo {i} on page {p}', { i: S.sel.i + 1, p: S.sel.p + 1 }) + (filled ? '' : t(' · empty'));
   $('#slot-tool-filled').hidden = !filled;
@@ -4081,7 +4088,7 @@ $('#slot-cap-x').addEventListener('click', function () {
 function drawHint() {
   var hint = $('#st-hint'), on = S.swap || S.armed != null;
   hint.hidden = !on;
-  if (on) $('#st-hint-t').textContent = S.swap ? 'Pick another frame to swap photos' : 'Pick a frame for this photo';
+  if (on) $('#st-hint-t').textContent = S.swap ? 'Pick another frame to swap photos' : 'Click a frame, or any empty spot on the page';
 }
 $('#st-hint-x').addEventListener('click', function () { S.swap = null; S.armed = null; drawHint(); drawTray(); });
 
@@ -4497,6 +4504,32 @@ function addText() {
   editText(p, 'tx', i);
   toast('Text added. Type your words, then drag it where you like.');
 }
+/* bingkai baru (opsional langsung berisi foto), paling atas di tumpukan */
+function newFrame(p, geo, photoIdx) {
+  var st = S.album.pages[p], z = topZ(p);
+  st.add = st.add || { tx: [], ph: [] };
+  st.add.ph.push(geo.map(function (v) { return Math.round(v * 10) / 10; }).concat([0]).slice(0, 5));
+  st.slots.push({ photo: null, fx: 0.5, fy: 0.5, z: 1 });
+  applyAdds(S.album, p);
+  var i = st.slots.length - 1;
+  st.z = st.z || {}; st.z['s' + i] = z;
+  if (photoIdx != null) setSlot(S.album, p, i, photoIdx);
+  S.dirty = true; S.sel = null; S.armed = null;
+  redrawPage(p); refreshNavFor(p); drawProgress();
+  selectSlot(p, i); drawHint();
+  return i;
+}
+/* foto ditaruh bebas di titik layar (drag dari rak, atau foto dipilih lalu klik ruang kosong) */
+function placeFree(p, clientX, clientY, photoIdx) {
+  var pr = pageNode(p).getBoundingClientRect(), ph = S.photos[photoIdx]; if (!ph) return;
+  var ux = (clientX - pr.left) / pr.width * 1000, uy = (clientY - pr.top) / pr.height * PAGE_H;
+  var a = ph.w / ph.h, w = a >= 1 ? 380 : 380 * a, hh = w / a;
+  if (hh > 520) { hh = 520; w = hh * a; }
+  var x = clamp(ux - w / 2, 0, 1000 - w), y = clamp(uy - hh / 2, 0, PAGE_H - hh);
+  endEdit();
+  newFrame(p, [x, y, w, hh], photoIdx);
+  toast('Photo placed. Drag it to move, or drag its corners to resize.');
+}
 function addFrame() {
   var p = addTarget(); if (p == null) return;
   endEdit();
@@ -4504,14 +4537,7 @@ function addFrame() {
   var st = S.album.pages[p], z = topZ(p), w = 360, hh = 270, sp = null;
   [[360, 270], [300, 225], [240, 180], [180, 135]].some(function (d) { var c = findSpot(p, d[0], d[1]); if (!c.ov) { sp = c; w = d[0]; hh = d[1]; return true; } return false; });
   if (!sp) { w = 360; hh = 270; sp = findSpot(p, w, hh); }
-  st.add = st.add || { tx: [], ph: [] };
-  st.add.ph.push([Math.round(sp.x), Math.round(sp.y), w, hh, 0]);
-  st.slots.push({ photo: null, fx: 0.5, fy: 0.5, z: 1 });
-  applyAdds(S.album, p);
-  var i = st.slots.length - 1;
-  st.z = st.z || {}; st.z['s' + i] = z;
-  S.dirty = true; S.sel = null; redrawPage(p); refreshNavFor(p); drawProgress();
-  selectSlot(p, i);
+  newFrame(p, [sp.x, sp.y, w, hh], null);
   toast('Photo frame added. Pick a photo for it from your photos.');
 }
 /* hapus elemen tambahan: indeks sesudahnya bergeser satu, begitu juga kunci geser/tumpukan/gaya miliknya */
@@ -4652,6 +4678,7 @@ $('#spread').addEventListener('click', function (e) {
   if (editing && editing.node.contains(e.target)) return;
   var pg = e.target.closest('.pg'); if (!pg) { deselect(); return; }
   var p = +pg.dataset.p, slot = e.target.closest('.slot'), txt = e.target.closest('[data-tx],[data-pa],[data-cp]');
+  if (S.armed != null && !slot && !S.swap) return placeFree(p, e.clientX, e.clientY, S.armed);
   if (!txt && !slot) {                               /* (8) tiny frames and small texts get a forgiving hit area: nearest one within 22px */
     var near = null, nd = 22;
     $$('.slot.is-tiny', pg).forEach(function (n) {
@@ -4697,8 +4724,17 @@ $('#spread').addEventListener('keydown', function (e) {
 });
 ['dragover', 'drop', 'dragleave'].forEach(function (ev) {
   $('#spread').addEventListener(ev, function (e) {
-    var el = e.target.closest ? e.target.closest('.slot') : null;
+    var el = e.target.closest ? e.target.closest('.slot') : null, pgEl = !el && e.target.closest ? e.target.closest('.pg') : null;
     $$('#spread .is-drop').forEach(function (n) { if (n !== el || ev !== 'dragover') n.classList.remove('is-drop'); });
+    $$('#spread .is-drop-free').forEach(function (n) { if (n !== pgEl || ev !== 'dragover') n.classList.remove('is-drop-free'); });
+    if (!el && pgEl) {   /* ruang kosong halaman: foto ditaruh bebas di titik itu sebagai bingkai baru */
+      e.preventDefault();
+      if (ev === 'dragover') { pgEl.classList.add('is-drop-free'); e.dataTransfer.dropEffect = 'copy'; return; }
+      if (ev !== 'drop') return;
+      var dd = e.dataTransfer.getData('text/plain');
+      if (dd.indexOf('imz:') === 0) placeFree(+pgEl.dataset.p, e.clientX, e.clientY, +dd.slice(4));
+      return;
+    }
     if (!el) return;
     e.preventDefault();
     if (ev === 'dragover') { el.classList.add('is-drop'); return; }

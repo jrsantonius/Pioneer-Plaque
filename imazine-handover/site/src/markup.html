@@ -182,10 +182,6 @@
 
   <div class="st-stage" id="st-stage">
     <div class="st-hint" id="st-hint" hidden><span id="st-hint-t"></span><button class="btn btn-sm btn-line" type="button" id="st-hint-x">Cancel</button></div>
-    <div class="add-bar" role="toolbar" aria-label="Add to the page">
-      <button class="btn btn-sm add-btn" type="button" id="add-text"><svg class="ic"><use href="#i-text"/></svg><span>Add a text</span></button>
-      <button class="btn btn-sm add-btn" type="button" id="add-photo"><svg class="ic"><use href="#i-photo"/></svg><span>Add a photo</span></button>
-    </div>
     <div class="spread" id="spread"></div>
     <div class="ph-bar tx-bar" id="tx-bar" role="toolbar" aria-label="Text tools" hidden>
       <select class="tx-font" id="tx-font" aria-label="Font"></select>
@@ -235,12 +231,16 @@
       <li class="howto-text">Click a text to type in it.</li>
       <li class="howto-layer">Photos and text can overlap: use To front or To back to choose what sits on top.</li>
       <li class="howto-style">Click a text to change its font, size, color, bold, italic, and more in the bar above it.</li>
-      <li class="howto-add">Use Add a text or Add a photo to fill empty space on the page you last touched.</li>
+      <li class="howto-add">Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.</li>
       <li class="howto-short">Drag photos and text · drag corners to resize · double-tap a photo to adjust it · To front / To back to stack.</li>
     </ul>
   </div>
 
   <aside class="st-panel" id="st-panel" aria-label="Album tools" data-safe>
+    <div class="add-bar" role="toolbar" aria-label="Add to the page">
+      <button class="btn btn-sm add-btn" type="button" id="add-text"><svg class="ic"><use href="#i-text"/></svg><span>Add a text</span></button>
+      <button class="btn btn-sm add-btn" type="button" id="add-photo"><svg class="ic"><use href="#i-photo"/></svg><span>Add a photo</span></button>
+    </div>
     <div class="tabs" role="tablist" aria-label="Tools">
       <button role="tab" type="button" id="tab-foto" aria-controls="pane-foto" aria-selected="true" data-tab="foto"><svg class="ic"><use href="#i-photo"/></svg>Photos</button>
       <button role="tab" type="button" id="tab-teks" aria-controls="pane-teks" aria-selected="false" data-tab="teks" tabindex="-1"><svg class="ic"><use href="#i-text"/></svg>Text</button>
@@ -272,7 +272,7 @@
         <p class="tray-t">Photo shelf <span class="num" id="tray-n">0</span></p>
         <button class="btn btn-sm btn-line" type="button" data-add-photos><svg class="ic"><use href="#i-plus"/></svg>Add photos</button>
       </div>
-      <p class="tip" id="tray-tip">Pick a frame on the page, then pick its photo here.</p>
+      <p class="tip" id="tray-tip">Pick a frame on the page, then pick its photo here. Or drag a photo onto any empty spot on the page.</p>
       <div class="tray" id="tray"></div>
     </div>
 
