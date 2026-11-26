@@ -19,8 +19,10 @@ function asObj(v) {   /* PHP mengubah {} menjadi [] dan {"0":..} menjadi list; k
 }
 
 function buildAlbum(order) {
-  var tpl = IMZ_TPL[order.template];
-  if (!tpl) throw new Error('Template "' + order.template + '" tidak dikenal.');
+  if (!IMZ_TPL[order.template]) throw new Error('Template "' + order.template + '" tidak dikenal.');
+  var tpl = albumTpl(order.template);
+  /* teks dan bingkai foto yang ditambahkan pembeli di halaman */
+  tpl.pages = tpl.pages.map(function (base, pi) { return composePage(base, normAdd(((order.pages || [])[pi] || {}).adds)); });
   var photos = (order.photos || []).map(function (p) {
     return { url: BLANK, w: p.width || 1, h: p.height || 1, date: p.date ? new Date(p.date + 'T00:00:00') : null };
   });

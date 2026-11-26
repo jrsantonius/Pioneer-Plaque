@@ -36,7 +36,7 @@ function h(tag, cls, text) {
 function pct(v, base) { return (v / base * 100).toFixed(3) + '%'; }
 
 /* Placeholder wording follows the casing the template asked for. */
-function tokenHint(tk) { return t(tk.up ? 'TEXT' : 'text'); }
+function tokenHint(tk) { return tk.hint ? t(tk.hint) : t(tk.up ? 'TEXT' : 'text'); }
 
 /* Keterangan foto hanya berisi apa yang ditulis pembeli. Tanggal dari file foto TIDAK diisikan otomatis (review 18 Nov 2026):
    tanggal di file bisa saja tanggal unduh, edit, atau pindah, bukan tanggal foto diambil. Pembeli bisa memakainya lewat tombol. */

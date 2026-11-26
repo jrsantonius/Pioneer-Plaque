@@ -1264,7 +1264,7 @@ function h(tag, cls, text) {
 function pct(v, base) { return (v / base * 100).toFixed(3) + '%'; }
 
 /* Placeholder wording follows the casing the template asked for. */
-function tokenHint(tk) { return t(tk.up ? 'TEXT' : 'text'); }
+function tokenHint(tk) { return tk.hint ? t(tk.hint) : t(tk.up ? 'TEXT' : 'text'); }
 
 /* Keterangan foto hanya berisi apa yang ditulis pembeli. Tanggal dari file foto TIDAK diisikan otomatis (review 18 Nov 2026):
    tanggal di file bisa saja tanggal unduh, edit, atau pindah, bukan tanggal foto diambil. Pembeli bisa memakainya lewat tombol. */
@@ -1778,8 +1778,40 @@ function samplePhotos(n) {
 }
 
 /* ---------- album model ---------- */
+/* Elemen tambahan pembeli (26 Nov 2026, tombol "Add a text" / "Add a photo"): album.pages[pi].add = { tx: [teks], ph: [bingkai] }.
+   Halaman template milik album ini = halaman dasar + tambahan di belakangnya, jadi renderer, geser, resize, gaya teks,
+   tumpukan, pratinjau, PDF admin, dan edit admin bekerja tanpa jalur khusus. Indeks elemen dasar tidak pernah bergeser. */
+var ADD_HINT = 'Edit here';
+function normAdd(a) {
+  if (!a || typeof a !== 'object') return null;
+  var num = function (v, d) { v = +v; return isFinite(v) ? v : d; };
+  var tx = (Array.isArray(a.tx) ? a.tx : []).filter(function (d) { return d && typeof d === 'object'; }).map(function (d) {
+    return { x: num(d.x, 100), y: num(d.y, 700), z: Math.min(Math.max(num(d.z, 36), 8), 400), f: typeof d.f === 'string' ? d.f : 'm', c: typeof d.c === 'string' ? d.c : '#2b2b2b', a: d.a === 'c' || d.a === 'r' ? d.a : 'l' };
+  });
+  var ph = (Array.isArray(a.ph) ? a.ph : []).filter(function (g) { return Array.isArray(g) && g.length >= 4; }).map(function (g) {
+    return [num(g[0], 300), num(g[1], 500), Math.max(num(g[2], 360), 40), Math.max(num(g[3], 270), 40), 0];
+  });
+  return tx.length || ph.length ? { tx: tx, ph: ph } : null;
+}
+function composePage(base, add) {
+  if (!add) return base;
+  var n = base.ph.length;
+  return { bg: base.bg, pa: base.pa, cp: base.cp, base: n, baseTx: base.tx.length,
+    ph: base.ph.concat(add.ph),
+    tx: base.tx.concat(add.tx.map(function (d) { return { x: d.x, y: d.y, z: d.z, f: d.f, c: d.c, a: d.a, k: 'e', add: 1, hint: ADD_HINT }; })),
+    ly: base.ly.concat(add.ph.map(function (g, j) { return n + j; })) };
+}
+function albumTpl(id) { var b = IMZ_TPL[id], o = {}; for (var k in b) o[k] = b[k]; o.key = id; o.pages = b.pages.slice(); return o; }
+function applyAdds(album, pi) { album.tpl.pages[pi] = composePage(IMZ_TPL[album.tpl.key].pages[pi], album.pages[pi].add || null); }
+/* dari data pesanan (admin, PDF): pasang tambahan halaman dan siapkan slot kosong untuk bingkainya */
+function restoreAdds(album, pi, raw) {
+  var add = normAdd(raw), st = album.pages[pi];
+  st.add = add || undefined;
+  if (add) add.ph.forEach(function () { st.slots.push({ photo: null, fx: 0.5, fy: 0.5, z: 1 }); });
+  applyAdds(album, pi);
+}
 function newAlbum(tplId, photos) {
-  var tpl = IMZ_TPL[tplId];
+  var tpl = albumTpl(tplId);
   return { tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
     return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {}, z: {}, fmt: {} };
   }) };
@@ -1853,7 +1885,7 @@ function totals(album) {
   album.pages.forEach(function (pg, pi) {
     var P = album.tpl.pages[pi];
     pg.slots.forEach(function (s) { total++; if (s.photo != null) filled++; });
-    P.tx.forEach(function (t, i) { if (t.k === 'e' && !pg.tx[i]) blankText++; });
+    P.tx.forEach(function (t, i) { if (t.k === 'e' && !t.add && !pg.tx[i]) blankText++; });   /* teks tambahan yang kosong tidak dicetak, bukan kekurangan */
     P.pa.forEach(function (p, i) { if (!pg.pa[i]) blankText++; });
     P.cp.forEach(function (c, i) { if (c.bar && !captionValue(album, pi, i)) blankText++; });
   });
@@ -1883,8 +1915,10 @@ function asObj(v) {   /* PHP mengubah {} menjadi [] dan {"0":..} menjadi list; k
 }
 
 function buildAlbum(order) {
-  var tpl = IMZ_TPL[order.template];
-  if (!tpl) throw new Error('Template "' + order.template + '" tidak dikenal.');
+  if (!IMZ_TPL[order.template]) throw new Error('Template "' + order.template + '" tidak dikenal.');
+  var tpl = albumTpl(order.template);
+  /* teks dan bingkai foto yang ditambahkan pembeli di halaman */
+  tpl.pages = tpl.pages.map(function (base, pi) { return composePage(base, normAdd(((order.pages || [])[pi] || {}).adds)); });
   var photos = (order.photos || []).map(function (p) {
     return { url: BLANK, w: p.width || 1, h: p.height || 1, date: p.date ? new Date(p.date + 'T00:00:00') : null };
   });

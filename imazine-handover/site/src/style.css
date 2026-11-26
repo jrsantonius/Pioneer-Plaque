@@ -319,9 +319,16 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .pt-n { font-size: 12px; line-height: 1.3; color: var(--ink-3); text-align: center; }
 .pt-badge { position: absolute; top: 2px; right: 2px; min-width: 20px; height: 20px; padding: 0 5px; display: grid; place-items: center; border-radius: 10px; background: var(--tangerine); color: var(--on-accent); font-size: 12px; line-height: 1; font-weight: 500; }
 
-.st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
-.spread { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-self: center; justify-self: center; height: min(100cqh - 100px, (100cqw - 40px) * .708); aspect-ratio: 2000 / 1416; box-shadow: 0 14px 28px rgba(0,0,0,.2); } /* no filter here: a filter lets cropped photos catch clicks outside the page */
-.spread.is-single { grid-template-columns: 1fr; aspect-ratio: 1000 / 1416; height: min(100cqh - 100px, (100cqw - 40px) * 1.416); }
+.st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
+.spread { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-self: center; justify-self: center; height: min(100%, (100cqw - 40px) * .708); aspect-ratio: 2000 / 1416; box-shadow: 0 14px 28px rgba(0,0,0,.2); } /* no filter here: a filter lets cropped photos catch clicks outside the page */
+.spread.is-single { grid-template-columns: 1fr; aspect-ratio: 1000 / 1416; height: min(100%, (100cqw - 40px) * 1.416); }
+/* bilah tambah elemen di atas halaman */
+.add-bar { display: flex; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }   /* kiri: notifikasi muncul di tengah atas dan tidak menutupinya */
+.add-btn { background: var(--bg); color: var(--ink); border: 1px solid var(--line-strong); }
+.add-btn:hover { background: var(--surface-2); }
+.add-btn .ic { width: 18px; height: 18px; }
+.tx-del { color: var(--danger); }
+.ph-bar.is-empty > :not(#slot-del):not(#lay-front):not(#lay-back):not(.ph-sep) { display: none; }
 .spread-blank { background: repeating-linear-gradient(135deg, transparent 0 9px, color-mix(in srgb, var(--ink) 7%, transparent) 9px 10px); border: 1px dashed var(--line-strong); display: grid; place-items: center; padding: 12%; text-align: center; font-size: 13px; line-height: 1.45; color: var(--ink-3); }
 .pager { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .pager-t { min-width: 15ch; text-align: center; font-size: 14px; line-height: 1.3; font-weight: 600; color: var(--ink-2); }
@@ -555,6 +562,7 @@ textarea.in { resize: vertical; min-height: 92px; }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 14px); } }
 /* in the editor and the preview the bottom edge belongs to the pager, so messages drop in from the top */
 body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto; top: calc(var(--top-h) + env(safe-area-inset-top, 0px) + 70px); animation-name: toast-top; }
+body[data-view="studio"] .toast { top: calc(var(--top-h) + env(safe-area-inset-top, 0px) + 122px); }   /* di bawah bilah Tambah teks / Tambah foto */
 @keyframes toast-top { from { opacity: 0; transform: translate(-50%, -14px); } }
 .btn-toast { background: var(--vintage); color: var(--ink); min-height: 44px; }
 .busy { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: color-mix(in srgb, var(--bg) 92%, transparent); color: var(--ink); }
@@ -586,6 +594,7 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .steps li.is-on .steps-t { display: inline; padding-right: 8px; }
   body[data-view="studio"] .top, body[data-view="preview"] .top { display: none; }
   body[data-view="studio"] .toast, body[data-view="preview"] .toast { top: calc(env(safe-area-inset-top, 0px) + 64px); }
+  body[data-view="studio"] .toast { top: calc(env(safe-area-inset-top, 0px) + 112px); }
   .studio, .preview { --chrome: calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)); }
   .studio { --panel-h: clamp(216px, 31dvh, 300px); grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "bar" "stage" "panel"; }
   .st-bar { gap: 8px; min-height: 56px; padding-block: 6px; }
@@ -601,7 +610,7 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .howto-st li { display: none; }
   .howto-st li.howto-short { display: block; }
   .howto-st li.howto-short::before { display: none; }
-  .spread, .spread.is-single { height: min(100cqh - 100px, (100cqw - 4px) * 1.416); }
+  .spread, .spread.is-single { height: min(100%, (100cqw - 4px) * 1.416); }
   .st-panel { border-left: 0; border-top: 1px solid var(--line); grid-template-rows: auto minmax(0, 1fr); height: var(--panel-h); padding-bottom: env(safe-area-inset-bottom, 0px); }
   .tab-hal { display: inline-flex !important; }
   .pane { padding: 10px var(--gut-r) 14px var(--gut-l); gap: 10px; }

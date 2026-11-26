@@ -69,6 +69,7 @@ async function adminBoot() {
     var album = newAlbum(order.template, S.photos);
     album.pages.forEach(function (pg, pi) {
       var src = (order.pages || [])[pi] || {};
+      restoreAdds(album, pi, src.adds);
       pg.slots.forEach(function (s, k) {
         var o = (src.slots || [])[k] || {}, ok = o.photo != null && S.photos[o.photo];
         s.photo = ok ? o.photo : null; s.fx = o.focusX != null ? +o.focusX : 0.5; s.fy = o.focusY != null ? +o.focusY : 0.5; s.z = o.zoom ? +o.zoom : 1;
@@ -114,7 +115,7 @@ async function adminSave() {
       pages: S.album.pages.map(function (pg, pi) {
         var P = S.album.tpl.pages[pi], cps = {};
         P.cp.forEach(function (c, i) { var v = captionValue(S.album, pi, i); if (v) cps[i] = v; });
-        return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {}, layers: pg.z || {}, styles: pg.fmt || {} };
+        return { page: pi + 1, slots: pg.slots.map(function (s) { return { photo: s.photo, focusX: +s.fx.toFixed(3), focusY: +s.fy.toFixed(3), zoom: +s.z.toFixed(2), box: s.g || undefined }; }), texts: pg.tx, paragraphs: pg.pa, captions: cps, moves: pg.mv || {}, layers: pg.z || {}, styles: pg.fmt || {}, adds: pg.add || undefined };
       })
     };
     title.textContent = 'Saving the album…'; busy(true, 0, 0);
