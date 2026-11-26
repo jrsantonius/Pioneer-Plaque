@@ -367,8 +367,16 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .howto li { display: inline-flex; align-items: baseline; gap: 6px; }
 .howto li::before { content: ""; flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--tangerine); transform: translateY(-1px); }
 .howto li[hidden] { display: none; }
-.howto-st { max-width: 760px; justify-self: center; }
-.howto-st .howto-short { display: none; }
+/* petunjuk editor: kartu kecil yang digeser ke samping, seperti kartu tips di Apple (26 Nov 2026) */
+.tips { display: flex; gap: 10px; margin: 0; padding: 2px 4px 8px; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 4px; scrollbar-width: none; min-width: 0; max-width: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 28px), transparent 100%); }
+.tips::-webkit-scrollbar { display: none; }
+.tip-c { flex: 0 0 214px; scroll-snap-align: start; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 16px rgba(0,0,0,.05); }
+.tip-i { flex: none; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--warm-wash); color: var(--warm-deep); }
+.tip-i .ic { width: 17px; height: 17px; }
+.tip-tx { display: grid; gap: 1px; min-width: 0; }
+.tip-tx b { font-size: 13px; line-height: 1.25; color: var(--ink); }
+.tip-tx span { font-size: 12px; line-height: 1.3; color: var(--ink-2); }
 .mag-ed .howto { justify-content: flex-start; display: grid; gap: 6px; font-size: 14px; max-width: 440px; justify-self: center; width: 100%; }
 .pg-edit .is-editing { z-index: 9000 !important; }   /* teks yang sedang diketik selalu terlihat, walau tertumpuk foto */
 .pg-edit .is-editing .tx-v, .pg-edit .is-editing .pa-t { outline: none; cursor: text; caret-color: var(--tangerine); -webkit-user-select: text; user-select: text; }
@@ -414,7 +422,7 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .is-resizing, .is-resizing * { cursor: grabbing !important; }
 
 /* panel */
-.st-panel { grid-area: panel; display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; border-left: 1px solid var(--line); background: var(--sheet); }
+.st-panel { grid-area: panel; display: grid; grid-template-rows: auto auto minmax(0, 1fr); min-height: 0; border-left: 1px solid var(--line); background: var(--sheet); }
 .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-bottom: 1px solid var(--line); }
 .tabs [role="tab"] { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 10px; border: 0; border-bottom: 3px solid transparent; background: none; font-weight: 700; font-size: 14px; line-height: 1.2; color: var(--ink-3); cursor: pointer; transition: color var(--d-1) var(--ease), border-color var(--d-1) var(--ease); }
 .tabs [role="tab"]:hover { color: var(--ink); }
@@ -596,7 +604,7 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   body[data-view="studio"] .top, body[data-view="preview"] .top { display: none; }
   body[data-view="studio"] .toast, body[data-view="preview"] .toast { top: calc(env(safe-area-inset-top, 0px) + 64px); }
   .studio, .preview { --chrome: calc(env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px)); }
-  .studio { --panel-h: clamp(216px, 31dvh, 300px); grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "bar" "stage" "panel"; }
+  .studio { --panel-h: clamp(262px, 38dvh, 400px); --add-h: 46px; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "bar" "stage" "panel"; }
   .st-bar { gap: 8px; min-height: 56px; padding-block: 6px; }
   .st-bar .back { padding: 0; width: 44px; flex: none; }
   .hide-s { display: none; }
@@ -606,17 +614,19 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .st-prog { min-width: 78px; }
   #st-preview { padding: 0 14px; }
   .st-stage { padding: 8px 10px 4px; gap: 4px; }
-  .howto-st { font-size: 11.5px; gap: 2px 12px; text-align: center; }
-  .howto-st li { display: none; }
-  .howto-st li.howto-short { display: block; }
-  .howto-st li.howto-short::before { display: none; }
+  .tips { gap: 8px; padding: 2px 2px 4px; }
+  .tip-c { flex-basis: 232px; padding: 6px 10px; gap: 8px; border-radius: 12px; }
+  .tip-i { width: 26px; height: 26px; }
+  .tip-i .ic { width: 14px; height: 14px; }
+  .tip-tx b { font-size: 11.5px; }
+  .tip-tx span { font-size: 11px; line-height: 1.25; }
   .spread, .spread.is-single { height: min(100%, (100cqw - 4px) * 1.416); }
-  .add-bar { padding: 8px 12px; gap: 6px; }
-  .add-bar .add-btn { min-height: 36px; }
-  .st-panel { border-left: 0; border-top: 1px solid var(--line); grid-template-rows: auto minmax(0, 1fr); height: var(--panel-h); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .add-bar { padding: 6px var(--gut-r) 6px var(--gut-l); gap: 6px; height: var(--add-h); box-sizing: border-box; }
+  .add-bar .add-btn { min-height: 34px; padding-block: 0; font-size: 13px; }
+  .st-panel { border-left: 0; border-top: 1px solid var(--line); grid-template-rows: auto auto minmax(0, 1fr); height: var(--panel-h); padding-bottom: env(safe-area-inset-bottom, 0px); }
   .tab-hal { display: inline-flex !important; }
   .pane { padding: 10px var(--gut-r) 14px var(--gut-l); gap: 10px; }
-  .st-pages { grid-area: panel; align-self: end; z-index: 2; height: calc(var(--panel-h) - 49px - env(safe-area-inset-bottom, 0px)); margin-bottom: env(safe-area-inset-bottom, 0px); border-right: 0; background: var(--sheet); grid-auto-flow: column; grid-auto-columns: 96px; overflow-x: auto; overflow-y: hidden; padding: 10px var(--gut-r) 10px var(--gut-l); align-content: start; align-items: start; }
+  .st-pages { grid-area: panel; align-self: end; z-index: 2; height: calc(var(--panel-h) - 49px - var(--add-h) - env(safe-area-inset-bottom, 0px)); margin-bottom: env(safe-area-inset-bottom, 0px); border-right: 0; background: var(--sheet); grid-auto-flow: column; grid-auto-columns: 96px; overflow-x: auto; overflow-y: hidden; padding: 10px var(--gut-r) 10px var(--gut-l); align-content: start; align-items: start; }
   .studio:not([data-tab="hal"]) .st-pages { display: none; }
   .pt-s { grid-template-columns: 1fr; }
   .pt-blank { display: none; }
@@ -636,9 +646,8 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .pv-bar #pv-cover span { display: inline; }
   .pv-bar #pv-edit span { display: inline; }
   .pv-bar .pv-title { display: none; }
-  .pv-bar { flex-wrap: wrap; row-gap: 8px; }   /* HP: baris 1 kembali + lanjut, baris 2 Edit cover + Edit halaman */
   .pv-bar #pv-next { margin-left: auto; }
-  .pv-bar #pv-cover, .pv-bar #pv-edit { order: 2; flex: 1 1 calc(50% - 4px); min-width: 0; justify-content: center; }
+  .pv-bar #pv-next { order: 3; }   /* tablet: satu baris, kembali · Edit cover · Edit halaman · lanjut */
   .pv-bar #pv-back { width: 44px; padding: 0; }
   .pv-title { font-size: 18px; }
   .pv-stage { padding: 12px 12px 6px; }
@@ -696,4 +705,15 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
 @media (max-width: 600px) {
   .pay-frame iframe { height: max(1300px, 90vh); }
   .pay-copy { margin-left: 0; }
+}
+
+/* HP (26 Nov 2026, cek responsif): bilah pratinjau dua baris, ringkasan harga lebih ringkas */
+@media (max-width: 600px) {
+  .pv-bar { flex-wrap: wrap; row-gap: 8px; }   /* baris 1 kembali + lanjut, baris 2 Edit cover + Edit halaman */
+  .pv-bar #pv-next { order: 1; }
+  .pv-bar #pv-cover, .pv-bar #pv-edit { order: 2; flex: 1 1 calc(50% - 4px); min-width: 0; justify-content: center; }
+}
+@media (max-width: 420px) {
+  .sum-now dd { font-size: 16px; }
+  .sum dt { white-space: nowrap; }
 }
