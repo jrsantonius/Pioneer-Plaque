@@ -85,12 +85,12 @@ if (!$ok) http_response_code(404);
     } else if (s.status === 'lunas') {
       $('eyebrow').textContent = 'Pembayaran diterima'; $('eyebrow').className = 'eyebrow ok';
       $('title').textContent = s.name ? 'Terima kasih, ' + s.name.split(' ')[0] + '.' : 'Terima kasih.';
-      $('msg').textContent = 'Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengiriman kamu terima dari Mayar lewat WhatsApp dan email.';
+      $('msg').textContent = 'Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengirimannya akan kamu terima lewat WhatsApp dan email.';
     } else if (s.status === 'menunggu_bayar') {
       $('eyebrow').innerHTML = '<span class="pulse"></span>Menunggu pembayaran';
       $('title').textContent = 'Belum ada pembayaran masuk.';
       var left = s.payBefore ? Math.max(0, s.payBefore * 1000 - Date.now()) : 0, hh = Math.floor(left / 3600000), mm = Math.floor(left % 3600000 / 60000);
-      $('msg').textContent = 'Kalau kamu baru saja membayar, halaman ini akan berubah sendiri dalam beberapa saat. Kalau belum, lanjutkan pembayarannya' + (s.payBefore ? ' dalam ' + (hh ? hh + ' jam ' : '') + mm + ' menit lagi. Setelah itu pesananmu dihapus dan albummu perlu dibuat ulang.' : '.') + ' Saat membayar di Mayar, pakai nama, email, dan nomor HP yang sama dengan pesananmu supaya terdeteksi otomatis.';
+      $('msg').textContent = 'Kalau kamu baru saja membayar, halaman ini akan berubah sendiri dalam beberapa saat. Kalau belum, lanjutkan pembayarannya' + (s.payBefore ? ' dalam ' + (hh ? hh + ' jam ' : '') + mm + ' menit lagi. Setelah itu pesananmu dihapus dan albummu perlu dibuat ulang.' : '.') + ' Saat membayar, pakai nama, email, dan nomor HP yang sama dengan pesananmu supaya terdeteksi otomatis.';
       if (s.payUrl) { btn.href = s.payUrl; btn.textContent = 'Lanjut bayar'; btn.hidden = false; }
     } else {
       $('eyebrow').textContent = 'Pesanan belum selesai';

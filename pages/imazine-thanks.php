@@ -36,7 +36,7 @@ header('X-Robots-Tag: noindex');
   <div class="card">
     <p class="eyebrow">Pembayaran diterima</p>
     <h1>Terima kasih.</h1>
-    <p>Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengiriman kamu terima dari Mayar lewat WhatsApp dan email.</p>
+    <p>Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengirimannya akan kamu terima lewat WhatsApp dan email.</p>
     <a class="btn" href="/imazine">Ke beranda Imazine</a>
   </div>
 </main>

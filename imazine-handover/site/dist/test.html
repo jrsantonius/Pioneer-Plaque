@@ -175,6 +175,75 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .how-n { font-size: 13px; color: var(--accent-text); }
 .how h3 { font: 400 24px/1.15 var(--font-display); letter-spacing: -.01em; }
 .how p { font-size: 14px; line-height: 1.5; color: var(--on-dark-2); max-width: 32ch; text-wrap: pretty; }
+/* Cara kerja: satu gambar kecil per langkah (dekorasi, aria-hidden). Ukuran dalam cqw supaya ikut lebar kartu. */
+.how-v { position: relative; container-type: inline-size; aspect-ratio: 4 / 3; margin-bottom: 8px; border-radius: var(--r-s, 12px); background: var(--surface-2); overflow: hidden; isolation: isolate; }
+.how-v img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; display: block; }
+.how-v span, .how-v i, .how-v b { position: absolute; display: block; }
+.hv-tick { right: 4%; top: 4%; width: 26%; aspect-ratio: 1; border-radius: 50%; background: var(--tangerine); box-shadow: 0 0 0 .5cqw #fff; z-index: 1; }
+.hv-tick svg { width: 100%; height: 100%; display: block; fill: none; stroke: #141414; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hv-pill { position: absolute; padding: 1.6cqw 3.6cqw; border-radius: 999px; background: var(--bg); color: var(--ink); font: 700 max(9px, 3.6cqw)/1.1 var(--font-ui); white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 6px 14px -6px rgba(0,0,0,.35); }
+.hv-pill-on { background: var(--tangerine); color: #141414; }
+.hv-page { position: absolute; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 10px 22px -10px rgba(0,0,0,.45); overflow: hidden; }
+.hv-page > span { overflow: hidden; background: #e9e6e1; }
+.hv-page > i, .hv-line { height: 1.2cqw; border-radius: 1cqw; background: #d8d4cd; }
+/* 1. tema dan cover */
+.hv-chips { position: absolute; left: 0; right: 0; top: 6cqw; display: flex; justify-content: center; gap: 1.6cqw; }
+.hv-chips span { position: static; padding: 1.3cqw 2.8cqw; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); font: 600 max(8px, 3.3cqw)/1.1 var(--font-ui); white-space: nowrap; }
+.hv-chips .is-on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.how-v .hv-c { position: absolute; top: 20cqw; width: 31cqw; height: auto; aspect-ratio: 600 / 849; right: auto; bottom: auto; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 12px 22px -10px rgba(0,0,0,.5); }
+.how-v .hv-c-l { left: 13cqw; transform: rotate(-8deg); opacity: .8; }
+.how-v .hv-c-r { left: 56cqw; transform: rotate(8deg); opacity: .8; }
+.how-v .hv-c-m { left: 34.5cqw; top: 17cqw; z-index: 1; width: 31cqw; outline: .9cqw solid var(--tangerine); outline-offset: .8cqw; }
+.how-v .hv-c-m > img { position: absolute; }
+.how-v .hv-c-m .hv-tick { right: -4cqw; top: -4cqw; width: 8cqw; }
+/* 2. pilih semua foto di galeri, langsung masuk halaman */
+.hv-phone { position: absolute; left: 8cqw; top: 6cqw; width: 36cqw; height: 63cqw; border-radius: 5cqw; border: 1.3cqw solid #1b1b1b; background: #fff; }
+.hv-grid { position: absolute; left: 1.6cqw; right: 1.6cqw; top: 6cqw; display: grid; grid-template-columns: repeat(3, 1fr); gap: .8cqw; }
+.hv-grid > span { position: relative; aspect-ratio: 1; overflow: hidden; }
+.hv-grid .hv-tick { width: 34%; right: 6%; top: 6%; box-shadow: 0 0 0 .35cqw #fff; }
+.hv-phone .hv-pill { left: 50%; bottom: 4cqw; transform: translateX(-50%); background: var(--tangerine); color: #141414; padding: 1.2cqw 3cqw; font-size: max(8px, 3.1cqw); box-shadow: none; }
+.hv-arrow { position: absolute; left: 47cqw; top: 33cqw; width: 9cqw; fill: none; stroke: var(--tangerine); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.hv-p2 { right: 9cqw; top: 13cqw; width: 33cqw; aspect-ratio: 210 / 297; }
+.hv-p2 > span:nth-child(1) { left: 7%; top: 6%; width: 86%; height: 38%; }
+.hv-p2 > span:nth-child(2) { left: 7%; top: 47%; width: 41.5%; height: 30%; }
+.hv-p2 > span:nth-child(3) { left: 51.5%; top: 47%; width: 41.5%; height: 30%; }
+.hv-p2 > span:nth-child(4) { display: none; }
+.hv-p2 > i { left: 7%; top: 84%; width: 50%; }
+/* 3. rapikan dan tulis */
+.hv-p3 { left: 9cqw; top: 6cqw; width: 44.5cqw; aspect-ratio: 210 / 297; }
+.hv-fr { left: 7%; top: 6%; width: 86%; height: 50%; overflow: visible !important; outline: .5cqw solid var(--tangerine); background: none !important; }
+.hv-fr > img { object-position: 30% 50%; }
+.hv-h { width: 2.4cqw; height: 2.4cqw; margin: -1.2cqw 0 0 -1.2cqw; background: #fff; border: .45cqw solid var(--tangerine); border-radius: 50%; z-index: 1; }
+.hv-h1 { left: 0; top: 0; } .hv-h2 { left: 100%; top: 0; } .hv-h3 { left: 0; top: 100%; } .hv-h4 { left: 100%; top: 100%; }
+.hv-move { position: absolute; left: 50%; top: 50%; width: 9cqw; margin: -4.5cqw 0 0 -4.5cqw; padding: 1.6cqw; border-radius: 50%; background: rgba(20,20,20,.62); fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; box-sizing: content-box; transform: translate(-1.6cqw, -1.6cqw); }
+.hv-cap { left: 7%; top: 61%; padding: .6cqw 1cqw; margin-left: -1cqw; color: #141414; font: 600 max(7px, 2.9cqw)/1.2 var(--font-ui); white-space: nowrap; outline: .35cqw dashed var(--tangerine); border-radius: .6cqw; }
+.hv-caret { position: relative !important; display: inline-block !important; width: .35cqw; height: 1em; margin-left: .3cqw; vertical-align: -.15em; background: var(--tangerine); }
+.hv-line { left: 7%; top: 73%; width: 70%; }
+.hv-line-s { top: 79%; width: 45%; }
+.hv-tools { position: absolute; left: 59cqw; top: 22cqw; display: grid; gap: 3cqw; }
+.hv-tools .hv-pill { position: static; }
+/* 4. lihat pratinjau, lalu pesan */
+.hv-book { position: absolute; left: 50%; top: 6cqw; width: 76cqw; transform: translateX(-50%); display: flex; filter: drop-shadow(0 12px 14px rgba(0,0,0,.35)); }
+.hv-book .hv-page { position: relative; width: 50%; aspect-ratio: 210 / 297; box-shadow: none; }
+.hv-pl { background: linear-gradient(to left, rgba(0,0,0,.14), rgba(0,0,0,0) 12%), #fff !important; }
+.hv-pr { background: linear-gradient(to right, rgba(0,0,0,.14), rgba(0,0,0,0) 12%), #fff !important; }
+.hv-pl > span:nth-child(1) { left: 8%; top: 7%; width: 84%; height: 44%; }
+.hv-pl > span:nth-child(2) { left: 8%; top: 55%; width: 50%; height: 32%; }
+.hv-pl > i { left: 64%; top: 58%; width: 26%; }
+.hv-pr > span { left: 8%; top: 7%; width: 84%; height: 62%; }
+.hv-pr > i { left: 8%; top: 76%; width: 60%; }
+.hv-pr > i.hv-line-s { top: 82%; width: 38%; }
+.hv-pay { left: 50%; bottom: 4.5cqw; transform: translateX(-50%); background: var(--tangerine); color: #141414; z-index: 1; }
+.hv-pay b { position: static; display: inline; font-weight: 800; }
+html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .hv-caret { animation: hv-blink 1.1s steps(1) infinite; }
+  .hv-fr > img { animation: hv-pan 5s ease-in-out infinite alternate; }
+  .hv-move { animation: hv-nudge 5s ease-in-out infinite alternate; }
+}
+@keyframes hv-blink { 50% { opacity: 0; } }
+@keyframes hv-pan { from { object-position: 15% 50%; } to { object-position: 70% 50%; } }
+@keyframes hv-nudge { from { margin-left: -6cqw; } to { margin-left: -3cqw; } }
 .price { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; margin-top: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid var(--line-dark); border-radius: var(--r); background: var(--vinyl-raise); align-items: center; }
 .price-main { display: grid; gap: 10px; justify-items: start; }
 .price-n { font: 400 clamp(2.8rem, 6vw, 4.2rem)/1.02 var(--font-display); letter-spacing: -.025em; }
@@ -905,10 +974,10 @@ html.pay [data-nopay]{display:none!important}
     <p class="eyebrow">How it works</p>
     <h2 id="cara-h" class="h2 nw">From your camera roll to your bookshelf.</h2>
     <ol class="how">
-      <li><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
-      <li><span class="how-n num">2</span><h3>Upload all your photos</h3><p>Select them all at once. They go straight onto the pages, oldest first.</p></li>
-      <li><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
-      <li><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
+      <li><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
+      <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Upload all your photos</h3><p>Select them all at once. They go straight onto the pages, oldest first.</p></li>
+      <li><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
+      <li><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
     </ol>
   </section>
 
@@ -929,7 +998,7 @@ html.pay [data-nopay]{display:none!important}
         <div><dt>Paper</dt><dd>Art Paper 260 gsm. Thick and sturdy, not thin like magazine paper</dd></div>
         <div><dt>Cover</dt><dd>Soft cover</dd></div>
         <div><dt>Binding</dt><dd>Bound with binding</dd></div>
-        <div data-pay><dt>Payment and shipping</dt><dd>Paid in full, once, through Mayar after you’ve seen the preview. No deposit. JNE shipping is calculated on Mayar from your address</dd></div>
+        <div data-pay><dt>Payment and shipping</dt><dd>Paid in full, once, after you’ve seen the preview. No deposit. JNE shipping is calculated from your address at checkout</dd></div>
       </dl>
     </div>
   </section>
@@ -943,7 +1012,7 @@ html.pay [data-nopay]{display:none!important}
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
       <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
       <details data-nopay><summary>What happens after I send my album?</summary><p>Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.</p></details>
-      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full through Mayar, with no deposit. You fill in your name, phone, address, and JNE shipping there. Use the same email you entered on Imazine so your payment is matched automatically.</p></details>
+      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Use the same email you entered earlier so your payment is matched automatically.</p></details>
       <details><summary>What are the paper and cover like?</summary><p>The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).</p></details>
       <details><summary>Will the printed colors match my screen exactly?</summary><p>Close, but never exactly. A screen gives off light while paper reflects it, so prints usually come out a little darker and softer. If a photo already looks dark on screen, brighten it before you upload.</p></details>
       <details><summary>Can I use photos from WhatsApp or screenshots?</summary><p>Yes, but they won’t be as sharp. WhatsApp shrinks photos when they’re sent, and screenshots are low resolution, so they can look blurry at A4 size. If you can, use the original files from your gallery or camera.</p></details>
@@ -1147,7 +1216,7 @@ html.pay [data-nopay]{display:none!important}
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form (by Mayar) opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -1185,13 +1254,13 @@ html.pay [data-nopay]{display:none!important}
       <button class="btn btn-quiet pay-copy" type="button" id="pay-copy">Copy</button>
     </div>
     <div class="pay-foot">
-      <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once Mayar confirms it.</span></p>
-      <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment on Mayar’s page</a>. Keep this page open, it still updates after you pay.</p>
+      <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once your payment is confirmed.</span></p>
+      <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment in a new tab</a>. Keep this page open, it still updates after you pay.</p>
       <p class="hint">Complete the payment within <span id="pay-min2">2 hours</span>. After that, unpaid orders are deleted.</p>
     </div>
     <div class="pay-frame" id="pay-frame">
       <p class="pay-load" id="pay-load">Loading the payment form…</p>
-      <iframe id="pay-if" title="Mayar payment and shipping form" allow="payment; clipboard-write"></iframe>
+      <iframe id="pay-if" title="Payment and shipping form" allow="payment; clipboard-write"></iframe>
     </div>
   </div>
 </section>
@@ -1270,7 +1339,7 @@ var I18N_ID = {
 "Binding": "Jilid",
 "Bound with binding": "Jilid binding",
 "Payment and shipping": "Pembayaran dan ongkir",
-"Paid in full, once, through Mayar after you’ve seen the preview. No deposit. JNE shipping is calculated on Mayar from your address": "Lunas sekali bayar lewat Mayar, setelah kamu melihat preview. Tanpa DP. Ongkir JNE dihitung otomatis di Mayar sesuai alamatmu",
+"Paid in full, once, after you’ve seen the preview. No deposit. JNE shipping is calculated from your address at checkout": "Lunas sekali bayar, setelah kamu melihat preview. Tanpa DP. Ongkir JNE dihitung otomatis sesuai alamatmu saat checkout",
 "Questions people ask.": "Yang sering ditanyakan.",
 "How many photos do I need?": "Butuh berapa foto?",
 "It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. If you’re short, empty frames can be filled with photos you’ve already added.": "Tergantung gaya layout yang kamu pilih, antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih. Kalau fotomu kurang, bingkai yang kosong bisa diisi ulang dengan foto yang sudah ada.",
@@ -1283,7 +1352,7 @@ var I18N_ID = {
 "What happens after I send my album?": "Setelah albumnya dikirim, lalu apa?",
 "Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Kami akan menghubungimu lewat WhatsApp untuk konfirmasi, alamat, dan pengiriman.",
 "How do I pay?": "Bayarnya bagaimana?",
-"After the preview, you pay in full through Mayar, with no deposit. You fill in your name, phone, address, and JNE shipping there. Use the same email you entered on Imazine so your payment is matched automatically.": "Setelah melihat preview, kamu membayar lunas lewat Mayar, tanpa DP. Nama, HP, alamat, dan ongkir JNE diisi di sana. Pakai email yang sama dengan yang kamu isi di Imazine supaya pembayaranmu terdeteksi otomatis.",
+"After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Use the same email you entered earlier so your payment is matched automatically.": "Setelah melihat preview, kamu membayar lunas, tanpa DP. Nama, HP, alamat, dan ongkir JNE diisi di form pembayaran. Pakai email yang sama dengan yang kamu isi sebelumnya supaya pembayaranmu terdeteksi otomatis.",
 "What are the paper and cover like?": "Kertas dan cover-nya seperti apa?",
 "The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).": "Isinya dicetak di kertas Art Paper 260 gsm, cukup tebal sehingga halamannya terasa kokoh dan foto tidak tembus ke halaman sebaliknya. Cover-nya soft cover dan albumnya dijilid binding. Ukurannya A4, 20 lembar (40 halaman, bolak-balik).",
 "Will the printed colors match my screen exactly?": "Warna cetaknya sama persis dengan di layar?",
@@ -1433,7 +1502,6 @@ var I18N_ID = {
 "Back cover": "Cover belakang",
 "Fill in text": "Isi teks",
 "Just one more step.": "Tinggal satu langkah lagi.",
-"Just enter your email, then pay on Mayar. Your name, phone, address, and JNE shipping go there.": "Cukup isi emailmu, lalu bayar di Mayar. Nama, HP, alamat, dan ongkir JNE diisi di sana.",
 "Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.": "Isi kontakmu, lalu kirim. Album dan semua fotomu langsung sampai ke tim kami, dan kami akan menyapamu lewat WhatsApp.",
 "Name": "Nama",
 "So we know what to call you.": "Biar kami tahu harus menyapamu siapa.",
@@ -1441,14 +1509,13 @@ var I18N_ID = {
 "We’ll use this number to confirm your order and delivery address.": "Kami hubungi lewat nomor ini untuk konfirmasi dan alamat pengiriman.",
 "name@email.com": "nama@email.com",
 "So we can send you updates about your album.": "Untuk mengirim kabar tentang albummu.",
-"Use the same email when you pay on Mayar. That’s how we know the payment is for your album.": "Pakai email yang sama saat membayar di Mayar. Dari email ini kami tahu pembayaran itu milik albummu.",
+"Use the same email in the payment form. That’s how we know the payment is for your album.": "Pakai email yang sama di form pembayaran. Dari email ini kami tahu pembayaran itu milik albummu.",
 "Note for the print team": "Catatan untuk tim cetak",
 "(optional)": "(boleh kosong)",
 "Continue to payment": "Lanjut bayar",
 "Send album": "Kirim album",
 "When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.": "Begitu tombolnya kamu tekan, album dan semua foto aslimu kami terima. Biarkan halaman ini terbuka sampai upload selesai, ya.",
 "Important:": "Penting:",
-"when you pay on Mayar, use the same email as above so your payment is matched automatically. You haven’t paid anything on this page. After you press the button, you’ll go straight to Mayar. Complete the payment within": "saat membayar di Mayar, pakai email yang sama dengan di atas supaya pembayaranmu terdeteksi otomatis. Kamu belum membayar apa pun di halaman ini. Setelah menekan tombol, kamu langsung dibawa ke Mayar. Selesaikan pembayaran dalam",
 "2 hours": "2 jam",
 ". After that, unpaid orders are deleted and you’ll need to make your album again.": ". Lewat dari itu pesanan yang belum dibayar dihapus dan albummu perlu dibuat ulang.",
 "Order summary": "Ringkasan pesanan",
@@ -1457,8 +1524,6 @@ var I18N_ID = {
 "One more album": "Tambah satu album",
 "Album price": "Harga album",
 "JNE shipping": "Ongkir JNE",
-"Calculated on Mayar": "Dihitung di Mayar",
-"Total on Mayar": "Total di Mayar",
 "Album price + shipping": "Harga album + ongkir",
 "Preparing photos…": "Menyiapkan foto…",
 "Please write your name first.": "Tulis namamu dulu, ya.",
@@ -1477,7 +1542,6 @@ var I18N_ID = {
 "Album sent!": "Album terkirim!",
 "Some photos didn’t upload. Please try sending again.": "Beberapa foto belum ter-upload. Coba kirim lagi, ya.",
 "We couldn’t create the payment link. Please try again in a moment.": "Link pembayaran belum bisa dibuat. Coba lagi sebentar lagi.",
-"Taking you to Mayar…": "Mengarahkan ke Mayar…",
 "Move": "Pindahkan",
 "Drag any photo or text to place it.": "Geser foto atau teks ke mana saja.",
 "Add more": "Tambah",
@@ -1500,6 +1564,8 @@ var I18N_ID = {
 "Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.": "Drag foto dari rak ke bagian halaman yang kosong, atau pakai Tambah teks dan Tambah foto, untuk mengisi ruang kosong.",
 "Add to the page": "Tambah ke halaman",
 "Add a text": "Tambah teks",
+"Select all": "Pilih semua",
+"Pay": "Bayar",
 "Add a photo": "Tambah foto",
 "Edit here": "Edit di sini",
 "Delete text": "Hapus teks",
@@ -1511,7 +1577,7 @@ var I18N_ID = {
 "Photo frame deleted.": "Bingkai foto dihapus.",
 "Use Add a text or Add a photo to fill empty space on the page you last touched.": "Pakai Tambah teks atau Tambah foto untuk mengisi ruang kosong di halaman yang terakhir kamu sentuh.",
 "Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup isi emailmu. Di layar berikutnya kamu isi nama, HP, alamat, dan ongkir JNE, lalu bayar, tanpa keluar dari Imazine.",
-"use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form (by Mayar) opens on this page. Complete the payment within": "pakai email yang sama di form pembayaran supaya pembayaranmu terdeteksi otomatis. Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran (dari Mayar) terbuka di halaman ini. Selesaikan pembayaran dalam",
+"use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page. Complete the payment within": "pakai email yang sama di form pembayaran supaya pembayaranmu terdeteksi otomatis. Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran terbuka di halaman ini. Selesaikan pembayaran dalam",
 "Calculated in the payment form": "Dihitung di form pembayaran",
 "Total to pay": "Total dibayar",
 "Pay and choose shipping.": "Bayar dan pilih pengiriman.",
@@ -1522,12 +1588,12 @@ var I18N_ID = {
 "Copy": "Salin",
 "Copied": "Tersalin",
 "Loading the payment form…": "Memuat form pembayaran…",
-"Mayar payment and shipping form": "Form pembayaran dan pengiriman Mayar",
-"Waiting for your payment. This page moves on by itself once Mayar confirms it.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah Mayar mengonfirmasi.",
+"Payment and shipping form": "Form pembayaran dan pengiriman",
+"Waiting for your payment. This page moves on by itself once your payment is confirmed.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah pembayaranmu terkonfirmasi.",
 "Payment received. Opening your order…": "Pembayaran diterima. Membuka pesananmu…",
 "We’ve received your payment. Our team is confirming it and will update you by email or WhatsApp.": "Pembayaranmu sudah kami terima. Tim kami sedang mengonfirmasinya dan akan mengabarimu lewat email atau WhatsApp.",
 "Form not loading, or your e-wallet app didn’t bring you back?": "Form tidak muncul, atau aplikasi e-wallet tidak kembali ke sini?",
-"Open the payment on Mayar’s page": "Buka pembayaran di halaman Mayar",
+"Open the payment in a new tab": "Buka pembayaran di tab baru",
 ". Keep this page open, it still updates after you pay.": ". Biarkan halaman ini terbuka, halaman ini tetap diperbarui setelah kamu bayar.",
 "Complete the payment within": "Selesaikan pembayaran dalam",
 ". After that, unpaid orders are deleted.": ". Lewat dari itu, pesanan yang belum dibayar dihapus.",
@@ -4933,7 +4999,7 @@ var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
-  $('#h-mail').textContent = PAY ? 'Use the same email when you pay on Mayar. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
+  $('#h-mail').textContent = PAY ? 'Use the same email in the payment form. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
   if (S.view === 'checkout' && S.album) drawCheckout();
 }
 var cfgLoaded = false, MIN_PHOTOS = 20, MAX_PHOTOS = 240, PAY_MIN = 120;   /* nilai asli dari server: /api/imazine/config */
@@ -5116,7 +5182,7 @@ function openPay(no, tok, url, email) {
   $('#pay-mail').textContent = email;
   $('#pay-out').href = url;
   $('#pay-min2').textContent = payMinText();
-  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once Mayar confirms it.';
+  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once your payment is confirmed.';
   $('#pay-wait').classList.remove('is-ok');
   var fr = $('#pay-if'), ld = $('#pay-load');
   ld.hidden = false; fr.classList.remove('is-in');

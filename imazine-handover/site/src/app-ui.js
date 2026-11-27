@@ -1802,7 +1802,7 @@ var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
-  $('#h-mail').textContent = PAY ? 'Use the same email when you pay on Mayar. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
+  $('#h-mail').textContent = PAY ? 'Use the same email in the payment form. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
   if (S.view === 'checkout' && S.album) drawCheckout();
 }
 var cfgLoaded = false, MIN_PHOTOS = 20, MAX_PHOTOS = 240, PAY_MIN = 120;   /* nilai asli dari server: /api/imazine/config */
@@ -1985,7 +1985,7 @@ function openPay(no, tok, url, email) {
   $('#pay-mail').textContent = email;
   $('#pay-out').href = url;
   $('#pay-min2').textContent = payMinText();
-  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once Mayar confirms it.';
+  $('#pay-wait-t').textContent = 'Waiting for your payment. This page moves on by itself once your payment is confirmed.';
   $('#pay-wait').classList.remove('is-ok');
   var fr = $('#pay-if'), ld = $('#pay-load');
   ld.hidden = false; fr.classList.remove('is-in');

@@ -170,6 +170,75 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .how-n { font-size: 13px; color: var(--accent-text); }
 .how h3 { font: 400 24px/1.15 var(--font-display); letter-spacing: -.01em; }
 .how p { font-size: 14px; line-height: 1.5; color: var(--on-dark-2); max-width: 32ch; text-wrap: pretty; }
+/* Cara kerja: satu gambar kecil per langkah (dekorasi, aria-hidden). Ukuran dalam cqw supaya ikut lebar kartu. */
+.how-v { position: relative; container-type: inline-size; aspect-ratio: 4 / 3; margin-bottom: 8px; border-radius: var(--r-s, 12px); background: var(--surface-2); overflow: hidden; isolation: isolate; }
+.how-v img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; display: block; }
+.how-v span, .how-v i, .how-v b { position: absolute; display: block; }
+.hv-tick { right: 4%; top: 4%; width: 26%; aspect-ratio: 1; border-radius: 50%; background: var(--tangerine); box-shadow: 0 0 0 .5cqw #fff; z-index: 1; }
+.hv-tick svg { width: 100%; height: 100%; display: block; fill: none; stroke: #141414; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hv-pill { position: absolute; padding: 1.6cqw 3.6cqw; border-radius: 999px; background: var(--bg); color: var(--ink); font: 700 max(9px, 3.6cqw)/1.1 var(--font-ui); white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 6px 14px -6px rgba(0,0,0,.35); }
+.hv-pill-on { background: var(--tangerine); color: #141414; }
+.hv-page { position: absolute; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 10px 22px -10px rgba(0,0,0,.45); overflow: hidden; }
+.hv-page > span { overflow: hidden; background: #e9e6e1; }
+.hv-page > i, .hv-line { height: 1.2cqw; border-radius: 1cqw; background: #d8d4cd; }
+/* 1. tema dan cover */
+.hv-chips { position: absolute; left: 0; right: 0; top: 6cqw; display: flex; justify-content: center; gap: 1.6cqw; }
+.hv-chips span { position: static; padding: 1.3cqw 2.8cqw; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); font: 600 max(8px, 3.3cqw)/1.1 var(--font-ui); white-space: nowrap; }
+.hv-chips .is-on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.how-v .hv-c { position: absolute; top: 20cqw; width: 31cqw; height: auto; aspect-ratio: 600 / 849; right: auto; bottom: auto; box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 12px 22px -10px rgba(0,0,0,.5); }
+.how-v .hv-c-l { left: 13cqw; transform: rotate(-8deg); opacity: .8; }
+.how-v .hv-c-r { left: 56cqw; transform: rotate(8deg); opacity: .8; }
+.how-v .hv-c-m { left: 34.5cqw; top: 17cqw; z-index: 1; width: 31cqw; outline: .9cqw solid var(--tangerine); outline-offset: .8cqw; }
+.how-v .hv-c-m > img { position: absolute; }
+.how-v .hv-c-m .hv-tick { right: -4cqw; top: -4cqw; width: 8cqw; }
+/* 2. pilih semua foto di galeri, langsung masuk halaman */
+.hv-phone { position: absolute; left: 8cqw; top: 6cqw; width: 36cqw; height: 63cqw; border-radius: 5cqw; border: 1.3cqw solid #1b1b1b; background: #fff; }
+.hv-grid { position: absolute; left: 1.6cqw; right: 1.6cqw; top: 6cqw; display: grid; grid-template-columns: repeat(3, 1fr); gap: .8cqw; }
+.hv-grid > span { position: relative; aspect-ratio: 1; overflow: hidden; }
+.hv-grid .hv-tick { width: 34%; right: 6%; top: 6%; box-shadow: 0 0 0 .35cqw #fff; }
+.hv-phone .hv-pill { left: 50%; bottom: 4cqw; transform: translateX(-50%); background: var(--tangerine); color: #141414; padding: 1.2cqw 3cqw; font-size: max(8px, 3.1cqw); box-shadow: none; }
+.hv-arrow { position: absolute; left: 47cqw; top: 33cqw; width: 9cqw; fill: none; stroke: var(--tangerine); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.hv-p2 { right: 9cqw; top: 13cqw; width: 33cqw; aspect-ratio: 210 / 297; }
+.hv-p2 > span:nth-child(1) { left: 7%; top: 6%; width: 86%; height: 38%; }
+.hv-p2 > span:nth-child(2) { left: 7%; top: 47%; width: 41.5%; height: 30%; }
+.hv-p2 > span:nth-child(3) { left: 51.5%; top: 47%; width: 41.5%; height: 30%; }
+.hv-p2 > span:nth-child(4) { display: none; }
+.hv-p2 > i { left: 7%; top: 84%; width: 50%; }
+/* 3. rapikan dan tulis */
+.hv-p3 { left: 9cqw; top: 6cqw; width: 44.5cqw; aspect-ratio: 210 / 297; }
+.hv-fr { left: 7%; top: 6%; width: 86%; height: 50%; overflow: visible !important; outline: .5cqw solid var(--tangerine); background: none !important; }
+.hv-fr > img { object-position: 30% 50%; }
+.hv-h { width: 2.4cqw; height: 2.4cqw; margin: -1.2cqw 0 0 -1.2cqw; background: #fff; border: .45cqw solid var(--tangerine); border-radius: 50%; z-index: 1; }
+.hv-h1 { left: 0; top: 0; } .hv-h2 { left: 100%; top: 0; } .hv-h3 { left: 0; top: 100%; } .hv-h4 { left: 100%; top: 100%; }
+.hv-move { position: absolute; left: 50%; top: 50%; width: 9cqw; margin: -4.5cqw 0 0 -4.5cqw; padding: 1.6cqw; border-radius: 50%; background: rgba(20,20,20,.62); fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; box-sizing: content-box; transform: translate(-1.6cqw, -1.6cqw); }
+.hv-cap { left: 7%; top: 61%; padding: .6cqw 1cqw; margin-left: -1cqw; color: #141414; font: 600 max(7px, 2.9cqw)/1.2 var(--font-ui); white-space: nowrap; outline: .35cqw dashed var(--tangerine); border-radius: .6cqw; }
+.hv-caret { position: relative !important; display: inline-block !important; width: .35cqw; height: 1em; margin-left: .3cqw; vertical-align: -.15em; background: var(--tangerine); }
+.hv-line { left: 7%; top: 73%; width: 70%; }
+.hv-line-s { top: 79%; width: 45%; }
+.hv-tools { position: absolute; left: 59cqw; top: 22cqw; display: grid; gap: 3cqw; }
+.hv-tools .hv-pill { position: static; }
+/* 4. lihat pratinjau, lalu pesan */
+.hv-book { position: absolute; left: 50%; top: 6cqw; width: 76cqw; transform: translateX(-50%); display: flex; filter: drop-shadow(0 12px 14px rgba(0,0,0,.35)); }
+.hv-book .hv-page { position: relative; width: 50%; aspect-ratio: 210 / 297; box-shadow: none; }
+.hv-pl { background: linear-gradient(to left, rgba(0,0,0,.14), rgba(0,0,0,0) 12%), #fff !important; }
+.hv-pr { background: linear-gradient(to right, rgba(0,0,0,.14), rgba(0,0,0,0) 12%), #fff !important; }
+.hv-pl > span:nth-child(1) { left: 8%; top: 7%; width: 84%; height: 44%; }
+.hv-pl > span:nth-child(2) { left: 8%; top: 55%; width: 50%; height: 32%; }
+.hv-pl > i { left: 64%; top: 58%; width: 26%; }
+.hv-pr > span { left: 8%; top: 7%; width: 84%; height: 62%; }
+.hv-pr > i { left: 8%; top: 76%; width: 60%; }
+.hv-pr > i.hv-line-s { top: 82%; width: 38%; }
+.hv-pay { left: 50%; bottom: 4.5cqw; transform: translateX(-50%); background: var(--tangerine); color: #141414; z-index: 1; }
+.hv-pay b { position: static; display: inline; font-weight: 800; }
+html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .hv-caret { animation: hv-blink 1.1s steps(1) infinite; }
+  .hv-fr > img { animation: hv-pan 5s ease-in-out infinite alternate; }
+  .hv-move { animation: hv-nudge 5s ease-in-out infinite alternate; }
+}
+@keyframes hv-blink { 50% { opacity: 0; } }
+@keyframes hv-pan { from { object-position: 15% 50%; } to { object-position: 70% 50%; } }
+@keyframes hv-nudge { from { margin-left: -6cqw; } to { margin-left: -3cqw; } }
 .price { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 32px; margin-top: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid var(--line-dark); border-radius: var(--r); background: var(--vinyl-raise); align-items: center; }
 .price-main { display: grid; gap: 10px; justify-items: start; }
 .price-n { font: 400 clamp(2.8rem, 6vw, 4.2rem)/1.02 var(--font-display); letter-spacing: -.025em; }
