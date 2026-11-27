@@ -361,6 +361,10 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .setup-pick b { color: var(--ink); }
 .drop { display: grid; gap: 14px; justify-items: center; text-align: center; padding: clamp(28px, 6vw, 56px) 20px; border: 2px dashed var(--line-strong); border-radius: var(--r); background: var(--sheet); transition: border-color var(--d-1) var(--ease), background-color var(--d-1) var(--ease); }
 .drop.is-over { border-color: var(--accent); background: var(--accent-wash); }
+/* setelah ada foto: kotak upload dipadatkan supaya foto yang sudah masuk tetap terlihat */
+.drop.is-compact { gap: 10px; padding: 18px 20px; }
+.drop.is-compact .drop-ic, .drop.is-compact .drop-or { display: none; }
+.drop.is-compact h2 { font-size: 22px; }
 .drop-ic { display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%; background: var(--accent-wash); color: var(--accent); }
 .drop-ic .ic { width: 26px; height: 26px; }
 .drop h2 { font: 400 28px/1.12 var(--font-display); letter-spacing: -.01em; text-wrap: balance; }
@@ -368,6 +372,21 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .drop-or { font-size: 13px; line-height: 1.4; color: var(--ink-3); }
 .linkish { display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; border: 0; background: none; color: var(--accent); font-weight: 700; font-size: 14px; line-height: 1.3; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .linkish:hover { color: var(--ink); }
+/* langkah upload wajib: hitungan foto, bilah progres, kisi foto yang sudah masuk */
+.upl-prog { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 16px; margin-bottom: 14px; padding: 14px 18px; border-radius: var(--r-s); background: var(--sheet); border: 1px solid var(--line); }
+.upl-count { font-size: 15px; color: var(--ink-2); white-space: nowrap; }
+.upl-count b { font: 400 30px/1 var(--font-display); color: var(--ink); letter-spacing: -.01em; }
+.upl-bar { display: block; height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.upl-bar i { display: block; height: 100%; border-radius: inherit; background: var(--tangerine); transition: width var(--d-2, .3s) ease; }
+.upl-left { grid-column: 1 / -1; font-size: 14px; font-weight: 600; color: var(--accent-text); }
+.upl-prog.is-done .upl-left { color: var(--ink); }
+.upl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; margin: 14px 0 18px; padding: 0; list-style: none; }
+.upl-grid li { position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+.upl-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.upl-x { position: absolute; top: 4px; right: 4px; display: grid; place-items: center; width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: rgba(17,17,17,.72); color: #fff; cursor: pointer; }
+.upl-x .ic { width: 14px; height: 14px; }
+.upl-x:hover, .upl-x:focus-visible { background: var(--danger); }
+@media (pointer: coarse) { .upl-x { width: 30px; height: 30px; } }
 .upl-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .upl-facts li { display: grid; gap: 4px; padding: 14px 16px; border-radius: var(--r-s); background: var(--sheet); border: 1px solid var(--line); font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 .upl-facts b { color: var(--ink); font-size: 15px; line-height: 1.35; }
@@ -1006,7 +1025,7 @@ html.pay [data-nopay]{display:none!important}
     <p class="eyebrow">FAQ</p>
     <h2 id="faq-h" class="h2 nw">Questions people ask.</h2>
     <div class="faq">
-      <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. If you’re short, empty frames can be filled with photos you’ve already added.</p></details>
+      <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick, and you upload them all right after choosing your layout, before you start arranging.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
       <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
@@ -1337,7 +1356,6 @@ var I18N_ID = {
 "Paid in full, once, after you’ve seen the preview. No deposit. JNE shipping is calculated from your address at checkout": "Lunas sekali bayar, setelah kamu melihat preview. Tanpa DP. Ongkir JNE dihitung otomatis sesuai alamatmu saat checkout",
 "Questions people ask.": "Yang sering ditanyakan.",
 "How many photos do I need?": "Butuh berapa foto?",
-"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. If you’re short, empty frames can be filled with photos you’ve already added.": "Tergantung gaya layout yang kamu pilih, antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih. Kalau fotomu kurang, bingkai yang kosong bisa diisi ulang dengan foto yang sudah ada.",
 "Are the dates next to photos filled in automatically?": "Tanggal di samping foto diisi otomatis?",
 "No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.": "Tidak. Tanggal yang tersimpan di file foto belum tentu tanggal fotonya diambil, bisa saja tanggal foto diunduh, diedit, atau dipindahkan. Karena itu kamu sendiri yang menulisnya. Kalau tanggal di file sudah benar, cukup ketuk tombolnya untuk memakai tanggal itu. Keterangan yang dibiarkan kosong tidak ikut dicetak.",
 "Can I change the text in the album?": "Teks di dalam album bisa diganti?",
@@ -1368,6 +1386,21 @@ var I18N_ID = {
 "There are three themes: Travel, Event, and Slice of Life. Magazine covers use your own photo; the people in these samples were made with AI. Your album’s layouts follow the theme of the cover you pick.": "Ada tiga tema: Travel, Event, dan Slice of Life. Cover majalah nanti memakai fotomu sendiri; foto di contoh ini dibuat dengan AI. Layout album mengikuti tema cover yang kamu pilih.",
 "Choose a layout.": "Pilih layout.",
 "Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.": "Semua layout berisi 40 halaman. Bedanya ada di susunan foto dan seberapa banyak ruang untuk menulis.",
+"This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.": "Layout ini butuh {n} foto. Upload semuanya sekarang, lalu kamu rapikan albumnya di layar berikutnya.",
+"{n} more to go": "Kurang {n} foto lagi",
+"All {n} photos are in.": "Semua {n} foto sudah masuk.",
+"Choose {n} photos from your device": "Pilih {n} foto dari perangkatmu",
+"Add {n} more photos": "Tambah {n} foto lagi",
+"Want to add a few extra?": "Mau tambah beberapa foto lagi?",
+"You can add more than needed. Extra photos wait on the shelf.": "Boleh lebih dari yang dibutuhkan. Foto lebihan disimpan di rak.",
+"Uploaded photos": "Foto yang sudah diupload",
+"Remove photo {n}": "Hapus foto {n}",
+"{n} more photos needed": "Butuh {n} foto lagi",
+"Ready to arrange {n} photos": "Siap merapikan {n} foto",
+"Continue to arranging": "Lanjut rapikan album",
+"{n} photos added. {m} more to go.": "{n} foto ditambahkan. Kurang {m} lagi.",
+"{n} photos added. All set, you can start arranging.": "{n} foto ditambahkan. Sudah lengkap, kamu bisa mulai merapikan.",
+"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick, and you upload them all right after choosing your layout, before you start arranging.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih, dan semua foto diupload sesudah memilih layout, sebelum mulai merapikan album.",
 "Now, upload your photos.": "Sekarang, upload foto-fotomu.",
 "Select them all at once. We’ll place them on each page, oldest first.": "Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari foto yang paling lama.",
 "Change layout": "Ganti gaya",
@@ -3336,7 +3369,7 @@ function pickCat(id) {
 var SETUP = {
   sampul: { n: 1, h: 'Choose your cover.', sub: function (cat) { return t('Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.', { theme: cat.name }); }, back: 'Change theme' },
   gaya: { n: 1, h: 'Choose a layout.', sub: 'Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.', back: 'Cover' },
-  foto: { n: 2, h: 'Now, upload your photos.', sub: 'Select them all at once. We’ll place them on each page, oldest first.', back: 'Change layout' }
+  foto: { n: 2, h: 'Now, upload your photos.', sub: function () { return t('This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.', { n: slotCount(S.layout) }); }, back: 'Change layout' }
 };
 function drawSetup() {
   var st = SETUP[S.step], body = $('#setup-body'), foot = $('#setup-foot'), cat = S.cat && catOf(S.cat);
@@ -3385,28 +3418,44 @@ function drawSetup() {
     body.appendChild(grid);
     drawSetupFoot();
   } else {
-    var need = slotCount(S.layout), have = S.photos.length;
-    var drop = h('div', 'drop'); drop.id = 'drop';
+    /* Langkah upload wajib (permintaan user, 27 Nov 2026): semua foto yang dibutuhkan layout diupload di sini dulu,
+       baru pembeli masuk editor. Upload berikutnya tetap di langkah ini; tombol lanjut terbuka saat jumlahnya cukup. */
+    var need = slotCount(S.layout), have = S.photos.length, left = Math.max(0, need - have);
+    var prog = h('div', 'upl-prog' + (left ? '' : ' is-done')); prog.setAttribute('role', 'status'); prog.setAttribute('aria-live', 'polite');
+    var cnt = h('p', 'upl-count'); cnt.appendChild(h('b', 'num', String(have))); cnt.appendChild(document.createTextNode(' / ' + need + ' ')); cnt.appendChild(h('span', null, 'photos'));
+    prog.appendChild(cnt);
+    var bar = h('span', 'upl-bar'), fill = h('i'); fill.style.width = Math.min(100, have / need * 100) + '%'; bar.appendChild(fill); prog.appendChild(bar);
+    prog.appendChild(h('p', 'upl-left', left ? t('{n} more to go', { n: left }) : t('All {n} photos are in.', { n: need })));
+    body.appendChild(prog);
+    var drop = h('div', 'drop' + (have ? ' is-compact' : '')); drop.id = 'drop';
     var dic = h('span', 'drop-ic'); dic.appendChild(icon('upload')); drop.appendChild(dic);
-    drop.appendChild(h('h2', null, have ? t('You already have {n} photos on the shelf.', { n: have }) : 'Choose photos from your device'));
-    drop.appendChild(h('p', null, noWidow(have ? 'Keep arranging with those photos, or add more first.' : t('This layout holds {n} photos. A few more or fewer is fine; you can adjust later.', { n: need }))));
-    var pickBtn = h('button', 'btn btn-lg ' + (have ? 'btn-line' : 'btn-warm')); pickBtn.type = 'button'; pickBtn.id = 'pick-files';
+    drop.appendChild(h('h2', null, !have ? t('Choose {n} photos from your device', { n: need }) : left ? t('Add {n} more photos', { n: left }) : 'Want to add a few extra?'));
+    drop.appendChild(h('p', null, noWidow(left ? 'Select them all at once. We’ll place them on each page, oldest first.' : 'You can add more than needed. Extra photos wait on the shelf.')));
+    var pickBtn = h('button', 'btn btn-lg ' + (left ? 'btn-warm' : 'btn-line')); pickBtn.type = 'button'; pickBtn.id = 'pick-files';
     pickBtn.appendChild(icon(have ? 'plus' : 'photo')); pickBtn.appendChild(h('span', null, have ? 'Add photos' : 'Choose photos'));
     pickBtn.addEventListener('click', function () { $('#file-first').click(); });
-    if (have) {
-      var cont = h('button', 'btn btn-warm btn-lg', 'Keep arranging'); cont.type = 'button';
-      cont.addEventListener('click', function () { enterStudio(true); });
-      drop.appendChild(cont);
-    }
     drop.appendChild(pickBtn);
     drop.appendChild(h('p', 'drop-or', 'JPG, PNG, WEBP, or HEIC. On a computer, you can also drag photos into this box.'));
-    if (!have) {
+    if (left && ALLOW_SAMPLE) {
       var demoBtn = h('button', 'linkish', 'No photos yet? Try it with sample photos'); demoBtn.type = 'button'; demoBtn.id = 'use-samples';
       demoBtn.addEventListener('click', useSamples);
       drop.appendChild(demoBtn);
     }
     var msg = h('p', 'msg'); msg.id = 'upl-msg'; msg.hidden = true; msg.setAttribute('role', 'alert');
     body.appendChild(drop); body.appendChild(msg);
+    if (have) {
+      var grid = h('ul', 'upl-grid'); grid.setAttribute('aria-label', 'Uploaded photos');
+      S.photos.forEach(function (p, i) {
+        var li = h('li'), im = new Image(); im.src = p.thumb || p.url; im.alt = ''; im.decoding = 'async'; im.loading = 'lazy'; li.appendChild(im);
+        if (!S.album) {   /* belum ada album: foto boleh dikeluarkan lagi (nomor foto belum dipakai di halaman mana pun) */
+          var x = h('button', 'upl-x'); x.type = 'button'; x.setAttribute('aria-label', t('Remove photo {n}', { n: i + 1 })); x.appendChild(icon('x'));
+          x.addEventListener('click', function () { S.photos.splice(i, 1); drawSetup(); var nx = $$('.upl-x')[Math.min(i, S.photos.length - 1)]; (nx || $('#pick-files')).focus(); });
+          li.appendChild(x);
+        }
+        grid.appendChild(li);
+      });
+      body.appendChild(grid);
+    }
     var facts = h('ul', 'upl-facts');
     [['Laid out for you', 'Photos are placed by date, oldest first.'], ['You decide the dates', 'You write the caption next to each photo number, or leave it empty.'], ['Still yours to adjust', 'Move, zoom, swap, or replace photos any time.']].forEach(function (f) {
       var li = h('li'); li.appendChild(h('b', null, f[0])); li.appendChild(document.createTextNode(f[1])); facts.appendChild(li);
@@ -3415,6 +3464,10 @@ function drawSetup() {
     ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('is-over'); }); });
     ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('is-over'); }); });
     drop.addEventListener('drop', function (e) { if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files, true); });
+    foot.hidden = false;
+    var pick = $('#setup-pick'); pick.textContent = left ? t('{n} more photos needed', { n: left }) : t('Ready to arrange {n} photos', { n: have });
+    $('#setup-next').textContent = 'Continue to arranging';
+    $('#setup-next').disabled = left > 0;
   }
   fixWidows($('[data-view="setup"]'));
 }
@@ -3864,16 +3917,21 @@ $('#setup-next').addEventListener('click', function (e) {
   if (S.step === 'sampul' && curCover().mag && !S.mag.photo && !(ALLOW_SAMPLE && magSample(S.cat))) { toast('Upload a photo for the magazine cover first.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
   if (S.step === 'sampul' && S.coverFrom) { S.album.cover = curCover().id; S.coverFrom = null; S.dirty = true; backToPreview(true); return; }
   if (S.step === 'sampul') { S.step = 'gaya'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); return; }
+  if (S.step === 'foto') { if (S.photos.length >= slotCount(S.layout)) enterStudio(true); return; }
   if (S.step !== 'gaya' || !S.layout) return;
   if (S.album && S.album.tpl.id === S.layout && S.album.cat === S.cat) { S.album.cover = curCover().id; return go('studio'); }
   if (S.album && S.dirty) {
     return openDialog({ trigger: e.currentTarget, title: t('Switch to the {name} layout?', { name: LAYOUTS[S.layout].name }),
       body: 'Your photos stay on the shelf. But the photo arrangement and text you’ve set up will start over with the new layout.',
-      actions: [{ label: 'Switch and start over', kind: 'primary', fn: function () { enterStudio(true); } }, { label: 'Keep the current layout', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
+      actions: [{ label: 'Switch and start over', kind: 'primary', fn: function () { toPhotosOrStudio(); } }, { label: 'Keep the current layout', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
   }
-  if (S.photos.length) return enterStudio(true);
-  S.step = 'foto'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true });
+  toPhotosOrStudio();
 });
+/* Editor hanya dibuka bila foto sudah cukup untuk layout; kalau kurang, ke langkah upload dulu. */
+function toPhotosOrStudio() {
+  if (S.photos.length >= slotCount(S.layout)) return enterStudio(true);
+  S.step = 'foto'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
+}
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -3894,15 +3952,22 @@ async function addFiles(files, first) {
   var from = S.photos.length;
   res.photos.forEach(function (p) { S.photos.push(p); });
   var fresh = res.photos.map(function (p, i) { return from + i; });
-  var tail = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '') + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
-  if (first || !S.album) { enterStudio(true, tail); return; }
+  var tail0 = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '');
+  var tail = tail0 + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
+  if (S.view === 'setup' && S.step === 'foto') {
+    drawSetup();
+    var lf = slotCount(S.layout) - S.photos.length;
+    toast((lf > 0 ? t('{n} photos added. {m} more to go.', { n: fresh.length, m: lf }) : t('{n} photos added. All set, you can start arranging.', { n: fresh.length })) + tail0);
+    return;
+  }
+  if (!S.album) { enterStudio(true, tail); return; }
   var placed = pourPhotos(S.album, fresh);
   S.dirty = true;
   drawStudio();
   toast((placed ? t('{n} photos added, {m} empty frames filled right away.', { n: fresh.length, m: placed }) : t('{n} photos added to the shelf.', { n: fresh.length })) + tail);
 }
 async function useSamples() {
-  var n = slotCount(S.layout) - 9;
+  var n = Math.max(0, slotCount(S.layout) - S.photos.length);
   busy(true, 0, n);
   var ph = await samplePhotos(n);
   busy(false);

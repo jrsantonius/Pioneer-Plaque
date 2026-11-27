@@ -146,7 +146,7 @@ function pickCat(id) {
 var SETUP = {
   sampul: { n: 1, h: 'Choose your cover.', sub: function (cat) { return t('Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.', { theme: cat.name }); }, back: 'Change theme' },
   gaya: { n: 1, h: 'Choose a layout.', sub: 'Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.', back: 'Cover' },
-  foto: { n: 2, h: 'Now, upload your photos.', sub: 'Select them all at once. We’ll place them on each page, oldest first.', back: 'Change layout' }
+  foto: { n: 2, h: 'Now, upload your photos.', sub: function () { return t('This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.', { n: slotCount(S.layout) }); }, back: 'Change layout' }
 };
 function drawSetup() {
   var st = SETUP[S.step], body = $('#setup-body'), foot = $('#setup-foot'), cat = S.cat && catOf(S.cat);
@@ -195,28 +195,44 @@ function drawSetup() {
     body.appendChild(grid);
     drawSetupFoot();
   } else {
-    var need = slotCount(S.layout), have = S.photos.length;
-    var drop = h('div', 'drop'); drop.id = 'drop';
+    /* Langkah upload wajib (permintaan user, 27 Nov 2026): semua foto yang dibutuhkan layout diupload di sini dulu,
+       baru pembeli masuk editor. Upload berikutnya tetap di langkah ini; tombol lanjut terbuka saat jumlahnya cukup. */
+    var need = slotCount(S.layout), have = S.photos.length, left = Math.max(0, need - have);
+    var prog = h('div', 'upl-prog' + (left ? '' : ' is-done')); prog.setAttribute('role', 'status'); prog.setAttribute('aria-live', 'polite');
+    var cnt = h('p', 'upl-count'); cnt.appendChild(h('b', 'num', String(have))); cnt.appendChild(document.createTextNode(' / ' + need + ' ')); cnt.appendChild(h('span', null, 'photos'));
+    prog.appendChild(cnt);
+    var bar = h('span', 'upl-bar'), fill = h('i'); fill.style.width = Math.min(100, have / need * 100) + '%'; bar.appendChild(fill); prog.appendChild(bar);
+    prog.appendChild(h('p', 'upl-left', left ? t('{n} more to go', { n: left }) : t('All {n} photos are in.', { n: need })));
+    body.appendChild(prog);
+    var drop = h('div', 'drop' + (have ? ' is-compact' : '')); drop.id = 'drop';
     var dic = h('span', 'drop-ic'); dic.appendChild(icon('upload')); drop.appendChild(dic);
-    drop.appendChild(h('h2', null, have ? t('You already have {n} photos on the shelf.', { n: have }) : 'Choose photos from your device'));
-    drop.appendChild(h('p', null, noWidow(have ? 'Keep arranging with those photos, or add more first.' : t('This layout holds {n} photos. A few more or fewer is fine; you can adjust later.', { n: need }))));
-    var pickBtn = h('button', 'btn btn-lg ' + (have ? 'btn-line' : 'btn-warm')); pickBtn.type = 'button'; pickBtn.id = 'pick-files';
+    drop.appendChild(h('h2', null, !have ? t('Choose {n} photos from your device', { n: need }) : left ? t('Add {n} more photos', { n: left }) : 'Want to add a few extra?'));
+    drop.appendChild(h('p', null, noWidow(left ? 'Select them all at once. We’ll place them on each page, oldest first.' : 'You can add more than needed. Extra photos wait on the shelf.')));
+    var pickBtn = h('button', 'btn btn-lg ' + (left ? 'btn-warm' : 'btn-line')); pickBtn.type = 'button'; pickBtn.id = 'pick-files';
     pickBtn.appendChild(icon(have ? 'plus' : 'photo')); pickBtn.appendChild(h('span', null, have ? 'Add photos' : 'Choose photos'));
     pickBtn.addEventListener('click', function () { $('#file-first').click(); });
-    if (have) {
-      var cont = h('button', 'btn btn-warm btn-lg', 'Keep arranging'); cont.type = 'button';
-      cont.addEventListener('click', function () { enterStudio(true); });
-      drop.appendChild(cont);
-    }
     drop.appendChild(pickBtn);
     drop.appendChild(h('p', 'drop-or', 'JPG, PNG, WEBP, or HEIC. On a computer, you can also drag photos into this box.'));
-    if (!have) {
+    if (left && ALLOW_SAMPLE) {
       var demoBtn = h('button', 'linkish', 'No photos yet? Try it with sample photos'); demoBtn.type = 'button'; demoBtn.id = 'use-samples';
       demoBtn.addEventListener('click', useSamples);
       drop.appendChild(demoBtn);
     }
     var msg = h('p', 'msg'); msg.id = 'upl-msg'; msg.hidden = true; msg.setAttribute('role', 'alert');
     body.appendChild(drop); body.appendChild(msg);
+    if (have) {
+      var grid = h('ul', 'upl-grid'); grid.setAttribute('aria-label', 'Uploaded photos');
+      S.photos.forEach(function (p, i) {
+        var li = h('li'), im = new Image(); im.src = p.thumb || p.url; im.alt = ''; im.decoding = 'async'; im.loading = 'lazy'; li.appendChild(im);
+        if (!S.album) {   /* belum ada album: foto boleh dikeluarkan lagi (nomor foto belum dipakai di halaman mana pun) */
+          var x = h('button', 'upl-x'); x.type = 'button'; x.setAttribute('aria-label', t('Remove photo {n}', { n: i + 1 })); x.appendChild(icon('x'));
+          x.addEventListener('click', function () { S.photos.splice(i, 1); drawSetup(); var nx = $$('.upl-x')[Math.min(i, S.photos.length - 1)]; (nx || $('#pick-files')).focus(); });
+          li.appendChild(x);
+        }
+        grid.appendChild(li);
+      });
+      body.appendChild(grid);
+    }
     var facts = h('ul', 'upl-facts');
     [['Laid out for you', 'Photos are placed by date, oldest first.'], ['You decide the dates', 'You write the caption next to each photo number, or leave it empty.'], ['Still yours to adjust', 'Move, zoom, swap, or replace photos any time.']].forEach(function (f) {
       var li = h('li'); li.appendChild(h('b', null, f[0])); li.appendChild(document.createTextNode(f[1])); facts.appendChild(li);
@@ -225,6 +241,10 @@ function drawSetup() {
     ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('is-over'); }); });
     ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('is-over'); }); });
     drop.addEventListener('drop', function (e) { if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files, true); });
+    foot.hidden = false;
+    var pick = $('#setup-pick'); pick.textContent = left ? t('{n} more photos needed', { n: left }) : t('Ready to arrange {n} photos', { n: have });
+    $('#setup-next').textContent = 'Continue to arranging';
+    $('#setup-next').disabled = left > 0;
   }
   fixWidows($('[data-view="setup"]'));
 }
@@ -674,16 +694,21 @@ $('#setup-next').addEventListener('click', function (e) {
   if (S.step === 'sampul' && curCover().mag && !S.mag.photo && !(ALLOW_SAMPLE && magSample(S.cat))) { toast('Upload a photo for the magazine cover first.'); var pk = $('[data-mag-pick]'); if (pk) { pk.scrollIntoView({ block: 'center' }); pk.focus({ preventScroll: true }); } return; }
   if (S.step === 'sampul' && S.coverFrom) { S.album.cover = curCover().id; S.coverFrom = null; S.dirty = true; backToPreview(true); return; }
   if (S.step === 'sampul') { S.step = 'gaya'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); return; }
+  if (S.step === 'foto') { if (S.photos.length >= slotCount(S.layout)) enterStudio(true); return; }
   if (S.step !== 'gaya' || !S.layout) return;
   if (S.album && S.album.tpl.id === S.layout && S.album.cat === S.cat) { S.album.cover = curCover().id; return go('studio'); }
   if (S.album && S.dirty) {
     return openDialog({ trigger: e.currentTarget, title: t('Switch to the {name} layout?', { name: LAYOUTS[S.layout].name }),
       body: 'Your photos stay on the shelf. But the photo arrangement and text you’ve set up will start over with the new layout.',
-      actions: [{ label: 'Switch and start over', kind: 'primary', fn: function () { enterStudio(true); } }, { label: 'Keep the current layout', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
+      actions: [{ label: 'Switch and start over', kind: 'primary', fn: function () { toPhotosOrStudio(); } }, { label: 'Keep the current layout', fn: function () { S.layout = S.album.tpl.id; S.cat = S.album.cat; go('studio'); } }] });
   }
-  if (S.photos.length) return enterStudio(true);
-  S.step = 'foto'; drawSetup(); window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true });
+  toPhotosOrStudio();
 });
+/* Editor hanya dibuka bila foto sudah cukup untuk layout; kalau kurang, ke langkah upload dulu. */
+function toPhotosOrStudio() {
+  if (S.photos.length >= slotCount(S.layout)) return enterStudio(true);
+  S.step = 'foto'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
+}
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -704,15 +729,22 @@ async function addFiles(files, first) {
   var from = S.photos.length;
   res.photos.forEach(function (p) { S.photos.push(p); });
   var fresh = res.photos.map(function (p, i) { return from + i; });
-  var tail = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '') + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
-  if (first || !S.album) { enterStudio(true, tail); return; }
+  var tail0 = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '');
+  var tail = tail0 + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
+  if (S.view === 'setup' && S.step === 'foto') {
+    drawSetup();
+    var lf = slotCount(S.layout) - S.photos.length;
+    toast((lf > 0 ? t('{n} photos added. {m} more to go.', { n: fresh.length, m: lf }) : t('{n} photos added. All set, you can start arranging.', { n: fresh.length })) + tail0);
+    return;
+  }
+  if (!S.album) { enterStudio(true, tail); return; }
   var placed = pourPhotos(S.album, fresh);
   S.dirty = true;
   drawStudio();
   toast((placed ? t('{n} photos added, {m} empty frames filled right away.', { n: fresh.length, m: placed }) : t('{n} photos added to the shelf.', { n: fresh.length })) + tail);
 }
 async function useSamples() {
-  var n = slotCount(S.layout) - 9;
+  var n = Math.max(0, slotCount(S.layout) - S.photos.length);
   busy(true, 0, n);
   var ph = await samplePhotos(n);
   busy(false);
