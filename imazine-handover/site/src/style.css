@@ -441,13 +441,18 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .sel-frame.is-crop .rs-h { display: none; }
 #slot-crop[aria-pressed="true"] { background: var(--tangerine); color: #fff; }
 .pg-edit .slot.is-crop:active img { cursor: grabbing; }
-.pg-edit .slot.is-empty { background-color: var(--empty) !important; box-shadow: none; outline: .4cqw dashed var(--empty-ink); outline-offset: -.4cqw; }
-.pg-edit .slot.is-empty .slot-lb { color: var(--empty-ink); }
+/* bingkai kosong: abu-abu, ajakan klik untuk isi foto (27 Nov 2026) */
+.pg-edit .slot.is-empty { background-color: #e2e2df !important; box-shadow: none; outline: .35cqw dashed #9b9b97; outline-offset: -.35cqw; cursor: pointer; }
+.pg-edit .slot.is-empty:hover { background-color: #d6d6d2 !important; }
+.pg-edit .slot.is-empty .slot-lb { color: #55554f; padding: 4%; text-align: center; letter-spacing: 0; text-transform: none; }
+.pg-edit .slot.is-empty .slot-plus { display: grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: 50%; background: #fff; color: #1b1b1b; font-size: 1.15em; line-height: 1; }
+.slot-cta { font-weight: 700; line-height: 1.2; max-width: 16em; }
+.slot-no { font-weight: 500; font-size: .85em; opacity: .7; }
 .pg-edit .slot:hover { filter: brightness(.96); }
 .pg-edit .slot:focus-visible { outline: .7cqw solid var(--paper-ink); outline-offset: -.7cqw; }
 .pg-edit .slot.is-drop { outline: .9cqw solid var(--tangerine); outline-offset: -.9cqw; }
 .slot-lb { font-size: max(12px, 2.6cqw); }
-.slot.is-tiny .slot-lb span:last-child { display: none; }
+.slot.is-tiny .slot-lb .slot-no, .slot.is-tiny .slot-lb .slot-cta { display: none; }
 .pg-edit .tx, .pg-edit .pa { cursor: pointer; border-radius: .4cqw; }
 .pg-edit .tx:hover, .pg-edit .pa:hover { outline: .3cqw dashed var(--paper-ink); outline-offset: .8cqw; }
 .pg-edit .tx.is-empty .tx-v { opacity: .45; text-decoration: underline dotted; text-underline-offset: .18em; }

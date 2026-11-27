@@ -101,7 +101,8 @@ function renderPage(album, pi, mode) {
       } else if (!thumb) {
         var lb = h('span', 'slot-lb');
         lb.appendChild(h('span', 'slot-plus', '+'));
-        lb.appendChild(h('span', null, t('Photo {n}', { n: k + 1 })));
+        if (edit) lb.appendChild(h('span', 'slot-cta', t(typeof clickWord === 'function' && clickWord() === 'Tap' ? 'Tap to insert your photo here' : 'Click to insert your photo here')));
+        lb.appendChild(h('span', 'slot-no', t('Photo {n}', { n: k + 1 })));
         d.appendChild(lb);
       }
       if (edit) d.setAttribute('aria-label', t(photo ? 'Photo {n}, filled. Pick to adjust' : 'Photo {n}, empty. Pick to fill', { n: k + 1 }));

@@ -449,13 +449,18 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .sel-frame.is-crop .rs-h { display: none; }
 #slot-crop[aria-pressed="true"] { background: var(--tangerine); color: #fff; }
 .pg-edit .slot.is-crop:active img { cursor: grabbing; }
-.pg-edit .slot.is-empty { background-color: var(--empty) !important; box-shadow: none; outline: .4cqw dashed var(--empty-ink); outline-offset: -.4cqw; }
-.pg-edit .slot.is-empty .slot-lb { color: var(--empty-ink); }
+/* bingkai kosong: abu-abu, ajakan klik untuk isi foto (27 Nov 2026) */
+.pg-edit .slot.is-empty { background-color: #e2e2df !important; box-shadow: none; outline: .35cqw dashed #9b9b97; outline-offset: -.35cqw; cursor: pointer; }
+.pg-edit .slot.is-empty:hover { background-color: #d6d6d2 !important; }
+.pg-edit .slot.is-empty .slot-lb { color: #55554f; padding: 4%; text-align: center; letter-spacing: 0; text-transform: none; }
+.pg-edit .slot.is-empty .slot-plus { display: grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: 50%; background: #fff; color: #1b1b1b; font-size: 1.15em; line-height: 1; }
+.slot-cta { font-weight: 700; line-height: 1.2; max-width: 16em; }
+.slot-no { font-weight: 500; font-size: .85em; opacity: .7; }
 .pg-edit .slot:hover { filter: brightness(.96); }
 .pg-edit .slot:focus-visible { outline: .7cqw solid var(--paper-ink); outline-offset: -.7cqw; }
 .pg-edit .slot.is-drop { outline: .9cqw solid var(--tangerine); outline-offset: -.9cqw; }
 .slot-lb { font-size: max(12px, 2.6cqw); }
-.slot.is-tiny .slot-lb span:last-child { display: none; }
+.slot.is-tiny .slot-lb .slot-no, .slot.is-tiny .slot-lb .slot-cta { display: none; }
 .pg-edit .tx, .pg-edit .pa { cursor: pointer; border-radius: .4cqw; }
 .pg-edit .tx:hover, .pg-edit .pa:hover { outline: .3cqw dashed var(--paper-ink); outline-offset: .8cqw; }
 .pg-edit .tx.is-empty .tx-v { opacity: .45; text-decoration: underline dotted; text-underline-offset: .18em; }
@@ -995,7 +1000,7 @@ html.pay [data-nopay]{display:none!important}
     <h2 id="cara-h" class="h2 nw">From your camera roll to your bookshelf.</h2>
     <ol class="how">
       <li><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
-      <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Upload all your photos</h3><p>Select them all at once. They go straight onto the pages, oldest first.</p></li>
+      <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
       <li><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
       <li><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
     </ol>
@@ -1027,7 +1032,7 @@ html.pay [data-nopay]{display:none!important}
     <p class="eyebrow">FAQ</p>
     <h2 id="faq-h" class="h2 nw">Questions people ask.</h2>
     <div class="faq">
-      <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick, and you upload them all right after choosing your layout, before you start arranging.</p></details>
+      <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
       <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
@@ -1165,7 +1170,7 @@ html.pay [data-nopay]{display:none!important}
       </div>
       <div class="st-note" id="st-note" hidden>
         <p data-nowidow><span id="st-note-t"></span><span class="note-more"> Fill them all to continue to the preview.</span></p>
-        <button class="btn btn-sm btn-primary" type="button" id="st-note-fill" aria-label="Fill with photos you’ve added"><svg class="ic"><use href="#i-fill"/></svg><span class="lbl-l">Fill with photos you’ve added</span><span class="lbl-s">Auto-fill</span></button>
+        <button class="btn btn-sm btn-primary" type="button" id="st-note-fill" aria-label="Add photos"><svg class="ic"><use href="#i-plus"/></svg><span class="lbl-l">Add photos</span><span class="lbl-s">Add</span></button>
       </div>
       <div class="tray-h">
         <p class="tray-t">Photo shelf <span class="num" id="tray-n">0</span></p>
@@ -1402,7 +1407,16 @@ var I18N_ID = {
 "Continue to arranging": "Lanjut rapikan album",
 "{n} photos added. {m} more to go.": "{n} foto ditambahkan. Kurang {m} lagi.",
 "{n} photos added. All set, you can start arranging.": "{n} foto ditambahkan. Sudah lengkap, kamu bisa mulai merapikan.",
-"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick, and you upload them all right after choosing your layout, before you start arranging.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih, dan semua foto diupload sesudah memilih layout, sebelum mulai merapikan album.",
+"Start your album": "Mulai albummu",
+"Click any gray frame to insert your photos. You can pick many at once.": "Klik bingkai abu-abu mana saja untuk memasukkan fotomu. Bisa pilih banyak sekaligus.",
+"Tap any gray frame to insert your photos. You can pick many at once.": "Ketuk bingkai abu-abu mana saja untuk memasukkan fotomu. Bisa pilih banyak sekaligus.",
+"Click to insert your photo here": "Klik untuk memasukkan fotomu di sini",
+"Tap to insert your photo here": "Ketuk untuk memasukkan fotomu di sini",
+"So no page prints with gaps, every gray frame needs its own photo first.": "Supaya tidak ada halaman yang tercetak bolong, setiap bingkai abu-abu perlu diisi fotonya dulu.",
+"Add your photos": "Masukkan fotomu",
+"Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.": "Klik bingkai abu-abu di albummu lalu pilih fotonya. Pilih banyak sekaligus, fotonya mengisi halaman mulai dari situ, urut dari yang paling lama.",
+"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih. Setiap bingkai abu-abu perlu diisi foto sebelum bisa dilihat preview-nya dan dipesan.",
+"Add": "Tambah",
 "Now, upload your photos.": "Sekarang, upload foto-fotomu.",
 "Select them all at once. We’ll place them on each page, oldest first.": "Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari foto yang paling lama.",
 "Change layout": "Ganti gaya",
@@ -2032,7 +2046,8 @@ function renderPage(album, pi, mode) {
       } else if (!thumb) {
         var lb = h('span', 'slot-lb');
         lb.appendChild(h('span', 'slot-plus', '+'));
-        lb.appendChild(h('span', null, t('Photo {n}', { n: k + 1 })));
+        if (edit) lb.appendChild(h('span', 'slot-cta', t(typeof clickWord === 'function' && clickWord() === 'Tap' ? 'Tap to insert your photo here' : 'Click to insert your photo here')));
+        lb.appendChild(h('span', 'slot-no', t('Photo {n}', { n: k + 1 })));
         d.appendChild(lb);
       }
       if (edit) d.setAttribute('aria-label', t(photo ? 'Photo {n}, filled. Pick to adjust' : 'Photo {n}, empty. Pick to fill', { n: k + 1 }));
@@ -2430,10 +2445,51 @@ function heicToJpeg(file) {
   heicQueue = run.catch(function () {});
   return run;
 }
+/* HEIC di Chrome/Firefox/Edge (27 Nov 2026): buka, perkecil, dan simpan JPEG semuanya di Web Worker
+   (public/imazine/vendor/heic/heic-worker.js), jadi layar tidak macet. Dua worker bila perangkatnya kuat.
+   Hasilnya tiga JPEG: file cetak (sisi terpanjang 4032, dikirim ke server), versi editor 1600, dan thumbnail 320.
+   Browser tanpa OffscreenCanvas atau bila worker gagal: kembali ke cara lama (heicToJpeg). */
+var HEIC_WORKER = '/public/imazine/vendor/heic/heic-worker.js', heicPool = null, heicSeq = 0;
+function heicWorkerOk() { return typeof Worker === 'function' && typeof OffscreenCanvas === 'function' && typeof OffscreenCanvas.prototype.convertToBlob === 'function'; }
+function heicPoolGet() {
+  if (!heicPool) {
+    var n = (navigator.hardwareConcurrency || 4) > 4 && (navigator.deviceMemory || 8) >= 4 ? 2 : 1;
+    heicPool = [];
+    for (var i = 0; i < n; i++) {
+      var w = new Worker(HEIC_WORKER), slot = { w: w, busy: 0, cb: {} };
+      (function (slot) {
+        slot.w.onmessage = function (e) { var d = e.data, f = d && slot.cb[d.id]; if (!f) return; delete slot.cb[d.id]; slot.busy--; f(d); };
+        slot.w.onerror = function (e) { var cbs = slot.cb; slot.cb = {}; slot.busy = 0; Object.keys(cbs).forEach(function (k) { cbs[k]({ error: 'worker' }); }); };
+      })(slot);
+      heicPool.push(slot);
+    }
+  }
+  return heicPool.reduce(function (a, b) { return b.busy < a.busy ? b : a; });
+}
+function heicInWorker(file) {
+  return file.arrayBuffer().then(function (buf) {
+    return new Promise(function (res, rej) {
+      var slot = heicPoolGet(), id = 'h' + (++heicSeq);
+      slot.busy++;
+      slot.cb[id] = function (d) { if (d.error || !d.full) rej(new Error(d.error || 'HEIC')); else res(d); };
+      slot.w.postMessage({ id: id, buffer: buf, imz: { full: HEIC_MAX, q: HEIC_Q, preview: PHOTO_MAX, pq: 0.85, thumb: THUMB_MAX, tq: 0.8 } }, [buf]);
+    });
+  });
+}
+var heicNative = null;   /* Safari membuka HEIC sendiri: cara lama sudah cepat di sana */
+async function intakeHeic(file, date) {
+  if (heicNative === null) { var u = URL.createObjectURL(file); try { await loadImg(u); heicNative = true; } catch (e) { heicNative = false; } finally { URL.revokeObjectURL(u); } }
+  if (heicNative || !heicWorkerOk()) return null;
+  try {
+    var r = await heicInWorker(file), name = (file.name || 'foto').replace(/\.(heic|heif)$/i, '') + '.jpg';
+    return { url: URL.createObjectURL(r.preview), thumb: URL.createObjectURL(r.thumb), w: r.w, h: r.h, date: date, name: name, dated: date ? 'file' : null,
+      file: new File([r.full], name, { type: 'image/jpeg', lastModified: file.lastModified || Date.now() }) };
+  } catch (e) { return null; }   /* worker gagal: cara lama */
+}
 async function intakeOne(file) {
   var head = await file.slice(0, 262144).arrayBuffer(), heic = isHeic(head, file);
   var date = (heic ? heicExifDate(head) : readExifDate(head)) || dateFromName(file.name || '');
-  if (heic) file = await heicToJpeg(file);
+  if (heic) { var hw = await intakeHeic(file, date); if (hw) return hw; file = await heicToJpeg(file); }
   var src = URL.createObjectURL(file);
   try {
     var img = await loadImg(src);
@@ -2546,9 +2602,10 @@ function byDate(photos, idxs) {
 }
 /* Pour photos into empty slots in page order. Inside one page, pair each slot
    with the photo whose shape fits it best, so less of the picture is cropped. */
-function pourPhotos(album, idxs) {
-  var queue = byDate(album.photos, idxs), placed = 0;
-  album.pages.forEach(function (pg, pi) {
+function pourPhotos(album, idxs, startPage) {
+  var queue = byDate(album.photos, idxs), placed = 0, n = album.pages.length, st = startPage || 0;
+  album.pages.map(function (_, k) { return (st + k) % n; }).forEach(function (pi) {
+    var pg = album.pages[pi];
     var empties = [];
     pg.slots.forEach(function (s, si) { if (s.photo == null) empties.push(si); });
     if (!empties.length || !queue.length) return;
@@ -3905,7 +3962,7 @@ function drawSetupFoot() {
     pick.appendChild(h('b', null, LAYOUTS[S.layout].name));
     pick.appendChild(document.createTextNode(t(' · fits {n} photos', { n: slotCount(S.layout) })));
   } else pick.textContent = 'Choose a layout to continue.';
-  $('#setup-next').textContent = S.album ? 'Use this layout' : 'Continue to photos';
+  $('#setup-next').textContent = S.album ? 'Use this layout' : 'Start your album';
   $('#setup-next').disabled = !S.layout;
 }
 $('#setup-back').addEventListener('click', function () {
@@ -3929,11 +3986,9 @@ $('#setup-next').addEventListener('click', function (e) {
   }
   toPhotosOrStudio();
 });
-/* Editor hanya dibuka bila foto sudah cukup untuk layout; kalau kurang, ke langkah upload dulu. */
-function toPhotosOrStudio() {
-  if (S.photos.length >= slotCount(S.layout)) return enterStudio(true);
-  S.step = 'foto'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
-}
+/* Sesudah layout langsung ke editor (27 Nov 2026, permintaan user): tiap bingkai kosong abu-abu bertuliskan
+   "Click to insert your photo here"; klik membuka pilihan foto. Upload 80 foto sekaligus di satu langkah terlalu lama. */
+function toPhotosOrStudio() { enterStudio(true); }
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -3963,7 +4018,14 @@ async function addFiles(files, first) {
     return;
   }
   if (!S.album) { enterStudio(true, tail); return; }
-  var placed = pourPhotos(S.album, fresh);
+  var from = S.fillFrom, placed = 0; S.fillFrom = null;
+  if (!from) { var se = S.sel && S.sel.t === 'slot' ? S.sel : null; if (se && S.album.pages[se.p] && S.album.pages[se.p].slots[se.i] && S.album.pages[se.p].slots[se.i].photo == null) from = { p: se.p, i: se.i }; }
+  if (from && S.album.pages[from.p] && S.album.pages[from.p].slots[from.i] && S.album.pages[from.p].slots[from.i].photo == null) {
+    var ordered = byDate(S.album.photos, fresh);
+    setSlot(S.album, from.p, from.i, ordered.shift()); placed = 1;
+    placed += pourPhotos(S.album, ordered, from.p);
+    S.page = from.p; S.sel = null;
+  } else placed = pourPhotos(S.album, fresh);
   S.dirty = true;
   drawStudio();
   toast((placed ? t('{n} photos added, {m} empty frames filled right away.', { n: fresh.length, m: placed }) : t('{n} photos added to the shelf.', { n: fresh.length })) + tail);
@@ -4006,8 +4068,11 @@ function enterStudio(rebuild, tail) {
   S.album.cover = curCover().id;
   drawStudio();
   var tt = totals(S.album), extra = S.photos.length - tt.filled;
-  go('studio', null, !rebuild ? null : function () { toast((tt.empty ? t('{n} photos placed. {m} frames still empty.', { n: tt.filled, m: tt.empty }) : extra > 0 ? t('{n} photos placed. {m} more photos are on the shelf.', { n: tt.filled, m: extra }) : t('All {n} frames filled. Just tidy up.', { n: tt.filled })) + (tail || '')); });
+  go('studio', null, !rebuild ? null : !tt.filled ? function () { toast(clickWord() + ' any gray frame to insert your photos. You can pick many at once.'); } : function () { toast((tt.empty ? t('{n} photos placed. {m} frames still empty.', { n: tt.filled, m: tt.empty }) : extra > 0 ? t('{n} photos placed. {m} more photos are on the shelf.', { n: tt.filled, m: extra }) : t('All {n} frames filled. Just tidy up.', { n: tt.filled })) + (tail || '')); });
 }
+/* HP/tablet: "Tap", komputer: "Click" */
+var coarse = window.matchMedia('(pointer: coarse)');
+function clickWord() { return coarse.matches ? 'Tap' : 'Click'; }
 function viewPages(p) {                       /* which pages share the screen with page p */
   if (!wide.matches) return [p];
   if (p === 0) return [null, 0];
@@ -4442,7 +4507,10 @@ function slotClick(p, i) {
   }
   if (S.armed != null) { var ph = S.armed; S.sel = { t: 'slot', p: p, i: i }; placePhoto(p, i, ph, false); return; }
   selectSlot(p, i);
+  if (s.photo == null && !ADMIN_NO) pickPhotos({ p: p, i: i });
 }
+/* Buka pemilih foto. from = bingkai kosong yang diklik: foto baru mengisi mulai dari bingkai itu. */
+function pickPhotos(from) { S.fillFrom = from || null; $('#file-more').click(); }
 /* Bingkai foto bisa di-resize di kanvas (24 Nov 2026, "kayak di Canva"): bingkai terpilih punya 8 pegangan.
    Sudut = ukuran ikut proporsi (Shift = bebas), sisi = lebar atau tinggi saja. Foto di dalamnya tetap memenuhi bingkai. */
 var RS_H = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
@@ -4933,7 +5001,7 @@ function fillWithExisting() {
     before.forEach(function (e) { setSlot(S.album, e[0], e[1], null); }); drawStudio();
   } });
 }
-$('#st-note-fill').addEventListener('click', fillWithExisting);
+$('#st-note-fill').addEventListener('click', function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } });
 function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
   gotoPage(e[0]); selectSlot(e[0], e[1]);
@@ -4947,8 +5015,8 @@ $('#st-preview').addEventListener('click', function (e) {
   var t = totals(S.album);
   if (!t.empty) return enterPreview();
   openDialog({ trigger: e.currentTarget, title: _t('{n} photo frames still empty', { n: t.empty }),
-    body: 'So no page prints with gaps, every frame needs a photo first. You can add photos, or fill the rest with photos you’ve already added.',
-    actions: [{ label: 'Fill with photos you’ve added', kind: 'primary', fn: fillWithExisting }, { label: 'Add photos', fn: function () { $('#file-more').click(); } }, { label: 'Show empty frames', kind: 'quiet', fn: gotoFirstEmpty }] });
+    body: 'So no page prints with gaps, every gray frame needs its own photo first.',
+    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } } }, { label: 'Show empty frames', fn: gotoFirstEmpty }] });
 });
 $('#st-back').addEventListener('click', function () { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; S.step = 'gaya'; drawSetup(); go('setup', 'setup-h'); });
 

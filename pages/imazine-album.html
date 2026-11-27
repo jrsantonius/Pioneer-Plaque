@@ -1334,7 +1334,8 @@ function renderPage(album, pi, mode) {
       } else if (!thumb) {
         var lb = h('span', 'slot-lb');
         lb.appendChild(h('span', 'slot-plus', '+'));
-        lb.appendChild(h('span', null, t('Photo {n}', { n: k + 1 })));
+        if (edit) lb.appendChild(h('span', 'slot-cta', t(typeof clickWord === 'function' && clickWord() === 'Tap' ? 'Tap to insert your photo here' : 'Click to insert your photo here')));
+        lb.appendChild(h('span', 'slot-no', t('Photo {n}', { n: k + 1 })));
         d.appendChild(lb);
       }
       if (edit) d.setAttribute('aria-label', t(photo ? 'Photo {n}, filled. Pick to adjust' : 'Photo {n}, empty. Pick to fill', { n: k + 1 }));
@@ -1732,10 +1733,51 @@ function heicToJpeg(file) {
   heicQueue = run.catch(function () {});
   return run;
 }
+/* HEIC di Chrome/Firefox/Edge (27 Nov 2026): buka, perkecil, dan simpan JPEG semuanya di Web Worker
+   (public/imazine/vendor/heic/heic-worker.js), jadi layar tidak macet. Dua worker bila perangkatnya kuat.
+   Hasilnya tiga JPEG: file cetak (sisi terpanjang 4032, dikirim ke server), versi editor 1600, dan thumbnail 320.
+   Browser tanpa OffscreenCanvas atau bila worker gagal: kembali ke cara lama (heicToJpeg). */
+var HEIC_WORKER = '/public/imazine/vendor/heic/heic-worker.js', heicPool = null, heicSeq = 0;
+function heicWorkerOk() { return typeof Worker === 'function' && typeof OffscreenCanvas === 'function' && typeof OffscreenCanvas.prototype.convertToBlob === 'function'; }
+function heicPoolGet() {
+  if (!heicPool) {
+    var n = (navigator.hardwareConcurrency || 4) > 4 && (navigator.deviceMemory || 8) >= 4 ? 2 : 1;
+    heicPool = [];
+    for (var i = 0; i < n; i++) {
+      var w = new Worker(HEIC_WORKER), slot = { w: w, busy: 0, cb: {} };
+      (function (slot) {
+        slot.w.onmessage = function (e) { var d = e.data, f = d && slot.cb[d.id]; if (!f) return; delete slot.cb[d.id]; slot.busy--; f(d); };
+        slot.w.onerror = function (e) { var cbs = slot.cb; slot.cb = {}; slot.busy = 0; Object.keys(cbs).forEach(function (k) { cbs[k]({ error: 'worker' }); }); };
+      })(slot);
+      heicPool.push(slot);
+    }
+  }
+  return heicPool.reduce(function (a, b) { return b.busy < a.busy ? b : a; });
+}
+function heicInWorker(file) {
+  return file.arrayBuffer().then(function (buf) {
+    return new Promise(function (res, rej) {
+      var slot = heicPoolGet(), id = 'h' + (++heicSeq);
+      slot.busy++;
+      slot.cb[id] = function (d) { if (d.error || !d.full) rej(new Error(d.error || 'HEIC')); else res(d); };
+      slot.w.postMessage({ id: id, buffer: buf, imz: { full: HEIC_MAX, q: HEIC_Q, preview: PHOTO_MAX, pq: 0.85, thumb: THUMB_MAX, tq: 0.8 } }, [buf]);
+    });
+  });
+}
+var heicNative = null;   /* Safari membuka HEIC sendiri: cara lama sudah cepat di sana */
+async function intakeHeic(file, date) {
+  if (heicNative === null) { var u = URL.createObjectURL(file); try { await loadImg(u); heicNative = true; } catch (e) { heicNative = false; } finally { URL.revokeObjectURL(u); } }
+  if (heicNative || !heicWorkerOk()) return null;
+  try {
+    var r = await heicInWorker(file), name = (file.name || 'foto').replace(/\.(heic|heif)$/i, '') + '.jpg';
+    return { url: URL.createObjectURL(r.preview), thumb: URL.createObjectURL(r.thumb), w: r.w, h: r.h, date: date, name: name, dated: date ? 'file' : null,
+      file: new File([r.full], name, { type: 'image/jpeg', lastModified: file.lastModified || Date.now() }) };
+  } catch (e) { return null; }   /* worker gagal: cara lama */
+}
 async function intakeOne(file) {
   var head = await file.slice(0, 262144).arrayBuffer(), heic = isHeic(head, file);
   var date = (heic ? heicExifDate(head) : readExifDate(head)) || dateFromName(file.name || '');
-  if (heic) file = await heicToJpeg(file);
+  if (heic) { var hw = await intakeHeic(file, date); if (hw) return hw; file = await heicToJpeg(file); }
   var src = URL.createObjectURL(file);
   try {
     var img = await loadImg(src);
@@ -1848,9 +1890,10 @@ function byDate(photos, idxs) {
 }
 /* Pour photos into empty slots in page order. Inside one page, pair each slot
    with the photo whose shape fits it best, so less of the picture is cropped. */
-function pourPhotos(album, idxs) {
-  var queue = byDate(album.photos, idxs), placed = 0;
-  album.pages.forEach(function (pg, pi) {
+function pourPhotos(album, idxs, startPage) {
+  var queue = byDate(album.photos, idxs), placed = 0, n = album.pages.length, st = startPage || 0;
+  album.pages.map(function (_, k) { return (st + k) % n; }).forEach(function (pi) {
+    var pg = album.pages[pi];
     var empties = [];
     pg.slots.forEach(function (s, si) { if (s.photo == null) empties.push(si); });
     if (!empties.length || !queue.length) return;

@@ -680,7 +680,7 @@ function drawSetupFoot() {
     pick.appendChild(h('b', null, LAYOUTS[S.layout].name));
     pick.appendChild(document.createTextNode(t(' · fits {n} photos', { n: slotCount(S.layout) })));
   } else pick.textContent = 'Choose a layout to continue.';
-  $('#setup-next').textContent = S.album ? 'Use this layout' : 'Continue to photos';
+  $('#setup-next').textContent = S.album ? 'Use this layout' : 'Start your album';
   $('#setup-next').disabled = !S.layout;
 }
 $('#setup-back').addEventListener('click', function () {
@@ -704,11 +704,9 @@ $('#setup-next').addEventListener('click', function (e) {
   }
   toPhotosOrStudio();
 });
-/* Editor hanya dibuka bila foto sudah cukup untuk layout; kalau kurang, ke langkah upload dulu. */
-function toPhotosOrStudio() {
-  if (S.photos.length >= slotCount(S.layout)) return enterStudio(true);
-  S.step = 'foto'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
-}
+/* Sesudah layout langsung ke editor (27 Nov 2026, permintaan user): tiap bingkai kosong abu-abu bertuliskan
+   "Click to insert your photo here"; klik membuka pilihan foto. Upload 80 foto sekaligus di satu langkah terlalu lama. */
+function toPhotosOrStudio() { enterStudio(true); }
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -738,7 +736,14 @@ async function addFiles(files, first) {
     return;
   }
   if (!S.album) { enterStudio(true, tail); return; }
-  var placed = pourPhotos(S.album, fresh);
+  var from = S.fillFrom, placed = 0; S.fillFrom = null;
+  if (!from) { var se = S.sel && S.sel.t === 'slot' ? S.sel : null; if (se && S.album.pages[se.p] && S.album.pages[se.p].slots[se.i] && S.album.pages[se.p].slots[se.i].photo == null) from = { p: se.p, i: se.i }; }
+  if (from && S.album.pages[from.p] && S.album.pages[from.p].slots[from.i] && S.album.pages[from.p].slots[from.i].photo == null) {
+    var ordered = byDate(S.album.photos, fresh);
+    setSlot(S.album, from.p, from.i, ordered.shift()); placed = 1;
+    placed += pourPhotos(S.album, ordered, from.p);
+    S.page = from.p; S.sel = null;
+  } else placed = pourPhotos(S.album, fresh);
   S.dirty = true;
   drawStudio();
   toast((placed ? t('{n} photos added, {m} empty frames filled right away.', { n: fresh.length, m: placed }) : t('{n} photos added to the shelf.', { n: fresh.length })) + tail);
@@ -781,8 +786,11 @@ function enterStudio(rebuild, tail) {
   S.album.cover = curCover().id;
   drawStudio();
   var tt = totals(S.album), extra = S.photos.length - tt.filled;
-  go('studio', null, !rebuild ? null : function () { toast((tt.empty ? t('{n} photos placed. {m} frames still empty.', { n: tt.filled, m: tt.empty }) : extra > 0 ? t('{n} photos placed. {m} more photos are on the shelf.', { n: tt.filled, m: extra }) : t('All {n} frames filled. Just tidy up.', { n: tt.filled })) + (tail || '')); });
+  go('studio', null, !rebuild ? null : !tt.filled ? function () { toast(clickWord() + ' any gray frame to insert your photos. You can pick many at once.'); } : function () { toast((tt.empty ? t('{n} photos placed. {m} frames still empty.', { n: tt.filled, m: tt.empty }) : extra > 0 ? t('{n} photos placed. {m} more photos are on the shelf.', { n: tt.filled, m: extra }) : t('All {n} frames filled. Just tidy up.', { n: tt.filled })) + (tail || '')); });
 }
+/* HP/tablet: "Tap", komputer: "Click" */
+var coarse = window.matchMedia('(pointer: coarse)');
+function clickWord() { return coarse.matches ? 'Tap' : 'Click'; }
 function viewPages(p) {                       /* which pages share the screen with page p */
   if (!wide.matches) return [p];
   if (p === 0) return [null, 0];
@@ -1217,7 +1225,10 @@ function slotClick(p, i) {
   }
   if (S.armed != null) { var ph = S.armed; S.sel = { t: 'slot', p: p, i: i }; placePhoto(p, i, ph, false); return; }
   selectSlot(p, i);
+  if (s.photo == null && !ADMIN_NO) pickPhotos({ p: p, i: i });
 }
+/* Buka pemilih foto. from = bingkai kosong yang diklik: foto baru mengisi mulai dari bingkai itu. */
+function pickPhotos(from) { S.fillFrom = from || null; $('#file-more').click(); }
 /* Bingkai foto bisa di-resize di kanvas (24 Nov 2026, "kayak di Canva"): bingkai terpilih punya 8 pegangan.
    Sudut = ukuran ikut proporsi (Shift = bebas), sisi = lebar atau tinggi saja. Foto di dalamnya tetap memenuhi bingkai. */
 var RS_H = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
@@ -1708,7 +1719,7 @@ function fillWithExisting() {
     before.forEach(function (e) { setSlot(S.album, e[0], e[1], null); }); drawStudio();
   } });
 }
-$('#st-note-fill').addEventListener('click', fillWithExisting);
+$('#st-note-fill').addEventListener('click', function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } });
 function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
   gotoPage(e[0]); selectSlot(e[0], e[1]);
@@ -1722,8 +1733,8 @@ $('#st-preview').addEventListener('click', function (e) {
   var t = totals(S.album);
   if (!t.empty) return enterPreview();
   openDialog({ trigger: e.currentTarget, title: _t('{n} photo frames still empty', { n: t.empty }),
-    body: 'So no page prints with gaps, every frame needs a photo first. You can add photos, or fill the rest with photos you’ve already added.',
-    actions: [{ label: 'Fill with photos you’ve added', kind: 'primary', fn: fillWithExisting }, { label: 'Add photos', fn: function () { $('#file-more').click(); } }, { label: 'Show empty frames', kind: 'quiet', fn: gotoFirstEmpty }] });
+    body: 'So no page prints with gaps, every gray frame needs its own photo first.',
+    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } } }, { label: 'Show empty frames', fn: gotoFirstEmpty }] });
 });
 $('#st-back').addEventListener('click', function () { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; S.step = 'gaya'; drawSetup(); go('setup', 'setup-h'); });
 
