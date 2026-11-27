@@ -21,7 +21,8 @@ define('IMAZINE_ADMIN_PASSWORD', '');
 define('IMAZINE_NOTIFY_EMAIL', '');
 
 // --- Opsional ---
-// define('IMAZINE_PRICE', 350000);        // harga per album
+// define('IMAZINE_PRICE', 250000);        // harga bayar per album (sama dengan harga produk di Mayar)
+// define('IMAZINE_PRICE_NORMAL', 350000); // harga normal yang dicoret di web; 0 = tanpa harga coret
 // define('IMAZINE_MIN_PHOTOS', 20);       // minimal foto per album
 // define('IMAZINE_MAX_PHOTOS', 240);      // maksimal foto per album
 // define('IMAZINE_PAY_MINUTES', 120);     // batas bayar; lewat dari ini pesanan yang belum dibayar dihapus

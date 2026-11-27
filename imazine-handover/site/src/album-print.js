@@ -67,11 +67,11 @@ function render(order, album) {
     var cs = h('div', 'sheet cover'); cs.appendChild(cv);
     coverLeaf = leaf('Sampul depan (pratinjau)', cs, 'leaf-cover');
   }
-  var bs = h('div', 'sheet cover'); bs.appendChild(backCover(made));
+  var bs = h('div', 'sheet cover'); bs.appendChild(backCover(made, NO));
   var backLeaf = leaf('Sampul belakang (pratinjau)', bs, 'leaf-cover');
   /* file cetak sampul: belakang + punggung 5 mm + depan, bleed 3 mm, satu lembar 431 x 303 mm */
   var sp = h('div', 'sheet spread');
-  var sb = h('div', 'sp-back'); sb.appendChild(backCover(made)); sp.appendChild(sb);
+  var sb = h('div', 'sp-back'); sb.appendChild(backCover(made, NO)); sp.appendChild(sb);
   var ss = h('div', 'sp-spine'); ss.appendChild(spineEl()); sp.appendChild(ss);
   var sf = h('div', 'sp-front'); var cv2 = coverEl(order); if (cv2) sf.appendChild(cv2); sp.appendChild(sf);
   spreadLeaf = leaf('File cetak sampul: belakang + punggung 5 mm + depan, bleed 3 mm (431 × 303 mm)', sp, 'leaf-spread');

@@ -20,7 +20,8 @@ if (is_file($__imzSecret)) require_once $__imzSecret;
 unset($__imzSecret);
 
 foreach ([
-    'IMAZINE_PRICE'            => 350000,            // harga per album (Rp); harus sama dengan harga produk di Mayar
+    'IMAZINE_PRICE'            => 250000,            // harga bayar per album (Rp); harus sama dengan harga produk di Mayar. Harga launching sejak 27 Nov 2026
+    'IMAZINE_PRICE_NORMAL'     => 350000,            // harga normal yang ditampilkan dicoret di web; 0 atau <= IMAZINE_PRICE = tanpa harga coret
     'IMAZINE_MAX_QTY'          => 20,
     'IMAZINE_MIN_PHOTOS'       => 20,                // minimal foto per album (bisa diubah)
     'IMAZINE_MAX_PHOTOS'       => 240,               // maksimal foto per album (bisa diubah)

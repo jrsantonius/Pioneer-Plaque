@@ -1,5 +1,5 @@
 /* ---------- catalogue ---------- */
-var PRICE = 350000;   /* nilai asli dari server: /api/imazine/config */
+var PRICE = 250000, PRICE_NORMAL = 350000;   /* nilai asli dari server: /api/imazine/config (harga launching; harga normal dicoret) */
 var CATS = [
   { id: 'travel', name: 'Travel', desc: 'Holidays, road trips, and cities you want to remember.',
     cover: { id: 'bali-2026', name: 'Bali 2026', img: 'bali', back: 'bali_back', bg: '#8ad1cd', g: 'Indonesia', note: 'Pantai dan kaki di pasir' },

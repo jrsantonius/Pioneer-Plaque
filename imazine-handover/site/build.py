@@ -101,7 +101,7 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
 .lb{margin:0;color:#b9ada0;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
 .sheet{width:210mm;height:297mm;max-width:calc(100vw - 32px);max-height:calc((100vw - 32px) * 297 / 210);background:#fff;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .sheet .pg{width:100%;height:100%;aspect-ratio:auto}
-.sheet .cv,.sheet.cover img{width:100%;height:100%;display:block;object-fit:cover}
+.sheet .cv,.sheet.cover>img{width:100%;height:100%;display:block;object-fit:cover}
 .sheet.spread{width:min(431mm, calc(100vw - 32px));height:auto;max-width:none;max-height:none;aspect-ratio:431/303}
 .spread-host{display:none}
 body.mode-spread .book{display:none}

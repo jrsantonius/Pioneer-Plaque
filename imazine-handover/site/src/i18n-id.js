@@ -6,6 +6,7 @@ var I18N_ID = {
 "Page sections": "Bagian halaman",
 "How it works": "Cara kerja",
 "Price": "Harga",
+"Launch price": "Harga launching",
 "Specs": "Spesifikasi",
 "Steps to make your album": "Langkah membuat album",
 "Arrange": "Susun",

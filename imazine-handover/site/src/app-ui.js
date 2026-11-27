@@ -1813,11 +1813,20 @@ function onLang() {
   var pm = $('#pay-min'); if (pm) pm.textContent = payMinText();
   if (S.view === 'setup') drawSetup();
 }
+/* Harga di beranda mengikuti server. Harga normal hanya tampil (dicoret) bila lebih tinggi dari harga bayar. */
+function drawPrices() {
+  var was = PRICE_NORMAL > PRICE;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-price]'), function (el) { el.textContent = rupiah(PRICE); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-price-was]'), function (el) { el.textContent = rupiah(PRICE_NORMAL); el.hidden = !was; });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-price-was-row]'), function (el) { el.hidden = !was; });
+}
 function loadConfig() {
   if (cfgLoaded) return; cfgLoaded = true;
   fetch('/api/imazine/config', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
     if (!c) return;
     if (c.price > 0) PRICE = c.price;
+    if (typeof c.priceNormal === 'number') PRICE_NORMAL = c.priceNormal;
+    drawPrices();
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
     if (c.samples === true) ALLOW_SAMPLE = true;
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
@@ -1834,7 +1843,9 @@ function drawCheckout() {
   $('#co-spec-a').textContent = _t('{name} layout', { name: LAYOUTS[S.layout].name });
   $('#co-spec-b').textContent = _t('A4 · 20 sheets, 40 pages · Art Paper 260 gsm · Soft cover · Binding · {n} photos', { n: t.filled });
   $('#qty-n').textContent = S.qty; $('#qty-dn').disabled = S.qty <= 1; $('#qty-up').disabled = S.qty >= 20;
-  $('#sum-total').textContent = rupiah(total);
+  var st = $('#sum-total'); st.textContent = '';
+  if (PRICE_NORMAL > PRICE) { var was = document.createElement('s'); was.className = 'sum-was'; was.textContent = rupiah(PRICE_NORMAL * S.qty); st.appendChild(was); st.appendChild(document.createTextNode(' ')); }
+  st.appendChild(document.createTextNode(rupiah(total)));
   $('#co-pay').textContent = PAY ? 'Continue to payment' : 'Send album';
 }
 /* Mengubah isian setelah percobaan gagal berarti pesanan di server sudah tidak sesuai: mulai pesanan baru. */
