@@ -216,6 +216,16 @@ function imzPhotoPath(string $orderNo, string $storedName): string {
 
 // ==================== Foto ukuran cetak (untuk album PDF di admin) ====================
 
+/* Link bayar Mayar untuk satu pesanan. Form checkout produk Mayar mengisi kolom dari parameter URL (dicek langsung
+ * di form Imazine, 27 Nov 2026): email, name, mobile mengisi kolom pembeli; quantity mengunci jumlah dan menyembunyikan
+ * kolom jumlah. Jadi pembeli tidak mengetik email dua kali, dan email di pembayaran sama dengan email pesanan. */
+function imzPayUrl(array $o): string {
+    $q = ['email' => (string) $o['email'], 'quantity' => max(1, (int) $o['qty'])];
+    if (trim((string) ($o['name'] ?? '')) !== '') $q['name'] = trim((string) $o['name']);
+    if (trim((string) ($o['whatsapp'] ?? '')) !== '') $q['mobile'] = trim((string) $o['whatsapp']);
+    return IMAZINE_MAYAR_URL . (strpos(IMAZINE_MAYAR_URL, '?') === false ? '?' : '&') . http_build_query($q, '', '&', PHP_QUERY_RFC3986);
+}
+
 const IMZ_PRINT_EDGE = 3500;   // sisi terpanjang; satu halaman A4 penuh di 300 dpi = 3508 px
 const IMZ_PRINT_QUALITY = 90;
 

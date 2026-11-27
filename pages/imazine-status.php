@@ -90,7 +90,7 @@ if (!$ok) http_response_code(404);
       $('eyebrow').innerHTML = '<span class="pulse"></span>Menunggu pembayaran';
       $('title').textContent = 'Belum ada pembayaran masuk.';
       var left = s.payBefore ? Math.max(0, s.payBefore * 1000 - Date.now()) : 0, hh = Math.floor(left / 3600000), mm = Math.floor(left % 3600000 / 60000);
-      $('msg').textContent = 'Kalau kamu baru saja membayar, halaman ini akan berubah sendiri dalam beberapa saat. Kalau belum, lanjutkan pembayarannya' + (s.payBefore ? ' dalam ' + (hh ? hh + ' jam ' : '') + mm + ' menit lagi. Setelah itu pesananmu dihapus dan albummu perlu dibuat ulang.' : '.') + ' Saat membayar, pakai nama, email, dan nomor HP yang sama dengan pesananmu supaya terdeteksi otomatis.';
+      $('msg').textContent = 'Kalau kamu baru saja membayar, halaman ini akan berubah sendiri dalam beberapa saat. Kalau belum, lanjutkan pembayarannya' + (s.payBefore ? ' dalam ' + (hh ? hh + ' jam ' : '') + mm + ' menit lagi. Setelah itu pesananmu dihapus dan albummu perlu dibuat ulang.' : '.');
       if (s.payUrl) { btn.href = s.payUrl; btn.textContent = 'Lanjut bayar'; btn.hidden = false; }
     } else {
       $('eyebrow').textContent = 'Pesanan belum selesai';

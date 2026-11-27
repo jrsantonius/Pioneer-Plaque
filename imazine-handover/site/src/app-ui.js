@@ -1802,7 +1802,7 @@ var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
-  $('#h-mail').textContent = PAY ? 'Use the same email in the payment form. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
+  $('#h-mail').textContent = PAY ? 'We fill it into the payment form for you, so you only type it once.' : 'So we can send you updates about your album.';
   if (S.view === 'checkout' && S.album) drawCheckout();
 }
 var cfgLoaded = false, MIN_PHOTOS = 20, MAX_PHOTOS = 240, PAY_MIN = 120;   /* nilai asli dari server: /api/imazine/config */
@@ -2011,12 +2011,6 @@ function openPay(no, tok, url, email) {
   payPoll = setInterval(check, 5000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden && S.view === 'pay') check(); });
 }
-$('#pay-copy').addEventListener('click', function () {
-  var b = this, v = $('#pay-mail').textContent;
-  function done() { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(done, function () {});
-  else { var r = document.createRange(); r.selectNodeContents($('#pay-mail')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
-});
 $('#co-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var bad = activeFields().filter(function (k) { return !checkField(k); });

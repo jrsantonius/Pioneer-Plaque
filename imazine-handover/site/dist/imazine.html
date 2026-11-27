@@ -771,7 +771,6 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
 .pay-mail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 12px 14px; border-radius: var(--r-s); background: var(--warm-wash); color: var(--warm-ink); border: 1px solid var(--line); }
 .pay-mail-l { font-size: 14px; }
 .pay-mail-v { font-weight: 700; word-break: break-all; }
-.pay-copy { min-height: 36px; padding: 0 14px; margin-left: auto; }
 .pay-frame { position: relative; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: #ffffff; min-height: 70vh; }
 .pay-frame iframe { display: block; width: 100%; height: max(1100px, 80vh); border: 0; opacity: 0; transition: opacity var(--d-2) var(--ease); }
 .pay-frame iframe.is-in { opacity: 1; }
@@ -786,7 +785,6 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
 @media (prefers-reduced-motion: reduce) { .pay-dot { animation: none; } }
 @media (max-width: 600px) {
   .pay-frame iframe { height: max(1300px, 90vh); }
-  .pay-copy { margin-left: 0; }
 }
 
 /* HP (26 Nov 2026, cek responsif): bilah pratinjau dua baris, ringkasan harga lebih ringkas */
@@ -1015,7 +1013,7 @@ html.pay [data-nopay]{display:none!important}
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
       <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
       <details data-nopay><summary>What happens after I send my album?</summary><p>Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.</p></details>
-      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Use the same email you entered earlier so your payment is matched automatically.</p></details>
+      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Your email is filled in for you.</p></details>
       <details><summary>What are the paper and cover like?</summary><p>The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).</p></details>
       <details><summary>Will the printed colors match my screen exactly?</summary><p>Close, but never exactly. A screen gives off light while paper reflects it, so prints usually come out a little darker and softer. If a photo already looks dark on screen, brighten it before you upload.</p></details>
       <details><summary>Can I use photos from WhatsApp or screenshots?</summary><p>Yes, but they won’t be as sharp. WhatsApp shrinks photos when they’re sent, and screenshots are low resolution, so they can look blurry at A4 size. If you can, use the original files from your gallery or camera.</p></details>
@@ -1219,7 +1217,7 @@ html.pay [data-nopay]{display:none!important}
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -1251,11 +1249,7 @@ html.pay [data-nopay]{display:none!important}
       <h1 class="h1 nw" id="pay-h" tabindex="-1">Pay and choose shipping.</h1>
       <p class="sub"><span>Your order</span> <b class="num" id="pay-no" data-noi18n></b> <span>is saved.</span> <span>Fill in your name, phone, address, and JNE shipping in the form below, then pay.</span></p>
     </div>
-    <div class="pay-mail">
-      <span class="pay-mail-l">Use this email on the form</span>
-      <b class="pay-mail-v" id="pay-mail" data-noi18n></b>
-      <button class="btn btn-quiet pay-copy" type="button" id="pay-copy">Copy</button>
-    </div>
+    <p class="pay-mail"><span class="pay-mail-l">Your email is already filled in:</span> <b class="pay-mail-v" id="pay-mail" data-noi18n></b></p>
     <div class="pay-foot">
       <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once your payment is confirmed.</span></p>
       <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment in a new tab</a>. Keep this page open, it still updates after you pay.</p>
@@ -1355,7 +1349,7 @@ var I18N_ID = {
 "What happens after I send my album?": "Setelah albumnya dikirim, lalu apa?",
 "Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Kami akan menghubungimu lewat WhatsApp untuk konfirmasi, alamat, dan pengiriman.",
 "How do I pay?": "Bayarnya bagaimana?",
-"After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Use the same email you entered earlier so your payment is matched automatically.": "Setelah melihat preview, kamu membayar lunas, tanpa DP. Nama, HP, alamat, dan ongkir JNE diisi di form pembayaran. Pakai email yang sama dengan yang kamu isi sebelumnya supaya pembayaranmu terdeteksi otomatis.",
+"After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Your email is filled in for you.": "Setelah melihat preview, kamu membayar lunas, tanpa DP. Nama, HP, alamat, dan ongkir JNE diisi di form pembayaran. Emailmu sudah terisi otomatis.",
 "What are the paper and cover like?": "Kertas dan cover-nya seperti apa?",
 "The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).": "Isinya dicetak di kertas Art Paper 260 gsm, cukup tebal sehingga halamannya terasa kokoh dan foto tidak tembus ke halaman sebaliknya. Cover-nya soft cover dan albumnya dijilid binding. Ukurannya A4, 20 lembar (40 halaman, bolak-balik).",
 "Will the printed colors match my screen exactly?": "Warna cetaknya sama persis dengan di layar?",
@@ -1512,7 +1506,7 @@ var I18N_ID = {
 "We’ll use this number to confirm your order and delivery address.": "Kami hubungi lewat nomor ini untuk konfirmasi dan alamat pengiriman.",
 "name@email.com": "nama@email.com",
 "So we can send you updates about your album.": "Untuk mengirim kabar tentang albummu.",
-"Use the same email in the payment form. That’s how we know the payment is for your album.": "Pakai email yang sama di form pembayaran. Dari email ini kami tahu pembayaran itu milik albummu.",
+"We fill it into the payment form for you, so you only type it once.": "Kami isikan otomatis ke form pembayaran, jadi cukup diketik sekali.",
 "Note for the print team": "Catatan untuk tim cetak",
 "(optional)": "(boleh kosong)",
 "Continue to payment": "Lanjut bayar",
@@ -1580,16 +1574,14 @@ var I18N_ID = {
 "Photo frame deleted.": "Bingkai foto dihapus.",
 "Use Add a text or Add a photo to fill empty space on the page you last touched.": "Pakai Tambah teks atau Tambah foto untuk mengisi ruang kosong di halaman yang terakhir kamu sentuh.",
 "Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup isi emailmu. Di layar berikutnya kamu isi nama, HP, alamat, dan ongkir JNE, lalu bayar, tanpa keluar dari Imazine.",
-"use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page. Complete the payment within": "pakai email yang sama di form pembayaran supaya pembayaranmu terdeteksi otomatis. Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran terbuka di halaman ini. Selesaikan pembayaran dalam",
+"You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within": "Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran terbuka di halaman ini dengan emailmu sudah terisi. Selesaikan pembayaran dalam",
 "Calculated in the payment form": "Dihitung di form pembayaran",
 "Total to pay": "Total dibayar",
 "Pay and choose shipping.": "Bayar dan pilih pengiriman.",
 "Your order": "Pesananmu",
 "is saved.": "sudah tersimpan.",
 "Fill in your name, phone, address, and JNE shipping in the form below, then pay.": "Isi nama, HP, alamat, dan ongkir JNE di form di bawah, lalu bayar.",
-"Use this email on the form": "Pakai email ini di form",
-"Copy": "Salin",
-"Copied": "Tersalin",
+"Your email is already filled in:": "Emailmu sudah terisi:",
 "Loading the payment form…": "Memuat form pembayaran…",
 "Payment and shipping form": "Form pembayaran dan pengiriman",
 "Waiting for your payment. This page moves on by itself once your payment is confirmed.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah pembayaranmu terkonfirmasi.",
@@ -5002,7 +4994,7 @@ var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
-  $('#h-mail').textContent = PAY ? 'Use the same email in the payment form. That’s how we know the payment is for your album.' : 'So we can send you updates about your album.';
+  $('#h-mail').textContent = PAY ? 'We fill it into the payment form for you, so you only type it once.' : 'So we can send you updates about your album.';
   if (S.view === 'checkout' && S.album) drawCheckout();
 }
 var cfgLoaded = false, MIN_PHOTOS = 20, MAX_PHOTOS = 240, PAY_MIN = 120;   /* nilai asli dari server: /api/imazine/config */
@@ -5211,12 +5203,6 @@ function openPay(no, tok, url, email) {
   payPoll = setInterval(check, 5000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden && S.view === 'pay') check(); });
 }
-$('#pay-copy').addEventListener('click', function () {
-  var b = this, v = $('#pay-mail').textContent;
-  function done() { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1600); }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(done, function () {});
-  else { var r = document.createRange(); r.selectNodeContents($('#pay-mail')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand('copy'); done(); } catch (e) {} }
-});
 $('#co-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var bad = activeFields().filter(function (k) { return !checkField(k); });

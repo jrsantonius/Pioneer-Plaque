@@ -132,7 +132,7 @@
       <details><summary>Can I change the text in the album?</summary><p>Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.</p></details>
       <details><summary>Can I choose which part of a photo shows?</summary><p>Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.</p></details>
       <details data-nopay><summary>What happens after I send my album?</summary><p>Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.</p></details>
-      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Use the same email you entered earlier so your payment is matched automatically.</p></details>
+      <details data-pay><summary>How do I pay?</summary><p>After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Your email is filled in for you.</p></details>
       <details><summary>What are the paper and cover like?</summary><p>The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).</p></details>
       <details><summary>Will the printed colors match my screen exactly?</summary><p>Close, but never exactly. A screen gives off light while paper reflects it, so prints usually come out a little darker and softer. If a photo already looks dark on screen, brighten it before you upload.</p></details>
       <details><summary>Can I use photos from WhatsApp or screenshots?</summary><p>Yes, but they won’t be as sharp. WhatsApp shrinks photos when they’re sent, and screenshots are low resolution, so they can look blurry at A4 size. If you can, use the original files from your gallery or camera.</p></details>
@@ -336,7 +336,7 @@
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay><strong>Important:</strong> use the same email in the payment form so your payment is matched automatically. You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -368,11 +368,7 @@
       <h1 class="h1 nw" id="pay-h" tabindex="-1">Pay and choose shipping.</h1>
       <p class="sub"><span>Your order</span> <b class="num" id="pay-no" data-noi18n></b> <span>is saved.</span> <span>Fill in your name, phone, address, and JNE shipping in the form below, then pay.</span></p>
     </div>
-    <div class="pay-mail">
-      <span class="pay-mail-l">Use this email on the form</span>
-      <b class="pay-mail-v" id="pay-mail" data-noi18n></b>
-      <button class="btn btn-quiet pay-copy" type="button" id="pay-copy">Copy</button>
-    </div>
+    <p class="pay-mail"><span class="pay-mail-l">Your email is already filled in:</span> <b class="pay-mail-v" id="pay-mail" data-noi18n></b></p>
     <div class="pay-foot">
       <p class="pay-wait" id="pay-wait" role="status" aria-live="polite"><span class="pay-dot" aria-hidden="true"></span><span id="pay-wait-t">Waiting for your payment. This page moves on by itself once your payment is confirmed.</span></p>
       <p class="hint">Form not loading, or your e-wallet app didn’t bring you back? <a id="pay-out" href="#" target="_blank" rel="noopener">Open the payment in a new tab</a>. Keep this page open, it still updates after you pay.</p>

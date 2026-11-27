@@ -189,7 +189,7 @@ function imzCheckout(string $orderNo): void {
     $deadline = $o['pay_deadline'] ? (int) $o['pay_deadline'] : time() + (int) IMAZINE_PAY_MINUTES * 60;
     if ($deadline <= time() + 30) jsonResponse(['error' => 'Waktu pembayaran pesanan ini sudah habis. Buat albummu lagi dari awal.'], 410);
     imzDb()->prepare("UPDATE imazine_orders SET status = 'menunggu_bayar', pay_deadline = ?, updated_at = datetime('now','localtime') WHERE order_no = ? AND status IN ('draf','menunggu_bayar')")->execute([$deadline, $orderNo]);
-    jsonResponse(['orderNo' => $orderNo, 'payUrl' => IMAZINE_MAYAR_URL, 'qty' => (int) $o['qty'], 'total' => (int) $o['total'], 'payBefore' => $deadline]);
+    jsonResponse(['orderNo' => $orderNo, 'payUrl' => imzPayUrl($o), 'qty' => (int) $o['qty'], 'total' => (int) $o['total'], 'payBefore' => $deadline]);
 }
 
 function imzStatus(string $orderNo): void {
@@ -198,7 +198,7 @@ function imzStatus(string $orderNo): void {
     jsonResponse([
         'orderNo' => $o['order_no'], 'status' => $o['status'], 'name' => $o['name'], 'cover' => $o['cover_name'],
         'qty' => (int) $o['qty'], 'total' => (int) $o['total'], 'noPay' => $o['paid_method'] === 'tanpa_bayar', 'paidAt' => $o['paid_at'], 'paidAmount' => $o['paid_amount'] !== null ? (int) $o['paid_amount'] : null,
-        'payUrl' => $o['status'] === 'menunggu_bayar' && IMAZINE_MAYAR_URL !== '' ? IMAZINE_MAYAR_URL : null,
+        'payUrl' => $o['status'] === 'menunggu_bayar' && IMAZINE_MAYAR_URL !== '' ? imzPayUrl($o) : null,
         'payBefore' => $o['status'] === 'menunggu_bayar' && $o['pay_deadline'] ? (int) $o['pay_deadline'] : null,
         // Pembayaran sudah masuk tapi belum bisa dicocokkan otomatis (mis. nominal beda): tim mengeceknya.
         'checking' => $o['status'] !== 'lunas' && (bool) imzDb()->query("SELECT 1 FROM imazine_payments WHERE status = 'perlu_cek' AND order_no = " . imzDb()->quote($o['order_no']) . ' LIMIT 1')->fetchColumn(),
