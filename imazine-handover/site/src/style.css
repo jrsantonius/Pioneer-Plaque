@@ -347,6 +347,14 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .cv { display: block; }
 .st-d { font-family: "Bowlby One", "Arial Black", Impact, sans-serif; }
 .st-s { font-family: var(--font-ui); font-weight: 800; letter-spacing: .2em; }
+/* pilihan cara upload */
+.modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.mode { padding: 24px; gap: 10px; }
+.mode-ic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--warm-wash); color: var(--accent-text); }
+.mode-ic .ic { width: 24px; height: 24px; }
+.mode-go { margin-top: 6px; font-size: 15px; font-weight: 700; color: var(--accent-text); }
+.mode-go::after { content: ' →'; }
+@media (max-width: 640px) { .modes { grid-template-columns: minmax(0, 1fr); } }
 .styles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .style-prev { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; padding: 12px; border-radius: var(--r-s); background: var(--surface-2); }
 .style-prev .pg { box-shadow: 0 1px 3px rgba(0,0,0,.18); }
@@ -414,6 +422,10 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 
 .st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
 .spread { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-self: center; justify-self: center; height: min(100%, (100cqw - 40px) * .708); aspect-ratio: 2000 / 1416; box-shadow: 0 14px 28px rgba(0,0,0,.2); } /* no filter here: a filter lets cropped photos catch clicks outside the page */
+/* pembatas dua halaman di editor (27 Nov 2026): garis lipatan di tengah seperti punggung buku */
+#spread { position: relative; }
+#spread:not(.is-single)::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 22px; transform: translateX(-50%); z-index: 4; pointer-events: none;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,.10) 40%, rgba(0,0,0,.30) 49%, rgba(0,0,0,.30) 51%, rgba(0,0,0,.10) 60%, rgba(0,0,0,0)); }
 .spread.is-single { grid-template-columns: 1fr; aspect-ratio: 1000 / 1416; height: min(100%, (100cqw - 40px) * 1.416); }
 /* bilah tambah elemen di atas halaman */
 .add-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }   /* di panel kanan, di atas tab (feedback 26 Nov 2026) */

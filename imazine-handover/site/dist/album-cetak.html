@@ -1869,10 +1869,92 @@ function restoreAdds(album, pi, raw) {
 }
 function newAlbum(tplId, photos) {
   var tpl = albumTpl(tplId);
-  return { tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
+  return fillDefaults({ tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
     return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {}, z: {}, fmt: {} };
-  }) };
+  }) }, tplId);
 }
+/* ---------- teks bawaan siap cetak (27 Nov 2026, permintaan user) ----------
+   Setiap album baru langsung berisi judul, label, paragraf, dan keterangan foto, jadi album yang tidak diedit pun
+   siap dicetak. Teks dipilih dari bank per tema (bahasa Inggris, gaya majalah seperti sampul contoh) dan disesuaikan
+   dengan ukuran kotaknya di template: yang tidak muat dilewati, paragraf diisi kalimat sampai kira-kira 80% kotak.
+   Semua tetap bisa diubah atau dikosongkan pembeli. Pesanan lama tidak tersentuh (data tersimpan dipakai apa adanya). */
+var IMZ_COPY = {
+  travel: {
+    title: 'Our Journey', run: 'Travel Journal',
+    heads: ['Into the Unknown', 'First Light', 'On the Road', 'Wander Days', 'Far from Home', 'Golden Hour', 'Off the Map', 'Little Detours', 'Streets & Stories', 'Sea, Sky, Us', 'Postcards', 'The Long Way', 'Local Flavors', 'Same Sun, New Sky', 'Good Company', 'Wanderlust', 'City Nights', 'Slow Mornings', 'Homeward'],
+    labels: ['Day one', 'Somewhere new', 'Notes', 'Snapshots', 'Next stop', 'Field notes', 'Along the way', 'Souvenirs', 'Out here', 'Window seat', 'Map pins', 'Last day'],
+    paras: ['We packed light and left room for the unexpected.', 'Every street had a story, and we tried to listen to all of them.', 'Some places you visit; others stay with you.', 'The best moments were the ones we never planned.', 'We got lost more than once, and it was worth it every time.', 'Coffee in the morning, wandering all afternoon, laughing until late.', 'New roads, new faces, the same good company.', 'We chased sunsets and caught a few.', 'Long walks, wrong turns, and views that made us stop talking.', 'We took too many photos and still wanted more.', 'This page is for the days we never want to forget.', 'Small cafés, loud markets, quiet beaches.', 'Somewhere between the first flight and the last ride home, it became a story.', 'The map said one thing; our feet said another.', 'Every corner felt like the start of something.', 'We came home tired, sunburnt, and already planning the next one.'],
+    caps: ['First stop', 'Window seat', 'Morning walk', 'Lost, happily', 'Golden hour', 'Street corner', 'Local lunch', 'View from up here', 'Sea breeze', 'Night lights', 'On the way', 'Little detour', 'Best view', 'Rest stop', 'Last sunset', 'Hello, city', 'Back roads', 'Souvenir'],
+    pre: 'the road'
+  },
+  event: {
+    title: 'The Big Day', run: 'Our Celebration',
+    heads: ['Here We Go', 'Getting Ready', 'All Together', 'Moments to Keep', 'Cheers to Us', 'The Celebration', 'With Love', 'Laughter & Light', 'Best Day Ever', 'Dance It Out', 'Familiar Faces', 'Before the Party', 'After Hours', 'Making Memories', 'Thank You', 'One More Toast', 'A Night to Remember'],
+    labels: ['The guests', 'Highlights', 'Notes', 'Snapshots', 'First look', 'Candid', 'Sweet things', 'The toast', 'Dance floor', 'Goodbyes', 'Little details', 'Together'],
+    paras: ['Some days deserve more than a quick photo on a phone.', 'Everyone we love, in one room, at the same time.', 'There was music, there was cake, and there was a lot of laughing.', 'We wanted to remember the small things too: the details, the hugs, the happy chaos.', 'Thank you for showing up, dressing up, and celebrating with us.', 'It went by too fast, so we kept a few pages of it here.', 'From the nervous minutes before to the last song of the night.', 'These are the faces that made the day what it was.', 'Big smiles, small tears, and a hundred little moments in between.', 'We will be telling stories about this day for years.', 'Every photo here holds a voice, a song, or a joke we still remember.', 'This page is for the people who made it special.'],
+    caps: ['Getting ready', 'First look', 'All smiles', 'Family', 'Best friends', 'The cake', 'Cheers', 'On the dance floor', 'Candid', 'Sweet details', 'Big hug', 'Together', 'Laughing', 'The toast', 'Last dance', 'Thank you'],
+    pre: 'the party'
+  },
+  sol: {
+    title: 'Ordinary Days', run: 'Slice of Life',
+    heads: ['Little Things', 'Slow Mornings', 'Home', 'Just Us', 'Sunday Feeling', 'Everyday Magic', 'Small Joys', 'In Between', 'The Usual', 'Quiet Hours', 'Good Days', 'Kitchen Table', 'Weekend Mood', 'Simple Things', 'Close to Home', 'Days Like These'],
+    labels: ['Notes', 'Lately', 'Snapshots', 'Today', 'Morning', 'Afternoon', 'Evening', 'Weekend', 'Little moments', 'Favorites', 'At home', 'Out and about'],
+    paras: ['The days that feel ordinary are the ones we miss the most.', 'Coffee, sunlight, and nowhere to be.', 'Nothing special happened, and that was the best part.', 'These are the little moments that make a life.', 'Slow mornings, long talks, and dinners that ran late.', 'We never planned these photos; we just did not want to forget.', 'Home is wherever these people are.', 'Some days are made of small things done together.', 'A quiet record of the days in between the big ones.', 'The light in the kitchen, the cat on the sofa, the same old jokes.', 'Ordinary days, written down so they stay a little longer.', 'This page is for the everyday that we love.'],
+    caps: ['Morning light', 'Coffee first', 'Lazy Sunday', 'At home', 'Kitchen table', 'Window seat', 'Little walk', 'Just us', 'Favorite corner', 'Evening', 'Home cooked', 'Weekend', 'Quiet hour', 'Simple joy', 'Out and about', 'Good day'],
+    pre: 'home'
+  }
+};
+/* kira-kira berapa huruf muat: lebar rata-rata satu huruf ~0,55 x ukuran huruf (huruf besar ~0,7; spasi huruf lebar +30%) */
+function copyFits(s, room, size, t) {
+  var k = (t && t.up ? 0.7 : 0.55) * (t && t.sp ? 1.3 : 1);
+  return s.length * size * k <= room;
+}
+function fillDefaults(album, tplId) {
+  var C = IMZ_COPY[String(tplId).split('-')[0]];
+  if (!C) return album;
+  var year = String(new Date().getFullYear()), turn = { heads: 0, labels: 0, paras: 0, caps: 0 };
+  function pick(bank, room, size, t) {
+    var list = C[bank];
+    for (var n = 0; n < list.length; n++) {
+      var s = list[(turn[bank] + n) % list.length];
+      if (copyFits(s, room, size, t)) { turn[bank] = (turn[bank] + n + 1) % list.length; return s; }
+    }
+    return '';
+  }
+  album.tpl.pages.forEach(function (P, pi) {
+    var st = album.pages[pi], titled = false;
+    (P.tx || []).forEach(function (t, i) {
+      if (t.k !== 'e' || t.add) return;
+      var x = t.x, room = t.a === 'c' ? 2 * Math.min(x, 1000 - x) - 80 : t.a === 'r' ? x - 60 : 1000 - x - 60, v = '';
+      if (t.r) room = Math.min(room, 360);
+      if (t.pre) v = C.pre;
+      else if (t.post) v = /\d/.test(t.post) ? 'Issue' : 'Our';
+      else if (t.y > 1150 && t.z <= 40) v = t.a === 'r' ? year : (copyFits(C.run, room, t.z, t) ? C.run : '');
+      else if (pi === 0 && t.z >= 55 && !titled) { titled = true; v = copyFits(C.title, room, t.z, t) ? C.title : pick('heads', room, t.z, t); }
+      else v = pick(t.z >= 48 ? 'heads' : 'labels', room, t.z, t);
+      if (v) st.tx[i] = v;
+    });
+    (P.pa || []).forEach(function (pa, i) {
+      if (pa.rule) return;   /* baris bergaris untuk tulisan tangan: biarkan kosong */
+      var fs = Math.min(pa.lh * 0.52, 46), perLine = Math.floor(pa.w / (fs * 0.5)), cap = Math.floor(perLine * pa.n * 0.8), out = '';
+      var list = C.paras;
+      for (var n = 0; n < list.length; n++) {
+        var s = list[(turn.paras + n) % list.length];
+        if ((out ? out.length + 1 : 0) + s.length > cap) { if (out) break; continue; }
+        out += (out ? ' ' : '') + s;
+        turn.paras = (turn.paras + n + 1) % list.length; n = -1;
+        if (out.length > cap * 0.75) break;
+      }
+      if (out) st.pa[i] = out;
+    });
+    (P.cp || []).forEach(function (cp, i) {
+      var v = pick('caps', cp.w || 300, cp.z, cp);
+      if (v) st.cp[i] = v;
+    });
+  });
+  return album;
+}
+
 function defaultFocus(photo, g) { return { fx: 0.5, fy: photo.w / photo.h < g[2] / g[3] ? 0.38 : 0.5, z: 1 }; }
 function setSlot(album, pi, si, photoIdx) {
   var s = album.pages[pi].slots[si];

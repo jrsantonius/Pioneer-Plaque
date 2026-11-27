@@ -352,6 +352,14 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 .cv { display: block; }
 .st-d { font-family: "Bowlby One", "Arial Black", Impact, sans-serif; }
 .st-s { font-family: var(--font-ui); font-weight: 800; letter-spacing: .2em; }
+/* pilihan cara upload */
+.modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.mode { padding: 24px; gap: 10px; }
+.mode-ic { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--warm-wash); color: var(--accent-text); }
+.mode-ic .ic { width: 24px; height: 24px; }
+.mode-go { margin-top: 6px; font-size: 15px; font-weight: 700; color: var(--accent-text); }
+.mode-go::after { content: ' →'; }
+@media (max-width: 640px) { .modes { grid-template-columns: minmax(0, 1fr); } }
 .styles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .style-prev { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; padding: 12px; border-radius: var(--r-s); background: var(--surface-2); }
 .style-prev .pg { box-shadow: 0 1px 3px rgba(0,0,0,.18); }
@@ -419,6 +427,10 @@ html.pay .hv-pay[data-pay], html:not(.pay) .hv-pay[data-nopay] { display: block;
 
 .st-stage { grid-area: stage; position: relative; display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 10px; padding: 18px 20px 12px; min-width: 0; min-height: 0; background: var(--stage); container-type: size; }
 .spread { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; align-self: center; justify-self: center; height: min(100%, (100cqw - 40px) * .708); aspect-ratio: 2000 / 1416; box-shadow: 0 14px 28px rgba(0,0,0,.2); } /* no filter here: a filter lets cropped photos catch clicks outside the page */
+/* pembatas dua halaman di editor (27 Nov 2026): garis lipatan di tengah seperti punggung buku */
+#spread { position: relative; }
+#spread:not(.is-single)::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 22px; transform: translateX(-50%); z-index: 4; pointer-events: none;
+  background: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,.10) 40%, rgba(0,0,0,.30) 49%, rgba(0,0,0,.30) 51%, rgba(0,0,0,.10) 60%, rgba(0,0,0,0)); }
 .spread.is-single { grid-template-columns: 1fr; aspect-ratio: 1000 / 1416; height: min(100%, (100cqw - 40px) * 1.416); }
 /* bilah tambah elemen di atas halaman */
 .add-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }   /* di panel kanan, di atas tab (feedback 26 Nov 2026) */
@@ -961,8 +973,8 @@ html.pay [data-nopay]{display:none!important}
   <div class="hero wrap">
     <div class="hero-copy">
       <p class="eyebrow">Printed photo album · A4 · 40 pages · Art Paper 260 gsm</p>
-      <h1 class="hero-h nw">This one’s a keeper.</h1>
-      <p class="lede nw">Tell us what your album is about. You’ll see how it looks inside, then pick a cover and add your photos. We lay them out into 40 pages for you.</p>
+      <h1 class="hero-h nw">Imazine is a customizable magazine you design yourself.</h1>
+      <p class="lede nw">It takes no more than 10 minutes.</p>
       <ul class="facts">
         <li data-pay><b data-price>Rp250.000</b><s class="was" data-price-was>Rp350.000</s> per album</li>
         <li data-nopay><b>A4</b> · 20 sheets, 40 pages</li>
@@ -993,8 +1005,7 @@ html.pay [data-nopay]{display:none!important}
   </section>
 
   <section class="band wrap" id="cara-kerja" aria-labelledby="cara-h">
-    <p class="eyebrow">How it works</p>
-    <h2 id="cara-h" class="h2 nw">From your camera roll to your bookshelf.</h2>
+    <h2 id="cara-h" class="themes-h sec-h nw">How it works</h2>
     <ol class="how">
       <li><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
       <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
@@ -1004,8 +1015,7 @@ html.pay [data-nopay]{display:none!important}
   </section>
 
   <section class="band wrap" id="harga" aria-labelledby="harga-h">
-    <p class="eyebrow"><span data-pay>Price</span><span data-nopay>Specs</span></p>
-    <h2 id="harga-h" class="h2 nw"><span data-pay>One size, one price.</span><span data-nopay>One size, printed with care.</span></h2>
+    <h2 id="harga-h" class="themes-h sec-h nw"><span data-pay>Price</span><span data-nopay>Specs</span></h2>
     <div class="price">
       <div class="price-main">
         <p class="price-was" data-pay data-price-was-row><span class="price-badge">Launch price</span><s data-price-was>Rp350.000</s></p>
@@ -1026,8 +1036,7 @@ html.pay [data-nopay]{display:none!important}
   </section>
 
   <section class="band wrap" id="tanya-jawab" aria-labelledby="faq-h">
-    <p class="eyebrow">FAQ</p>
-    <h2 id="faq-h" class="h2 nw">Questions people ask.</h2>
+    <h2 id="faq-h" class="themes-h sec-h nw">FAQ</h2>
     <div class="faq">
       <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
@@ -1168,6 +1177,7 @@ html.pay [data-nopay]{display:none!important}
       <div class="st-note" id="st-note" hidden>
         <p data-nowidow><span id="st-note-t"></span><span class="note-more"> Fill them all to continue to the preview.</span></p>
         <button class="btn btn-sm btn-primary" type="button" id="st-note-fill" aria-label="Add photos"><svg class="ic"><use href="#i-plus"/></svg><span class="lbl-l">Add photos</span><span class="lbl-s">Add</span></button>
+        <button class="btn btn-sm btn-line" type="button" id="st-note-sample" hidden>Fill with sample photos</button>
       </div>
       <div class="tray-h">
         <p class="tray-t">Photo shelf <span class="num" id="tray-n">0</span></p>
@@ -1323,6 +1333,8 @@ var I18N_ID = {
 "Order": "Pesan",
 "Make an album": "Bikin album",
 "Printed photo album · A4 · 40 pages · Art Paper 260 gsm": "Album foto cetak · A4 · 40 halaman · Art Paper 260 gsm",
+"Imazine is a customizable magazine you design yourself.": "Imazine adalah majalah yang bisa kamu desain sendiri.",
+"It takes no more than 10 minutes.": "Membuatnya tidak lebih dari 10 menit.",
 "This one’s a keeper.": "Yang ini harus kita simpan.",
 "Pick a cover, upload your photos, and we lay them out into a 40-page album for you. All that’s left is to tidy up and write your story.": "Pilih cover, upload foto-fotomu, dan kami susun otomatis jadi album 40 halaman. Kamu tinggal merapikan dan menuliskan ceritanya.",
 "See how it works": "Lihat cara kerja",
@@ -1414,6 +1426,15 @@ var I18N_ID = {
 "Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.": "Klik bingkai abu-abu di albummu lalu pilih fotonya. Pilih banyak sekaligus, fotonya mengisi halaman mulai dari situ, urut dari yang paling lama.",
 "It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih. Setiap bingkai abu-abu perlu diisi foto sebelum bisa dilihat preview-nya dan dipesan.",
 "Add": "Tambah",
+"Fill with sample photos": "Isi dengan foto contoh",
+"{n} frames filled with sample photos.": "{n} bingkai diisi foto contoh.",
+"How do you want to add your photos?": "Mau masukkan foto dengan cara apa?",
+"This layout holds {n} photos. You can change or add photos any time in the editor.": "Layout ini muat {n} foto. Foto bisa diganti atau ditambah kapan saja di editor.",
+"Upload all photos at once": "Upload langsung semua foto",
+"Pick all {n} photos now. We place them on every page, oldest first, then you tidy up.": "Pilih {n} foto sekaligus. Kami susun ke semua halaman, urut dari yang paling lama, lalu kamu tinggal merapikan.",
+"Upload photos one by one": "Upload foto satu per satu",
+"Start with gray frames. Click a frame to add its photo, page by page.": "Mulai dari bingkai abu-abu. Klik bingkainya untuk memasukkan foto, halaman demi halaman.",
+"Start with empty frames": "Mulai dari bingkai kosong",
 "Now, upload your photos.": "Sekarang, upload foto-fotomu.",
 "Select them all at once. We’ll place them on each page, oldest first.": "Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari foto yang paling lama.",
 "Change layout": "Ganti gaya",
@@ -2578,10 +2599,92 @@ function restoreAdds(album, pi, raw) {
 }
 function newAlbum(tplId, photos) {
   var tpl = albumTpl(tplId);
-  return { tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
+  return fillDefaults({ tpl: tpl, photos: photos, pages: tpl.pages.map(function (p) {
     return { slots: p.ph.map(function () { return { photo: null, fx: 0.5, fy: 0.5, z: 1 }; }), tx: {}, pa: {}, cp: {}, mv: {}, z: {}, fmt: {} };
-  }) };
+  }) }, tplId);
 }
+/* ---------- teks bawaan siap cetak (27 Nov 2026, permintaan user) ----------
+   Setiap album baru langsung berisi judul, label, paragraf, dan keterangan foto, jadi album yang tidak diedit pun
+   siap dicetak. Teks dipilih dari bank per tema (bahasa Inggris, gaya majalah seperti sampul contoh) dan disesuaikan
+   dengan ukuran kotaknya di template: yang tidak muat dilewati, paragraf diisi kalimat sampai kira-kira 80% kotak.
+   Semua tetap bisa diubah atau dikosongkan pembeli. Pesanan lama tidak tersentuh (data tersimpan dipakai apa adanya). */
+var IMZ_COPY = {
+  travel: {
+    title: 'Our Journey', run: 'Travel Journal',
+    heads: ['Into the Unknown', 'First Light', 'On the Road', 'Wander Days', 'Far from Home', 'Golden Hour', 'Off the Map', 'Little Detours', 'Streets & Stories', 'Sea, Sky, Us', 'Postcards', 'The Long Way', 'Local Flavors', 'Same Sun, New Sky', 'Good Company', 'Wanderlust', 'City Nights', 'Slow Mornings', 'Homeward'],
+    labels: ['Day one', 'Somewhere new', 'Notes', 'Snapshots', 'Next stop', 'Field notes', 'Along the way', 'Souvenirs', 'Out here', 'Window seat', 'Map pins', 'Last day'],
+    paras: ['We packed light and left room for the unexpected.', 'Every street had a story, and we tried to listen to all of them.', 'Some places you visit; others stay with you.', 'The best moments were the ones we never planned.', 'We got lost more than once, and it was worth it every time.', 'Coffee in the morning, wandering all afternoon, laughing until late.', 'New roads, new faces, the same good company.', 'We chased sunsets and caught a few.', 'Long walks, wrong turns, and views that made us stop talking.', 'We took too many photos and still wanted more.', 'This page is for the days we never want to forget.', 'Small cafés, loud markets, quiet beaches.', 'Somewhere between the first flight and the last ride home, it became a story.', 'The map said one thing; our feet said another.', 'Every corner felt like the start of something.', 'We came home tired, sunburnt, and already planning the next one.'],
+    caps: ['First stop', 'Window seat', 'Morning walk', 'Lost, happily', 'Golden hour', 'Street corner', 'Local lunch', 'View from up here', 'Sea breeze', 'Night lights', 'On the way', 'Little detour', 'Best view', 'Rest stop', 'Last sunset', 'Hello, city', 'Back roads', 'Souvenir'],
+    pre: 'the road'
+  },
+  event: {
+    title: 'The Big Day', run: 'Our Celebration',
+    heads: ['Here We Go', 'Getting Ready', 'All Together', 'Moments to Keep', 'Cheers to Us', 'The Celebration', 'With Love', 'Laughter & Light', 'Best Day Ever', 'Dance It Out', 'Familiar Faces', 'Before the Party', 'After Hours', 'Making Memories', 'Thank You', 'One More Toast', 'A Night to Remember'],
+    labels: ['The guests', 'Highlights', 'Notes', 'Snapshots', 'First look', 'Candid', 'Sweet things', 'The toast', 'Dance floor', 'Goodbyes', 'Little details', 'Together'],
+    paras: ['Some days deserve more than a quick photo on a phone.', 'Everyone we love, in one room, at the same time.', 'There was music, there was cake, and there was a lot of laughing.', 'We wanted to remember the small things too: the details, the hugs, the happy chaos.', 'Thank you for showing up, dressing up, and celebrating with us.', 'It went by too fast, so we kept a few pages of it here.', 'From the nervous minutes before to the last song of the night.', 'These are the faces that made the day what it was.', 'Big smiles, small tears, and a hundred little moments in between.', 'We will be telling stories about this day for years.', 'Every photo here holds a voice, a song, or a joke we still remember.', 'This page is for the people who made it special.'],
+    caps: ['Getting ready', 'First look', 'All smiles', 'Family', 'Best friends', 'The cake', 'Cheers', 'On the dance floor', 'Candid', 'Sweet details', 'Big hug', 'Together', 'Laughing', 'The toast', 'Last dance', 'Thank you'],
+    pre: 'the party'
+  },
+  sol: {
+    title: 'Ordinary Days', run: 'Slice of Life',
+    heads: ['Little Things', 'Slow Mornings', 'Home', 'Just Us', 'Sunday Feeling', 'Everyday Magic', 'Small Joys', 'In Between', 'The Usual', 'Quiet Hours', 'Good Days', 'Kitchen Table', 'Weekend Mood', 'Simple Things', 'Close to Home', 'Days Like These'],
+    labels: ['Notes', 'Lately', 'Snapshots', 'Today', 'Morning', 'Afternoon', 'Evening', 'Weekend', 'Little moments', 'Favorites', 'At home', 'Out and about'],
+    paras: ['The days that feel ordinary are the ones we miss the most.', 'Coffee, sunlight, and nowhere to be.', 'Nothing special happened, and that was the best part.', 'These are the little moments that make a life.', 'Slow mornings, long talks, and dinners that ran late.', 'We never planned these photos; we just did not want to forget.', 'Home is wherever these people are.', 'Some days are made of small things done together.', 'A quiet record of the days in between the big ones.', 'The light in the kitchen, the cat on the sofa, the same old jokes.', 'Ordinary days, written down so they stay a little longer.', 'This page is for the everyday that we love.'],
+    caps: ['Morning light', 'Coffee first', 'Lazy Sunday', 'At home', 'Kitchen table', 'Window seat', 'Little walk', 'Just us', 'Favorite corner', 'Evening', 'Home cooked', 'Weekend', 'Quiet hour', 'Simple joy', 'Out and about', 'Good day'],
+    pre: 'home'
+  }
+};
+/* kira-kira berapa huruf muat: lebar rata-rata satu huruf ~0,55 x ukuran huruf (huruf besar ~0,7; spasi huruf lebar +30%) */
+function copyFits(s, room, size, t) {
+  var k = (t && t.up ? 0.7 : 0.55) * (t && t.sp ? 1.3 : 1);
+  return s.length * size * k <= room;
+}
+function fillDefaults(album, tplId) {
+  var C = IMZ_COPY[String(tplId).split('-')[0]];
+  if (!C) return album;
+  var year = String(new Date().getFullYear()), turn = { heads: 0, labels: 0, paras: 0, caps: 0 };
+  function pick(bank, room, size, t) {
+    var list = C[bank];
+    for (var n = 0; n < list.length; n++) {
+      var s = list[(turn[bank] + n) % list.length];
+      if (copyFits(s, room, size, t)) { turn[bank] = (turn[bank] + n + 1) % list.length; return s; }
+    }
+    return '';
+  }
+  album.tpl.pages.forEach(function (P, pi) {
+    var st = album.pages[pi], titled = false;
+    (P.tx || []).forEach(function (t, i) {
+      if (t.k !== 'e' || t.add) return;
+      var x = t.x, room = t.a === 'c' ? 2 * Math.min(x, 1000 - x) - 80 : t.a === 'r' ? x - 60 : 1000 - x - 60, v = '';
+      if (t.r) room = Math.min(room, 360);
+      if (t.pre) v = C.pre;
+      else if (t.post) v = /\d/.test(t.post) ? 'Issue' : 'Our';
+      else if (t.y > 1150 && t.z <= 40) v = t.a === 'r' ? year : (copyFits(C.run, room, t.z, t) ? C.run : '');
+      else if (pi === 0 && t.z >= 55 && !titled) { titled = true; v = copyFits(C.title, room, t.z, t) ? C.title : pick('heads', room, t.z, t); }
+      else v = pick(t.z >= 48 ? 'heads' : 'labels', room, t.z, t);
+      if (v) st.tx[i] = v;
+    });
+    (P.pa || []).forEach(function (pa, i) {
+      if (pa.rule) return;   /* baris bergaris untuk tulisan tangan: biarkan kosong */
+      var fs = Math.min(pa.lh * 0.52, 46), perLine = Math.floor(pa.w / (fs * 0.5)), cap = Math.floor(perLine * pa.n * 0.8), out = '';
+      var list = C.paras;
+      for (var n = 0; n < list.length; n++) {
+        var s = list[(turn.paras + n) % list.length];
+        if ((out ? out.length + 1 : 0) + s.length > cap) { if (out) break; continue; }
+        out += (out ? ' ' : '') + s;
+        turn.paras = (turn.paras + n + 1) % list.length; n = -1;
+        if (out.length > cap * 0.75) break;
+      }
+      if (out) st.pa[i] = out;
+    });
+    (P.cp || []).forEach(function (cp, i) {
+      var v = pick('caps', cp.w || 300, cp.z, cp);
+      if (v) st.cp[i] = v;
+    });
+  });
+  return album;
+}
+
 function defaultFocus(photo, g) { return { fx: 0.5, fy: photo.w / photo.h < g[2] / g[3] ? 0.38 : 0.5, z: 1 }; }
 function setSlot(album, pi, si, photoIdx) {
   var s = album.pages[pi].slots[si];
@@ -3293,7 +3396,7 @@ function go(view, focusId, after) {
     $$('.view').forEach(function (v) { v.hidden = v.dataset.view !== view; });
     document.body.dataset.view = view;
     document.body.dataset.scene = SCENE[view];
-    var at = view === 'setup' && S.step === 'foto' ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
+    var at = view === 'setup' && (S.step === 'foto' || S.step === 'cara') ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
     $$('.steps li').forEach(function (li, i) {
       li.classList.toggle('is-on', i === at);
       li.classList.toggle('is-done', at > -1 && i < at);
@@ -3425,6 +3528,7 @@ function pickCat(id) {
 var SETUP = {
   sampul: { n: 1, h: 'Choose your cover.', sub: function (cat) { return t('Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.', { theme: cat.name }); }, back: 'Change theme' },
   gaya: { n: 1, h: 'Choose a layout.', sub: 'Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.', back: 'Cover' },
+  cara: { n: 2, h: 'How do you want to add your photos?', sub: function () { return t('This layout holds {n} photos. You can change or add photos any time in the editor.', { n: slotCount(S.layout) }); }, back: 'Change layout' },
   foto: { n: 2, h: 'Now, upload your photos.', sub: function () { return t('This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.', { n: slotCount(S.layout) }); }, back: 'Change layout' }
 };
 function drawSetup() {
@@ -3473,6 +3577,22 @@ function drawSetup() {
     });
     body.appendChild(grid);
     drawSetupFoot();
+  } else if (S.step === 'cara') {
+    /* Pilihan cara upload (27 Nov 2026, permintaan user): semua sekaligus (pilih semua foto, langsung tersusun)
+       atau satu per satu (editor dengan bingkai abu-abu yang diklik). */
+    var need2 = slotCount(S.layout), modes = h('div', 'modes');
+    [['all', 'photo', 'Upload all photos at once', t('Pick all {n} photos now. We place them on every page, oldest first, then you tidy up.', { n: need2 }), 'Choose photos'],
+     ['one', 'plus', 'Upload photos one by one', 'Start with gray frames. Click a frame to add its photo, page by page.', 'Start with empty frames']].forEach(function (m) {
+      var b = h('button', 'pick mode'); b.type = 'button'; b.dataset.mode = m[0];
+      var ic = h('span', 'mode-ic'); ic.appendChild(icon(m[1])); b.appendChild(ic);
+      b.appendChild(h('span', 'pick-name', m[2]));
+      b.appendChild(h('span', 'pick-desc', m[3]));
+      b.appendChild(h('span', 'mode-go', m[4]));
+      b.addEventListener('click', function () { if (m[0] === 'all') $('#file-first').click(); else enterStudio(true); });
+      modes.appendChild(b);
+    });
+    body.appendChild(modes);
+    var msg2 = h('p', 'msg'); msg2.id = 'upl-msg'; msg2.hidden = true; msg2.setAttribute('role', 'alert'); body.appendChild(msg2);
   } else {
     /* Langkah upload wajib (permintaan user, 27 Nov 2026): semua foto yang dibutuhkan layout diupload di sini dulu,
        baru pembeli masuk editor. Upload berikutnya tetap di langkah ini; tombol lanjut terbuka saat jumlahnya cukup. */
@@ -3985,7 +4105,10 @@ $('#setup-next').addEventListener('click', function (e) {
 });
 /* Sesudah layout langsung ke editor (27 Nov 2026, permintaan user): tiap bingkai kosong abu-abu bertuliskan
    "Click to insert your photo here"; klik membuka pilihan foto. Upload 80 foto sekaligus di satu langkah terlalu lama. */
-function toPhotosOrStudio() { enterStudio(true); }
+function toPhotosOrStudio() {
+  if (S.photos.length) return enterStudio(true);
+  S.step = 'cara'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
+}
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -4008,6 +4131,7 @@ async function addFiles(files, first) {
   var fresh = res.photos.map(function (p, i) { return from + i; });
   var tail0 = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '');
   var tail = tail0 + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
+  if (S.view === 'setup' && S.step === 'cara') { enterStudio(true, tail); return; }
   if (S.view === 'setup' && S.step === 'foto') {
     drawSetup();
     var lf = slotCount(S.layout) - S.photos.length;
@@ -4100,6 +4224,7 @@ function drawProgress() {
   $('#st-prog').classList.toggle('is-full', !t.empty);
   var note = $('#st-note');
   note.hidden = !t.empty;
+  $('#st-note-sample').hidden = !(ALLOW_SAMPLE && t.empty && !ADMIN_NO);
   if (t.empty) $('#st-note-t').textContent = _t('{n} photo frames still empty.', { n: t.empty });
 }
 function emptyOnPage(p) { return S.album.pages[p].slots.filter(function (s) { return s.photo == null; }).length; }
@@ -4998,6 +5123,18 @@ function fillWithExisting() {
     before.forEach(function (e) { setSlot(S.album, e[0], e[1], null); }); drawStudio();
   } });
 }
+/* Mode uji: isi semua bingkai abu-abu dengan foto contoh, supaya alur bisa dicoba sampai pembayaran. */
+$('#st-note-sample').addEventListener('click', async function () {
+  var n = emptySlots(S.album).length; if (!n) return;
+  busy(true, 0, n);
+  var ph = await samplePhotos(n);
+  busy(false);
+  var from = S.photos.length;
+  ph.forEach(function (p) { S.photos.push(p); });
+  var placed = pourPhotos(S.album, ph.map(function (p, i) { return from + i; }));
+  S.dirty = true; drawStudio();
+  toast(t('{n} frames filled with sample photos.', { n: placed }));
+});
 $('#st-note-fill').addEventListener('click', function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } });
 function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
@@ -5150,7 +5287,7 @@ function loadConfig() {
     if (typeof c.priceNormal === 'number') PRICE_NORMAL = c.priceNormal;
     drawPrices();
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
-    if (c.samples === true) ALLOW_SAMPLE = true;
+    if (c.samples === true) { ALLOW_SAMPLE = true; if (S.view === 'studio' && S.album) drawProgress(); }
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
     if (c.maxPhotos >= MIN_PHOTOS) MAX_PHOTOS = c.maxPhotos;
     if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = payMinText(); }

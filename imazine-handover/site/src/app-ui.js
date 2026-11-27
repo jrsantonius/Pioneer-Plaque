@@ -14,7 +14,7 @@ function go(view, focusId, after) {
     $$('.view').forEach(function (v) { v.hidden = v.dataset.view !== view; });
     document.body.dataset.view = view;
     document.body.dataset.scene = SCENE[view];
-    var at = view === 'setup' && S.step === 'foto' ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
+    var at = view === 'setup' && (S.step === 'foto' || S.step === 'cara') ? 1 : view === 'pay' ? 3 : STEP_ORDER.indexOf(view);
     $$('.steps li').forEach(function (li, i) {
       li.classList.toggle('is-on', i === at);
       li.classList.toggle('is-done', at > -1 && i < at);
@@ -146,6 +146,7 @@ function pickCat(id) {
 var SETUP = {
   sampul: { n: 1, h: 'Choose your cover.', sub: function (cat) { return t('Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.', { theme: cat.name }); }, back: 'Change theme' },
   gaya: { n: 1, h: 'Choose a layout.', sub: 'Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.', back: 'Cover' },
+  cara: { n: 2, h: 'How do you want to add your photos?', sub: function () { return t('This layout holds {n} photos. You can change or add photos any time in the editor.', { n: slotCount(S.layout) }); }, back: 'Change layout' },
   foto: { n: 2, h: 'Now, upload your photos.', sub: function () { return t('This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.', { n: slotCount(S.layout) }); }, back: 'Change layout' }
 };
 function drawSetup() {
@@ -194,6 +195,22 @@ function drawSetup() {
     });
     body.appendChild(grid);
     drawSetupFoot();
+  } else if (S.step === 'cara') {
+    /* Pilihan cara upload (27 Nov 2026, permintaan user): semua sekaligus (pilih semua foto, langsung tersusun)
+       atau satu per satu (editor dengan bingkai abu-abu yang diklik). */
+    var need2 = slotCount(S.layout), modes = h('div', 'modes');
+    [['all', 'photo', 'Upload all photos at once', t('Pick all {n} photos now. We place them on every page, oldest first, then you tidy up.', { n: need2 }), 'Choose photos'],
+     ['one', 'plus', 'Upload photos one by one', 'Start with gray frames. Click a frame to add its photo, page by page.', 'Start with empty frames']].forEach(function (m) {
+      var b = h('button', 'pick mode'); b.type = 'button'; b.dataset.mode = m[0];
+      var ic = h('span', 'mode-ic'); ic.appendChild(icon(m[1])); b.appendChild(ic);
+      b.appendChild(h('span', 'pick-name', m[2]));
+      b.appendChild(h('span', 'pick-desc', m[3]));
+      b.appendChild(h('span', 'mode-go', m[4]));
+      b.addEventListener('click', function () { if (m[0] === 'all') $('#file-first').click(); else enterStudio(true); });
+      modes.appendChild(b);
+    });
+    body.appendChild(modes);
+    var msg2 = h('p', 'msg'); msg2.id = 'upl-msg'; msg2.hidden = true; msg2.setAttribute('role', 'alert'); body.appendChild(msg2);
   } else {
     /* Langkah upload wajib (permintaan user, 27 Nov 2026): semua foto yang dibutuhkan layout diupload di sini dulu,
        baru pembeli masuk editor. Upload berikutnya tetap di langkah ini; tombol lanjut terbuka saat jumlahnya cukup. */
@@ -706,7 +723,10 @@ $('#setup-next').addEventListener('click', function (e) {
 });
 /* Sesudah layout langsung ke editor (27 Nov 2026, permintaan user): tiap bingkai kosong abu-abu bertuliskan
    "Click to insert your photo here"; klik membuka pilihan foto. Upload 80 foto sekaligus di satu langkah terlalu lama. */
-function toPhotosOrStudio() { enterStudio(true); }
+function toPhotosOrStudio() {
+  if (S.photos.length) return enterStudio(true);
+  S.step = 'cara'; drawSetup(); if (S.view !== 'setup') go('setup', 'setup-h'); else { window.scrollTo(0, 0); $('#setup-h').focus({ preventScroll: true }); }
+}
 
 /* ---------- photos in ---------- */
 async function addFiles(files, first) {
@@ -729,6 +749,7 @@ async function addFiles(files, first) {
   var fresh = res.photos.map(function (p, i) { return from + i; });
   var tail0 = (res.failed ? t(' {n} other photos couldn’t be opened.', { n: res.failed }) : '') + (res.skipped ? t(' The last {n} photos weren’t added because an album holds at most {max} photos.', { n: res.skipped, max: MAX_PHOTOS }) : '');
   var tail = tail0 + (S.photos.length < MIN_PHOTOS ? t(' You need at least {min} photos to order this album; you have {n}.', { min: MIN_PHOTOS, n: S.photos.length }) : '');
+  if (S.view === 'setup' && S.step === 'cara') { enterStudio(true, tail); return; }
   if (S.view === 'setup' && S.step === 'foto') {
     drawSetup();
     var lf = slotCount(S.layout) - S.photos.length;
@@ -821,6 +842,7 @@ function drawProgress() {
   $('#st-prog').classList.toggle('is-full', !t.empty);
   var note = $('#st-note');
   note.hidden = !t.empty;
+  $('#st-note-sample').hidden = !(ALLOW_SAMPLE && t.empty && !ADMIN_NO);
   if (t.empty) $('#st-note-t').textContent = _t('{n} photo frames still empty.', { n: t.empty });
 }
 function emptyOnPage(p) { return S.album.pages[p].slots.filter(function (s) { return s.photo == null; }).length; }
@@ -1719,6 +1741,18 @@ function fillWithExisting() {
     before.forEach(function (e) { setSlot(S.album, e[0], e[1], null); }); drawStudio();
   } });
 }
+/* Mode uji: isi semua bingkai abu-abu dengan foto contoh, supaya alur bisa dicoba sampai pembayaran. */
+$('#st-note-sample').addEventListener('click', async function () {
+  var n = emptySlots(S.album).length; if (!n) return;
+  busy(true, 0, n);
+  var ph = await samplePhotos(n);
+  busy(false);
+  var from = S.photos.length;
+  ph.forEach(function (p) { S.photos.push(p); });
+  var placed = pourPhotos(S.album, ph.map(function (p, i) { return from + i; }));
+  S.dirty = true; drawStudio();
+  toast(t('{n} frames filled with sample photos.', { n: placed }));
+});
 $('#st-note-fill').addEventListener('click', function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } });
 function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
@@ -1871,7 +1905,7 @@ function loadConfig() {
     if (typeof c.priceNormal === 'number') PRICE_NORMAL = c.priceNormal;
     drawPrices();
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
-    if (c.samples === true) ALLOW_SAMPLE = true;
+    if (c.samples === true) { ALLOW_SAMPLE = true; if (S.view === 'studio' && S.album) drawProgress(); }
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
     if (c.maxPhotos >= MIN_PHOTOS) MAX_PHOTOS = c.maxPhotos;
     if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = payMinText(); }
