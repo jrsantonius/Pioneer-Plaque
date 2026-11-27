@@ -1924,6 +1924,16 @@ function fillDefaults(album, tplId) {
   }
   album.tpl.pages.forEach(function (P, pi) {
     var st = album.pages[pi], titled = false;
+    /* teks bawaan tidak boleh menimpa foto: kotak yang bertumpuk dengan bingkai foto dibiarkan kosong (audit 28 Nov 2026) */
+    var frames = (P.ph || []).map(function (g) { return [g[0], g[1], g[0] + g[2], g[1] + g[3]]; });
+    function onPhoto(x0, y0, x1, y1) {
+      var area = Math.max(1, (x1 - x0) * (y1 - y0));
+      return frames.some(function (f) { var ix = Math.min(x1, f[2]) - Math.max(x0, f[0]), iy = Math.min(y1, f[3]) - Math.max(y0, f[1]); return ix > 0 && iy > 0 && ix * iy > area * 0.1; });
+    }
+    function textBox(t, s, w) {
+      var wd = Math.min(w || 1e9, s.length * t.z * (t.up ? 0.7 : 0.55) * (t.sp ? 1.3 : 1)), x0 = t.a === 'r' ? t.x - wd : t.a === 'c' ? t.x - wd / 2 : t.x;
+      return [x0, t.y - t.z * 0.85, x0 + wd, t.y + t.z * 0.25];
+    }
     (P.tx || []).forEach(function (t, i) {
       if (t.k !== 'e' || t.add) return;
       var x = t.x, room = t.a === 'c' ? 2 * Math.min(x, 1000 - x) - 80 : t.a === 'r' ? x - 60 : 1000 - x - 60, v = '';
@@ -1933,10 +1943,12 @@ function fillDefaults(album, tplId) {
       else if (t.y > 1150 && t.z <= 40) v = t.a === 'r' ? year : (copyFits(C.run, room, t.z, t) ? C.run : '');
       else if (pi === 0 && t.z >= 55 && !titled) { titled = true; v = copyFits(C.title, room, t.z, t) ? C.title : pick('heads', room, t.z, t); }
       else v = pick(t.z >= 48 ? 'heads' : 'labels', room, t.z, t);
+      if (v && !t.r && onPhoto.apply(null, textBox(t, v))) v = '';
       if (v) st.tx[i] = v;
     });
     (P.pa || []).forEach(function (pa, i) {
       if (pa.rule) return;   /* baris bergaris untuk tulisan tangan: biarkan kosong */
+      if (onPhoto(pa.x, pa.y, pa.x + pa.w, pa.y + pa.n * pa.lh)) return;
       var fs = Math.min(pa.lh * 0.52, 46), perLine = Math.floor(pa.w / (fs * 0.5)), cap = Math.floor(perLine * pa.n * 0.8), out = '';
       var list = C.paras;
       for (var n = 0; n < list.length; n++) {
@@ -1950,6 +1962,7 @@ function fillDefaults(album, tplId) {
     });
     (P.cp || []).forEach(function (cp, i) {
       var v = pick('caps', cp.w || 300, cp.z, cp);
+      if (v && onPhoto.apply(null, textBox(cp, v, cp.w))) v = '';
       if (v) st.cp[i] = v;
     });
   });

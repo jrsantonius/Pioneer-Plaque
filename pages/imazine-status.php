@@ -21,7 +21,7 @@ if (!$ok) http_response_code(404);
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Status pesanan Imazine</title>
+<title data-t="title_status">Status pesanan Imazine</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">
 <style>
   :root { --bg:#0c0a09; --ink:#f4ede4; --ink2:#b9ada0; --line:#2a2420; --accent:#cf7a3c; --accent-ink:#1a0f06; --ok:#7fc58f; }
@@ -45,66 +45,107 @@ if (!$ok) http_response_code(404);
   @media (min-width:700px) { main { width:min(100%,520px); } h1 { font-size:34px; } .card { padding:36px 32px; } }
   @media (max-width:420px) { .card { padding:24px 18px; } h1 { font-size:26px; } .btn { display:block; text-align:center; } }
 </style>
+<script>
+/* Bahasa mengikuti pilihan pembeli di /imazine (localStorage "imz-lang" atau ?lang=id|en), sama seperti halaman utama. */
+var IMZ_LANG = (function () { try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'id' || q === 'en') return q; return localStorage.getItem('imz-lang') === 'id' ? 'id' : 'en'; } catch (e) { return 'en'; } })();
+var IMZ_W = {
+  en: {
+    title_status: 'Imazine order status', title_thanks: 'Thank you - Imazine',
+    nf_eyebrow: 'Order not found', nf_h: 'This link is no longer valid.',
+    nf_p: 'Unpaid orders are deleted automatically after {h} hours. If that is what happened, make your album again. If you already paid, message our team on WhatsApp with the name and email you used.',
+    home: 'Back to Imazine', checking: 'Checking your order…', wait: 'One moment.',
+    l_no: 'Order number', l_cover: 'Cover', l_qty: 'Quantity', l_total: 'Album price', l_paid: 'Paid (incl. shipping)', l_unpaid: 'Album price (excl. shipping)', qty: '{n} album',
+    sent_eyebrow: 'Album sent', thanks_name: 'Thank you, {name}.', thanks: 'Thank you.',
+    sent_msg: 'We have received your album and all your photos. Our team will contact you on WhatsApp to confirm and arrange delivery.',
+    paid_eyebrow: 'Payment received', paid_msg: 'We are getting your album ready for print. Once it ships, you will get the JNE tracking number.',
+    wait_eyebrow: 'Waiting for payment', wait_h: 'No payment yet.',
+    wait_msg: 'If you just paid, this page updates by itself in a moment. If not, finish your payment{within}', within: ' within {t}. After that, your order is deleted and you will need to make your album again.', dot: '.',
+    hm: '{h} h {m} min', m: '{m} min', pay: 'Continue to payment',
+    inc_eyebrow: 'Order not finished', inc_h: 'Your order was not fully sent.', inc_msg: 'Your photos did not finish uploading. Open Imazine again and send your album again.', back: 'Back to Imazine',
+    err_h: 'We could not load your order status.', err_msg: 'Check your internet connection, then refresh this page.'
+  },
+  id: {
+    title_status: 'Status pesanan Imazine', title_thanks: 'Makasih - Imazine',
+    nf_eyebrow: 'Pesanan nggak ketemu', nf_h: 'Link ini udah nggak berlaku.',
+    nf_p: 'Pesanan yang belum dibayar otomatis dihapus setelah {h} jam. Kalau itu yang terjadi, bikin albummu lagi dari awal, ya. Kalau kamu udah bayar, chat tim kami lewat WhatsApp dan sebutin nama serta email yang kamu pakai.',
+    home: 'Ke beranda Imazine', checking: 'Lagi ngecek pesananmu…', wait: 'Sebentar, ya.',
+    l_no: 'Nomor pesanan', l_cover: 'Cover', l_qty: 'Jumlah', l_total: 'Harga album', l_paid: 'Dibayar (termasuk ongkir)', l_unpaid: 'Harga album (belum termasuk ongkir)', qty: '{n} album',
+    sent_eyebrow: 'Album terkirim', thanks_name: 'Makasih, {name}!', thanks: 'Makasih!',
+    sent_msg: 'Album dan semua fotomu udah kami terima. Tim kami bakal ngehubungin kamu lewat WhatsApp buat konfirmasi dan pengiriman.',
+    paid_eyebrow: 'Pembayaran diterima', paid_msg: 'Albummu lagi kami siapin buat dicetak. Begitu dikirim, kamu bakal dapat nomor resi JNE-nya.',
+    wait_eyebrow: 'Menunggu pembayaran', wait_h: 'Belum ada pembayaran masuk.',
+    wait_msg: 'Kalau kamu baru aja bayar, halaman ini bakal berubah sendiri sebentar lagi. Kalau belum, lanjutin pembayarannya{within}', within: ' dalam {t} lagi. Lewat dari itu, pesananmu dihapus dan albummu harus dibikin ulang.', dot: '.',
+    hm: '{h} jam {m} menit', m: '{m} menit', pay: 'Lanjut bayar',
+    inc_eyebrow: 'Pesanan belum selesai', inc_h: 'Pesananmu belum kekirim semua.', inc_msg: 'Fotomu belum selesai di-upload. Buka Imazine lagi, terus kirim ulang albummu.', back: 'Balik ke Imazine',
+    err_h: 'Status pesananmu belum bisa dimuat.', err_msg: 'Cek koneksi internetmu, terus refresh halaman ini.'
+  }
+};
+function tr(k, p) { var s = (IMZ_W[IMZ_LANG] || IMZ_W.en)[k] || k; return p ? s.replace(/\{(\w+)\}/g, function (m, n) { return p[n] != null ? p[n] : m; }) : s; }
+function trPage() { document.documentElement.lang = IMZ_LANG; Array.prototype.forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = tr(el.getAttribute('data-t'), el.dataset.h ? { h: el.dataset.h } : null); }); var tt = document.querySelector('title[data-t]'); if (tt) document.title = tr(tt.getAttribute('data-t')); }
+</script>
 </head>
 <body>
 <main>
   <p class="logo">ima<b>zine</b></p>
 <?php if (!$ok): ?>
   <div class="card">
-    <p class="eyebrow">Pesanan tidak ditemukan</p>
-    <h1>Link ini sudah tidak berlaku.</h1>
-    <p>Pesanan yang belum dibayar dihapus otomatis setelah <?= (int) IMAZINE_PAY_MINUTES / 60 ?> jam. Kalau itu yang terjadi, buat albummu lagi dari awal. Kalau kamu sudah membayar, hubungi tim kami lewat WhatsApp dengan menyebut nama dan email yang kamu pakai.</p>
-    <a class="btn" href="/imazine">Ke beranda Imazine</a>
+    <p class="eyebrow" data-t="nf_eyebrow">Pesanan nggak ketemu</p>
+    <h1 data-t="nf_h">Link ini udah nggak berlaku.</h1>
+    <p data-t="nf_p" data-h="<?= (int) IMAZINE_PAY_MINUTES / 60 ?>">Pesanan yang belum dibayar otomatis dihapus setelah <?= (int) IMAZINE_PAY_MINUTES / 60 ?> jam.</p>
+    <a class="btn" href="/imazine" data-t="home">Ke beranda Imazine</a>
   </div>
+<script>trPage();</script>
 <?php else: ?>
   <div class="card" id="card" aria-live="polite">
-    <p class="eyebrow" id="eyebrow">Mengecek pesananmu…</p>
-    <h1 id="title">Sebentar ya.</h1>
+    <p class="eyebrow" id="eyebrow" data-t="checking">Lagi ngecek pesananmu…</p>
+    <h1 id="title" data-t="wait">Sebentar, ya.</h1>
     <p id="msg"></p>
     <a class="btn" id="btn" href="#" hidden></a>
     <dl>
-      <div><dt>Nomor pesanan</dt><dd><?= e($imzOrderNo) ?></dd></div>
-      <div><dt>Cover</dt><dd id="cover">-</dd></div>
-      <div><dt>Jumlah</dt><dd id="qty">-</dd></div>
-      <div><dt id="total-l">Harga album</dt><dd id="total">-</dd></div>
+      <div><dt data-t="l_no">Nomor pesanan</dt><dd><?= e($imzOrderNo) ?></dd></div>
+      <div><dt data-t="l_cover">Cover</dt><dd id="cover">-</dd></div>
+      <div><dt data-t="l_qty">Jumlah</dt><dd id="qty">-</dd></div>
+      <div><dt id="total-l" data-t="l_total">Harga album</dt><dd id="total">-</dd></div>
     </dl>
   </div>
 <script>
+trPage();
 (function () {
   var NO = <?= json_encode($imzOrderNo) ?>, T = <?= json_encode($token) ?>, tries = 0;
   var $ = function (id) { return document.getElementById(id); };
   var rp = function (n) { return 'Rp' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   function show(s) {
-    $('cover').textContent = s.cover || '-'; $('qty').textContent = s.qty + ' album'; $('total').textContent = s.paidAmount ? rp(s.paidAmount) : rp(s.total); $('total-l').textContent = s.paidAmount ? 'Dibayar (termasuk ongkir)' : 'Harga album (belum termasuk ongkir)';
+    var first = s.name ? s.name.split(' ')[0] : '';
+    $('cover').textContent = s.cover || '-'; $('qty').textContent = tr('qty', { n: s.qty }); $('total').textContent = s.paidAmount ? rp(s.paidAmount) : rp(s.total); $('total-l').textContent = tr(s.paidAmount ? 'l_paid' : 'l_unpaid');
     var btn = $('btn'); btn.hidden = true;
     if (s.noPay) {   /* mode tanpa pembayaran: album langsung masuk ke tim */
       $('total').parentNode.style.display = 'none';
-      $('eyebrow').textContent = 'Album terkirim'; $('eyebrow').className = 'eyebrow ok';
-      $('title').textContent = s.name ? 'Terima kasih, ' + s.name.split(' ')[0] + '.' : 'Terima kasih.';
-      $('msg').textContent = 'Album dan semua fotomu sudah kami terima. Tim kami akan menghubungimu lewat WhatsApp untuk konfirmasi dan pengiriman.';
-      btn.href = '/imazine'; btn.textContent = 'Ke beranda Imazine'; btn.hidden = false;
+      $('eyebrow').textContent = tr('sent_eyebrow'); $('eyebrow').className = 'eyebrow ok';
+      $('title').textContent = first ? tr('thanks_name', { name: first }) : tr('thanks');
+      $('msg').textContent = tr('sent_msg');
+      btn.href = '/imazine'; btn.textContent = tr('home'); btn.hidden = false;
     } else if (s.status === 'lunas') {
-      $('eyebrow').textContent = 'Pembayaran diterima'; $('eyebrow').className = 'eyebrow ok';
-      $('title').textContent = s.name ? 'Terima kasih, ' + s.name.split(' ')[0] + '.' : 'Terima kasih.';
-      $('msg').textContent = 'Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengirimannya akan kamu terima lewat WhatsApp dan email.';
+      $('eyebrow').textContent = tr('paid_eyebrow'); $('eyebrow').className = 'eyebrow ok';
+      $('title').textContent = first ? tr('thanks_name', { name: first }) : tr('thanks');
+      $('msg').textContent = tr('paid_msg');
     } else if (s.status === 'menunggu_bayar') {
-      $('eyebrow').innerHTML = '<span class="pulse"></span>Menunggu pembayaran';
-      $('title').textContent = 'Belum ada pembayaran masuk.';
+      $('eyebrow').innerHTML = '<span class="pulse"></span>'; $('eyebrow').appendChild(document.createTextNode(tr('wait_eyebrow')));
+      $('title').textContent = tr('wait_h');
       var left = s.payBefore ? Math.max(0, s.payBefore * 1000 - Date.now()) : 0, hh = Math.floor(left / 3600000), mm = Math.floor(left % 3600000 / 60000);
-      $('msg').textContent = 'Kalau kamu baru saja membayar, halaman ini akan berubah sendiri dalam beberapa saat. Kalau belum, lanjutkan pembayarannya' + (s.payBefore ? ' dalam ' + (hh ? hh + ' jam ' : '') + mm + ' menit lagi. Setelah itu pesananmu dihapus dan albummu perlu dibuat ulang.' : '.');
-      if (s.payUrl) { btn.href = s.payUrl; btn.textContent = 'Lanjut bayar'; btn.hidden = false; }
+      $('msg').textContent = tr('wait_msg', { within: s.payBefore ? tr('within', { t: hh ? tr('hm', { h: hh, m: mm }) : tr('m', { m: mm }) }) : tr('dot') });
+      if (s.payUrl) { btn.href = s.payUrl; btn.textContent = tr('pay'); btn.hidden = false; }
     } else {
-      $('eyebrow').textContent = 'Pesanan belum selesai';
-      $('title').textContent = 'Pesananmu belum terkirim sepenuhnya.';
-      $('msg').textContent = 'Fotomu belum selesai di-upload. Buka Imazine lagi, lalu kirim ulang albummu.';
-      btn.href = '/imazine'; btn.textContent = 'Kembali ke Imazine'; btn.hidden = false;
+      $('eyebrow').textContent = tr('inc_eyebrow');
+      $('title').textContent = tr('inc_h');
+      $('msg').textContent = tr('inc_msg');
+      btn.href = '/imazine'; btn.textContent = tr('back'); btn.hidden = false;
     }
   }
   function poll() {
     fetch('/api/imazine/orders/' + NO + '/status?t=' + encodeURIComponent(T), { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (s) { show(s); if (s.status === 'menunggu_bayar' && ++tries < 150) setTimeout(poll, 4000); })
-      .catch(function () { $('title').textContent = 'Status pesananmu belum bisa dimuat.'; $('msg').textContent = 'Cek koneksi internetmu, lalu refresh halaman ini.'; });
+      .catch(function () { $('title').textContent = tr('err_h'); $('msg').textContent = tr('err_msg'); });
   }
   poll();
 })();

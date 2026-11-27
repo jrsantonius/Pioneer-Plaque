@@ -15,7 +15,7 @@ header('X-Robots-Tag: noindex');
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Terima kasih - Imazine</title>
+<title data-t="title_thanks">Makasih - Imazine</title>
 <link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">
 <style>
   :root { --bg:#0c0a09; --ink:#f4ede4; --ink2:#b9ada0; --line:#2a2420; --accent:#cf7a3c; --accent-ink:#1a0f06; }
@@ -30,16 +30,55 @@ header('X-Robots-Tag: noindex');
   @media (min-width:700px) { main { width:min(100%,520px); } h1 { font-size:34px; } .card { padding:36px 32px; } }
   @media (max-width:420px) { .card { padding:24px 18px; } h1 { font-size:26px; } .btn { display:block; text-align:center; } }
 </style>
+<script>
+/* Bahasa mengikuti pilihan pembeli di /imazine (localStorage "imz-lang" atau ?lang=id|en), sama seperti halaman utama. */
+var IMZ_LANG = (function () { try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'id' || q === 'en') return q; return localStorage.getItem('imz-lang') === 'id' ? 'id' : 'en'; } catch (e) { return 'en'; } })();
+var IMZ_W = {
+  en: {
+    title_status: 'Imazine order status', title_thanks: 'Thank you - Imazine',
+    nf_eyebrow: 'Order not found', nf_h: 'This link is no longer valid.',
+    nf_p: 'Unpaid orders are deleted automatically after {h} hours. If that is what happened, make your album again. If you already paid, message our team on WhatsApp with the name and email you used.',
+    home: 'Back to Imazine', checking: 'Checking your order…', wait: 'One moment.',
+    l_no: 'Order number', l_cover: 'Cover', l_qty: 'Quantity', l_total: 'Album price', l_paid: 'Paid (incl. shipping)', l_unpaid: 'Album price (excl. shipping)', qty: '{n} album',
+    sent_eyebrow: 'Album sent', thanks_name: 'Thank you, {name}.', thanks: 'Thank you.',
+    sent_msg: 'We have received your album and all your photos. Our team will contact you on WhatsApp to confirm and arrange delivery.',
+    paid_eyebrow: 'Payment received', paid_msg: 'We are getting your album ready for print. Once it ships, you will get the JNE tracking number.',
+    wait_eyebrow: 'Waiting for payment', wait_h: 'No payment yet.',
+    wait_msg: 'If you just paid, this page updates by itself in a moment. If not, finish your payment{within}', within: ' within {t}. After that, your order is deleted and you will need to make your album again.', dot: '.',
+    hm: '{h} h {m} min', m: '{m} min', pay: 'Continue to payment',
+    inc_eyebrow: 'Order not finished', inc_h: 'Your order was not fully sent.', inc_msg: 'Your photos did not finish uploading. Open Imazine again and send your album again.', back: 'Back to Imazine',
+    err_h: 'We could not load your order status.', err_msg: 'Check your internet connection, then refresh this page.'
+  },
+  id: {
+    title_status: 'Status pesanan Imazine', title_thanks: 'Makasih - Imazine',
+    nf_eyebrow: 'Pesanan nggak ketemu', nf_h: 'Link ini udah nggak berlaku.',
+    nf_p: 'Pesanan yang belum dibayar otomatis dihapus setelah {h} jam. Kalau itu yang terjadi, bikin albummu lagi dari awal, ya. Kalau kamu udah bayar, chat tim kami lewat WhatsApp dan sebutin nama serta email yang kamu pakai.',
+    home: 'Ke beranda Imazine', checking: 'Lagi ngecek pesananmu…', wait: 'Sebentar, ya.',
+    l_no: 'Nomor pesanan', l_cover: 'Cover', l_qty: 'Jumlah', l_total: 'Harga album', l_paid: 'Dibayar (termasuk ongkir)', l_unpaid: 'Harga album (belum termasuk ongkir)', qty: '{n} album',
+    sent_eyebrow: 'Album terkirim', thanks_name: 'Makasih, {name}!', thanks: 'Makasih!',
+    sent_msg: 'Album dan semua fotomu udah kami terima. Tim kami bakal ngehubungin kamu lewat WhatsApp buat konfirmasi dan pengiriman.',
+    paid_eyebrow: 'Pembayaran diterima', paid_msg: 'Albummu lagi kami siapin buat dicetak. Begitu dikirim, kamu bakal dapat nomor resi JNE-nya.',
+    wait_eyebrow: 'Menunggu pembayaran', wait_h: 'Belum ada pembayaran masuk.',
+    wait_msg: 'Kalau kamu baru aja bayar, halaman ini bakal berubah sendiri sebentar lagi. Kalau belum, lanjutin pembayarannya{within}', within: ' dalam {t} lagi. Lewat dari itu, pesananmu dihapus dan albummu harus dibikin ulang.', dot: '.',
+    hm: '{h} jam {m} menit', m: '{m} menit', pay: 'Lanjut bayar',
+    inc_eyebrow: 'Pesanan belum selesai', inc_h: 'Pesananmu belum kekirim semua.', inc_msg: 'Fotomu belum selesai di-upload. Buka Imazine lagi, terus kirim ulang albummu.', back: 'Balik ke Imazine',
+    err_h: 'Status pesananmu belum bisa dimuat.', err_msg: 'Cek koneksi internetmu, terus refresh halaman ini.'
+  }
+};
+function tr(k, p) { var s = (IMZ_W[IMZ_LANG] || IMZ_W.en)[k] || k; return p ? s.replace(/\{(\w+)\}/g, function (m, n) { return p[n] != null ? p[n] : m; }) : s; }
+function trPage() { document.documentElement.lang = IMZ_LANG; Array.prototype.forEach.call(document.querySelectorAll('[data-t]'), function (el) { el.textContent = tr(el.getAttribute('data-t'), el.dataset.h ? { h: el.dataset.h } : null); }); var tt = document.querySelector('title[data-t]'); if (tt) document.title = tr(tt.getAttribute('data-t')); }
+</script>
 </head>
 <body>
 <main>
   <p class="logo">ima<b>zine</b></p>
   <div class="card">
-    <p class="eyebrow">Pembayaran diterima</p>
-    <h1>Terima kasih.</h1>
-    <p>Albummu sedang kami siapkan untuk dicetak. Nomor resi JNE dan kabar pengirimannya akan kamu terima lewat WhatsApp dan email.</p>
-    <a class="btn" href="/imazine">Ke beranda Imazine</a>
+    <p class="eyebrow" data-t="paid_eyebrow">Pembayaran diterima</p>
+    <h1 data-t="thanks">Makasih!</h1>
+    <p data-t="paid_msg">Albummu lagi kami siapin buat dicetak. Begitu dikirim, kamu bakal dapat nomor resi JNE-nya.</p>
+    <a class="btn" href="/imazine" data-t="home">Ke beranda Imazine</a>
   </div>
+<script>trPage();</script>
 </main>
 <script>
 (function () {
