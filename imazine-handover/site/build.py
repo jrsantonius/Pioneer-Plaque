@@ -54,11 +54,11 @@ SITE_HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
              # pratinjau link di WhatsApp/IG/Facebook (audit 28 Nov 2026): gambar 1200x630 di public/imazine/img/og-imazine.jpg
              '<link rel="canonical" href="https://theinnovatorsstudio.id/imazine">'
              '<meta property="og:type" content="website"><meta property="og:site_name" content="Imazine · The Innovators Studio">'
-             '<meta property="og:url" content="https://theinnovatorsstudio.id/imazine"><meta property="og:locale" content="id_ID">'
-             '<meta property="og:title" content="Imazine — Album foto cetak ala majalah">'
-             '<meta property="og:description" content="Pilih cover, upload foto, beres. Album cetak A4, 40 halaman. Kamu bisa buat kurang dari 10 menit.">'
+             '<meta property="og:url" content="https://theinnovatorsstudio.id/imazine"><meta property="og:locale" content="en_US"><meta property="og:locale:alternate" content="id_ID">'
+             '<meta property="og:title" content="Imazine — Printed photo albums, magazine style">'
+             '<meta property="og:description" content="A customizable magazine you design yourself: pick a cover, add your photos, and get a printed A4 album of 40 pages. It takes no more than 10 minutes.">'
              '<meta property="og:image" content="https://theinnovatorsstudio.id/public/imazine/img/og-imazine.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
-             '<meta property="og:image:alt" content="Tiga contoh cover majalah Imazine">'
+             '<meta property="og:image:alt" content="Three sample Imazine magazine covers">'
              '<meta name="twitter:card" content="summary_large_image">'
              '<style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>\n')
 # Font disajikan dari server sendiri (public/imazine/fonts), bukan Google Fonts: stylesheet Google memblokir tampilan halaman
