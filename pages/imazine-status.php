@@ -22,6 +22,7 @@ if (!$ok) http_response_code(404);
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Status pesanan Imazine</title>
+<link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">
 <style>
   :root { --bg:#0c0a09; --ink:#f4ede4; --ink2:#b9ada0; --line:#2a2420; --accent:#cf7a3c; --accent-ink:#1a0f06; --ok:#7fc58f; }
   * { box-sizing: border-box; }

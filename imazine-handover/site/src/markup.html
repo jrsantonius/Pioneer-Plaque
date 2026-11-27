@@ -58,51 +58,72 @@
 <section class="view scene-dark" data-view="home">
   <div class="hero wrap">
     <div class="hero-copy">
-      <p class="eyebrow">Printed photo album · A4 · 40 pages · Art Paper 260 gsm</p>
-      <h1 class="hero-h nw">Imazine is a customizable magazine you design yourself.</h1>
-      <p class="lede nw">It takes no more than 10 minutes.</p>
-      <ul class="facts">
+      <p class="eyebrow" data-reveal>Printed photo album · A4 · 40 pages · Art Paper 260 gsm</p>
+      <h1 class="hero-h nw" data-reveal style="--rd:1">Imazine is a customizable magazine you design yourself.</h1>
+      <p class="lede nw" data-reveal style="--rd:2">It takes no more than 10 minutes.</p>
+      <ul class="facts" data-reveal style="--rd:2">
         <li data-pay><b data-price>Rp250.000</b><s class="was" data-price-was>Rp350.000</s> per album</li>
         <li data-nopay><b>A4</b> · 20 sheets, 40 pages</li>
+        <li data-pay><b>40 pages</b> A4</li>
         <li>No account needed</li>
         <li data-pay>Pay once, no deposit</li>
         <li data-nopay>Art Paper 260 gsm · Soft cover</li>
       </ul>
+      <div class="hero-cta" data-reveal style="--rd:3">
+        <button class="btn btn-warm btn-lg" type="button" data-start>Make an album</button>
+        <a class="btn btn-line btn-lg" href="#cara-kerja">How it works</a>
+      </div>
+    </div>
+    <div class="hero-stage" id="hero-stage" data-reveal style="--rd:2">
+      <div class="mag-stack" id="mag-stack">
+        <button class="mag" type="button" data-theme="travel" data-pos="0"><img src="{{hero_travel}}" alt="" width="300" height="424"><span class="mag-tag">Travel</span></button>
+        <button class="mag" type="button" data-theme="event" data-pos="1"><img src="{{hero_event}}" alt="" width="300" height="424"><span class="mag-tag">Event</span></button>
+        <button class="mag" type="button" data-theme="sol" data-pos="2"><img src="{{hero_sol}}" alt="" width="300" height="424"><span class="mag-tag">Slice of Life</span></button>
+      </div>
+      <div class="mag-tabs" role="group" aria-label="Sample covers">
+        <button type="button" data-theme="travel" aria-pressed="true">Travel</button>
+        <button type="button" data-theme="event" aria-pressed="false">Event</button>
+        <button type="button" data-theme="sol" aria-pressed="false">Slice of Life</button>
+      </div>
+      <p class="mag-hint">Tap a cover to see it up front. Tap again to start.</p>
     </div>
   </div>
 
+  <div class="m-cta" id="m-cta" aria-hidden="true"><span class="m-cta-t"><b data-pay data-price>Rp250.000</b> <span data-pay>per album</span><span data-nopay>A4 · 40 pages</span></span><button class="btn btn-warm" type="button" data-start tabindex="-1">Make an album</button></div>
+
   <section class="themes-band wrap" id="mulai" aria-labelledby="mulai-h">
-    <h2 id="mulai-h" class="themes-h nw" tabindex="-1">What’s your album about?</h2>
+    <h2 id="mulai-h" class="themes-h nw" tabindex="-1" data-reveal>What’s your album about?</h2>
     <div class="themes">
-      <button class="theme" type="button" data-theme="travel" style="--i:0">
+      <button class="theme" type="button" data-theme="travel" style="--i:0;--rd:1" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="{{hero_travel}}" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Travel</span><span class="theme-desc">Holidays, road trips, and cities you want to remember.</span><span class="theme-go">Start a Travel album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Travel</span><span class="theme-desc">Holidays, road trips, and cities you want to remember.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start a Travel album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
-      <button class="theme" type="button" data-theme="event" style="--i:1">
+      <button class="theme" type="button" data-theme="event" style="--i:1;--rd:2" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="{{hero_event}}" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Event</span><span class="theme-desc">Big days that only come once: birthdays, weddings, graduations.</span><span class="theme-go">Start an Event album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Event</span><span class="theme-desc">Big days that only come once: birthdays, weddings, graduations.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start an Event album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
-      <button class="theme" type="button" data-theme="sol" style="--i:2">
+      <button class="theme" type="button" data-theme="sol" style="--i:2;--rd:3" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="{{hero_sol}}" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Slice of Life</span><span class="theme-desc">Ordinary days that turn out to be the ones you miss most.</span><span class="theme-go">Start a Slice of Life album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Slice of Life</span><span class="theme-desc">Ordinary days that turn out to be the ones you miss most.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start a Slice of Life album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
     </div>
     <p class="themes-note">Each card shows a sample cover and two inside pages. The people in these sample photos were made with AI. They aren’t our customers.</p>
   </section>
 
   <section class="band wrap" id="cara-kerja" aria-labelledby="cara-h">
-    <h2 id="cara-h" class="themes-h sec-h nw">How it works</h2>
+    <h2 id="cara-h" class="themes-h sec-h nw" data-reveal>How it works</h2>
     <ol class="how">
-      <li><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
-      <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
-      <li><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
-      <li><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
+      <li data-reveal style="--rd:1"><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
+      <li data-reveal style="--rd:2"><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
+      <li data-reveal style="--rd:3"><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
+      <li data-reveal style="--rd:4"><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
     </ol>
+    <div class="sec-cta" data-reveal><button class="btn btn-warm btn-lg" type="button" data-start>Make an album</button></div>
   </section>
 
   <section class="band wrap" id="harga" aria-labelledby="harga-h">
-    <h2 id="harga-h" class="themes-h sec-h nw"><span data-pay>Price</span><span data-nopay>Specs</span></h2>
-    <div class="price">
+    <h2 id="harga-h" class="themes-h sec-h nw" data-reveal><span data-pay>Price</span><span data-nopay>Specs</span></h2>
+    <div class="price" data-reveal>
       <div class="price-main">
         <p class="price-was" data-pay data-price-was-row><span class="price-badge">Launch price</span><s data-price-was>Rp350.000</s></p>
         <p class="price-n" data-pay data-price>Rp250.000</p>
@@ -122,7 +143,7 @@
   </section>
 
   <section class="band wrap" id="tanya-jawab" aria-labelledby="faq-h">
-    <h2 id="faq-h" class="themes-h sec-h nw">FAQ</h2>
+    <h2 id="faq-h" class="themes-h sec-h nw" data-reveal>FAQ</h2>
     <div class="faq">
       <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
@@ -388,6 +409,7 @@
   <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-h" aria-describedby="dlg-p">
     <h2 class="dlg-h" id="dlg-h" tabindex="-1"></h2>
     <p class="dlg-p" id="dlg-p"></p>
+    <ul class="dlg-l" id="dlg-l" hidden></ul>
     <div class="dlg-a" id="dlg-a"></div>
   </div>
 </div>

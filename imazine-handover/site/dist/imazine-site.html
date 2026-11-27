@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="A printed A4 photo album, 40 pages. Pick a magazine-style cover, upload your photos, and we lay them out into an album. Available in English and Bahasa Indonesia."><meta name="theme-color" content="#000000"><style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}@font-face{font-family:"Manrope";src:url("/public/imazine/fonts/manrope-latin-wght-normal.woff2") format("woff2");font-weight:400 800;font-style:normal;font-display:swap}@font-face{font-family:"Instrument Serif";src:url("/public/imazine/fonts/instrument-serif-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Instrument Serif";src:url("/public/imazine/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}@font-face{font-family:"DM Mono";src:url("/public/imazine/fonts/dm-mono-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"DM Mono";src:url("/public/imazine/fonts/dm-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}@font-face{font-family:"Bowlby One";src:url("/public/imazine/fonts/bowlby-one-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Caveat Brush";src:url("/public/imazine/fonts/caveat-brush-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}</style><link rel="preload" href="/public/imazine/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/public/imazine/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="A printed A4 photo album, 40 pages. Pick a magazine-style cover, upload your photos, and we lay them out into an album. Available in English and Bahasa Indonesia."><meta name="theme-color" content="#000000"><link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png"><style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}@font-face{font-family:"Manrope";src:url("/public/imazine/fonts/manrope-latin-wght-normal.woff2") format("woff2");font-weight:400 800;font-style:normal;font-display:swap}@font-face{font-family:"Instrument Serif";src:url("/public/imazine/fonts/instrument-serif-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Instrument Serif";src:url("/public/imazine/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");font-weight:400;font-style:italic;font-display:swap}@font-face{font-family:"DM Mono";src:url("/public/imazine/fonts/dm-mono-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"DM Mono";src:url("/public/imazine/fonts/dm-mono-latin-500-normal.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}@font-face{font-family:"Bowlby One";src:url("/public/imazine/fonts/bowlby-one-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:"Caveat Brush";src:url("/public/imazine/fonts/caveat-brush-latin-400-normal.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}</style><link rel="preload" href="/public/imazine/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/public/imazine/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <title>Imazine — Printed photo albums</title>
 <style>
 @font-face{font-family:"Manrope Fallback";src:local("Arial"),local("Helvetica Neue"),local("Liberation Sans");size-adjust:100.4%;ascent-override:106.2%;descent-override:29.9%;line-gap-override:0%}
@@ -163,6 +163,7 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .theme:hover .theme-spread { transform: rotate(0deg) scale(1.03); }
 .theme-body { display: grid; gap: 8px; padding: 18px 20px 20px; align-content: start; }
 .theme-name { font: 400 28px/1.1 var(--font-display); letter-spacing: -.01em; }
+.theme-meta { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--on-dark-3); }
 .theme-desc { font-size: 14px; line-height: 1.5; color: var(--on-dark-2); text-wrap: pretty; }
 .theme-go { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-weight: 700; font-size: 14px; line-height: 1.3; color: var(--accent-text); }
 .theme-go .ic { width: 16px; height: 16px; transition: transform var(--d-1) var(--ease); }
@@ -170,6 +171,7 @@ body:not([data-view="home"]):not([data-view="done"]) .steps { display: flex; }
 .themes-note { font-size: 12px; line-height: 1.45; color: var(--on-dark-3); max-width: 70ch; }
 @media (prefers-reduced-motion: reduce) { .theme, .theme-cover, .theme-spread { transition: none; } .theme:hover { transform: none; } }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+.sec-cta { display: flex; justify-content: center; margin-top: 28px; }
 .how { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin-top: 22px; }
 .how li { display: grid; gap: 8px; align-content: start; padding-top: 16px; border-top: 2px solid var(--line-dark); }
 .how-n { font-size: 13px; color: var(--accent-text); }
@@ -681,6 +683,12 @@ textarea.in { resize: vertical; min-height: 92px; }
 @keyframes dlg-in { from { opacity: 0; transform: scale(.9); } }
 .dlg-h { font: 400 30px/1.12 var(--font-display); letter-spacing: -.015em; text-wrap: balance; outline: none; }
 .dlg-p { color: var(--ink-2); text-wrap: pretty; }
+.dlg-l { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.dlg-l li { display: flex; align-items: flex-start; gap: 10px; font-size: 15px; line-height: 1.4; }
+.dlg-l .ic { flex: none; width: 20px; height: 20px; padding: 3px; border-radius: 50%; box-sizing: border-box; }
+.dlg-l .is-ok .ic { background: #dcefe0; color: #1f6b34; }
+.dlg-l .is-no { font-weight: 600; }
+.dlg-l .is-no .ic { background: var(--danger-wash); color: var(--danger); }
 .dlg-a { display: grid; gap: 8px; margin-top: 8px; }
 .dlg-a .btn { width: 100%; white-space: normal; }
 .toast { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom, 0px)); top: auto; z-index: 70; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100% - 32px); padding: 8px 8px 8px 18px; min-height: 52px; border-radius: 26px; background: var(--ink); color: var(--vintage); font-size: 14px; line-height: 1.4; font-weight: 600; box-shadow: 0 14px 34px rgba(0,0,0,.35); animation: toast-in var(--d-2) var(--ease-out) both; }
@@ -830,6 +838,60 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .sum-now dd { font-size: 16px; }
   .sum dt { white-space: nowrap; }
 }
+
+/* ---------- landing interaktif (27 Nov 2026): tumpukan sampul, muncul saat di-scroll, kartu miring, bilah ajakan HP ---------- */
+.hero-cta { margin-top: 4px; }
+.hero-stage { display: grid; justify-items: center; gap: 14px; min-width: 0; }
+.mag-stack { position: relative; width: min(100%, 420px); aspect-ratio: 1 / 1.02; perspective: 1400px; }
+.mag-stack-in { position: absolute; inset: 0; }
+.mag { position: absolute; left: 50%; top: 50%; width: 58%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 3px;
+  transform-style: preserve-3d; transition: transform 700ms var(--ease-out), filter 700ms var(--ease-out), box-shadow 700ms var(--ease-out);
+  transform: translate(-50%, -50%) translate3d(var(--px, 0px), var(--py, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateX(var(--sx, 0%)) rotate(var(--rot, 0deg)) scale(var(--sc, 1));
+  box-shadow: 0 24px 44px -12px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.18); }
+.mag img { display: block; width: 100%; height: auto; border-radius: 3px; pointer-events: none; }
+.mag[data-pos="0"] { z-index: 3; --sx: 0%; --rot: -2deg; --sc: 1; }
+.mag[data-pos="1"] { z-index: 2; --sx: -34%; --rot: -9deg; --sc: .86; filter: brightness(.82) saturate(.9); }
+.mag[data-pos="2"] { z-index: 1; --sx: 34%; --rot: 8deg; --sc: .82; filter: brightness(.74) saturate(.85); }
+.mag:focus-visible { outline: 2.5px solid var(--tangerine); outline-offset: 4px; }
+.mag-tag { position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); padding: 5px 12px; border-radius: 999px; background: var(--tangerine); color: #141414; font: 700 12px/1.2 var(--font-ui); white-space: nowrap; opacity: 0; transition: opacity var(--d-2) var(--ease); pointer-events: none; }
+.mag[data-pos="0"] .mag-tag { opacity: 1; }
+.mag-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--line-dark); background: var(--vinyl-raise); }
+.mag-tabs button { min-height: 34px; padding: 0 14px; border: 0; border-radius: 999px; background: none; color: var(--on-dark-2); font: 600 13px/1 var(--font-ui); cursor: pointer; transition: background var(--d-2) var(--ease), color var(--d-2) var(--ease); }
+.mag-tabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.mag-hint { font-size: 12px; color: var(--on-dark-3); }
+@media (min-width: 1000px) {
+  .hero { grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 56px; }
+  .hero .hero-h { font-size: clamp(2.7rem, 4.6vw, 4.5rem); }
+}
+@media (hover: hover) and (pointer: fine) {
+  .mag[data-pos="0"]:hover { box-shadow: 0 34px 60px -14px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.18); }
+  .theme { --rx: 0deg; --ry: 0deg; transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty, 0)); }
+  .theme:hover { --ty: -4px; transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(var(--ty)); }
+  .theme::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity var(--d-2) var(--ease);
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,.16), transparent 60%); }
+  .theme:hover::after { opacity: 1; }
+  .how li .how-v { transition: transform var(--d-2) var(--ease), box-shadow var(--d-2) var(--ease); }
+  .how li:hover .how-v { transform: translateY(-4px); box-shadow: 0 16px 30px -18px rgba(0,0,0,.45); }
+}
+.theme { position: relative; }
+/* muncul saat di-scroll (hanya bila JS jalan dan animasi tidak dimatikan) */
+.reveal-on [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--rd, 0) * 90ms); }
+.reveal-on [data-reveal].is-in { opacity: 1; transform: none; }
+/* FAQ: jawaban muncul halus */
+.faq details[open] p { animation: faq-in 360ms var(--ease-out); }
+@keyframes faq-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+/* bilah ajakan di HP, muncul sesudah hero terlewati */
+.m-cta { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; display: none; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 10px 10px 16px; border-radius: 16px; background: var(--ink); color: var(--bg); box-shadow: 0 18px 40px -12px rgba(0,0,0,.45);
+  transform: translateY(140%); transition: transform 380ms var(--ease-out); }
+.m-cta.is-on { transform: none; }
+.m-cta-t { font-size: 13px; line-height: 1.3; }
+.m-cta-t b { font-size: 16px; }
+@media (max-width: 760px) { body[data-view="home"] .m-cta { display: flex; } }
+@media (prefers-reduced-motion: reduce) {
+  .mag, .m-cta, .theme, .how li .how-v { transition: none; }
+  .faq details[open] p { animation: none; }
+}
 /* ---------- template page ---------- */
 .pg{position:relative;aspect-ratio:1000/1416;container-type:inline-size;overflow:hidden;background:#fff;isolation:isolate}
 .pg-l{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -973,51 +1035,72 @@ html.pay [data-nopay]{display:none!important}
 <section class="view scene-dark" data-view="home">
   <div class="hero wrap">
     <div class="hero-copy">
-      <p class="eyebrow">Printed photo album · A4 · 40 pages · Art Paper 260 gsm</p>
-      <h1 class="hero-h nw">Imazine is a customizable magazine you design yourself.</h1>
-      <p class="lede nw">It takes no more than 10 minutes.</p>
-      <ul class="facts">
+      <p class="eyebrow" data-reveal>Printed photo album · A4 · 40 pages · Art Paper 260 gsm</p>
+      <h1 class="hero-h nw" data-reveal style="--rd:1">Imazine is a customizable magazine you design yourself.</h1>
+      <p class="lede nw" data-reveal style="--rd:2">It takes no more than 10 minutes.</p>
+      <ul class="facts" data-reveal style="--rd:2">
         <li data-pay><b data-price>Rp250.000</b><s class="was" data-price-was>Rp350.000</s> per album</li>
         <li data-nopay><b>A4</b> · 20 sheets, 40 pages</li>
+        <li data-pay><b>40 pages</b> A4</li>
         <li>No account needed</li>
         <li data-pay>Pay once, no deposit</li>
         <li data-nopay>Art Paper 260 gsm · Soft cover</li>
       </ul>
+      <div class="hero-cta" data-reveal style="--rd:3">
+        <button class="btn btn-warm btn-lg" type="button" data-start>Make an album</button>
+        <a class="btn btn-line btn-lg" href="#cara-kerja">How it works</a>
+      </div>
+    </div>
+    <div class="hero-stage" id="hero-stage" data-reveal style="--rd:2">
+      <div class="mag-stack" id="mag-stack">
+        <button class="mag" type="button" data-theme="travel" data-pos="0"><img src="/public/imazine/img/c-mag-travel.webp" alt="" width="300" height="424"><span class="mag-tag">Travel</span></button>
+        <button class="mag" type="button" data-theme="event" data-pos="1"><img src="/public/imazine/img/c-mag-event.webp" alt="" width="300" height="424"><span class="mag-tag">Event</span></button>
+        <button class="mag" type="button" data-theme="sol" data-pos="2"><img src="/public/imazine/img/c-mag-sol.webp" alt="" width="300" height="424"><span class="mag-tag">Slice of Life</span></button>
+      </div>
+      <div class="mag-tabs" role="group" aria-label="Sample covers">
+        <button type="button" data-theme="travel" aria-pressed="true">Travel</button>
+        <button type="button" data-theme="event" aria-pressed="false">Event</button>
+        <button type="button" data-theme="sol" aria-pressed="false">Slice of Life</button>
+      </div>
+      <p class="mag-hint">Tap a cover to see it up front. Tap again to start.</p>
     </div>
   </div>
 
+  <div class="m-cta" id="m-cta" aria-hidden="true"><span class="m-cta-t"><b data-pay data-price>Rp250.000</b> <span data-pay>per album</span><span data-nopay>A4 · 40 pages</span></span><button class="btn btn-warm" type="button" data-start tabindex="-1">Make an album</button></div>
+
   <section class="themes-band wrap" id="mulai" aria-labelledby="mulai-h">
-    <h2 id="mulai-h" class="themes-h nw" tabindex="-1">What’s your album about?</h2>
+    <h2 id="mulai-h" class="themes-h nw" tabindex="-1" data-reveal>What’s your album about?</h2>
     <div class="themes">
-      <button class="theme" type="button" data-theme="travel" style="--i:0">
+      <button class="theme" type="button" data-theme="travel" style="--i:0;--rd:1" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="/public/imazine/img/c-mag-travel.webp" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Travel</span><span class="theme-desc">Holidays, road trips, and cities you want to remember.</span><span class="theme-go">Start a Travel album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Travel</span><span class="theme-desc">Holidays, road trips, and cities you want to remember.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start a Travel album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
-      <button class="theme" type="button" data-theme="event" style="--i:1">
+      <button class="theme" type="button" data-theme="event" style="--i:1;--rd:2" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="/public/imazine/img/c-mag-event.webp" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Event</span><span class="theme-desc">Big days that only come once: birthdays, weddings, graduations.</span><span class="theme-go">Start an Event album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Event</span><span class="theme-desc">Big days that only come once: birthdays, weddings, graduations.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start an Event album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
-      <button class="theme" type="button" data-theme="sol" style="--i:2">
+      <button class="theme" type="button" data-theme="sol" style="--i:2;--rd:3" data-reveal>
         <span class="theme-art"><img class="theme-cover" src="/public/imazine/img/c-mag-sol.webp" alt="" width="300" height="424"><span class="theme-spread" data-spread></span></span>
-        <span class="theme-body"><span class="theme-name">Slice of Life</span><span class="theme-desc">Ordinary days that turn out to be the ones you miss most.</span><span class="theme-go">Start a Slice of Life album<svg class="ic"><use href="#i-right"/></svg></span></span>
+        <span class="theme-body"><span class="theme-name">Slice of Life</span><span class="theme-desc">Ordinary days that turn out to be the ones you miss most.</span><span class="theme-meta">A4 · 40 pages · printed album</span><span class="theme-go">Start a Slice of Life album<svg class="ic"><use href="#i-right"/></svg></span></span>
       </button>
     </div>
     <p class="themes-note">Each card shows a sample cover and two inside pages. The people in these sample photos were made with AI. They aren’t our customers.</p>
   </section>
 
   <section class="band wrap" id="cara-kerja" aria-labelledby="cara-h">
-    <h2 id="cara-h" class="themes-h sec-h nw">How it works</h2>
+    <h2 id="cara-h" class="themes-h sec-h nw" data-reveal>How it works</h2>
     <ol class="how">
-      <li><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
-      <li><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
-      <li><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
-      <li><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
+      <li data-reveal style="--rd:1"><div class="how-v hv1" aria-hidden="true"><div class="hv-chips"><span class="is-on">Travel</span><span>Event</span><span>Slice of Life</span></div><div class="hv-covers"><img class="hv-c hv-c-l" src="/public/imazine/img/c-mag-event.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><img class="hv-c hv-c-r" src="/public/imazine/img/c-mag-sol.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><span class="hv-c hv-c-m"><img src="/public/imazine/img/c-mag-travel.webp" alt="" loading="lazy" decoding="async" width="600" height="849"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div></div><span class="how-n num">1</span><h3>Choose a theme and a cover</h3><p>Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.</p></li>
+      <li data-reveal style="--rd:2"><div class="how-v hv2" aria-hidden="true"><div class="hv-phone"><div class="hv-grid"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-6.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><i class="hv-tick"><svg viewBox="0 0 12 12"><path d="M2.6 6.3 5 8.6 9.6 3.6"/></svg></i></span></div><span class="hv-pill">Select all</span></div><svg class="hv-arrow" viewBox="0 0 40 16"><path d="M1 8h34M29 2l6 6-6 6"/></svg><div class="hv-page hv-p2"><span><img src="/public/imazine/img/pv-travel-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-4.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-sol-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-travel-2.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div></div><span class="how-n num">2</span><h3>Add your photos</h3><p>Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.</p></li>
+      <li data-reveal style="--rd:3"><div class="how-v hv3" aria-hidden="true"><div class="hv-page hv-p3"><span class="hv-fr"><img src="/public/imazine/img/pv-travel-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"><b class="hv-h hv-h1"></b><b class="hv-h hv-h2"></b><b class="hv-h hv-h3"></b><b class="hv-h hv-h4"></b><svg class="hv-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg></span><span class="hv-cap">Dieng · 14.06.2026<i class="hv-caret"></i></span><span class="hv-line"></span><span class="hv-line hv-line-s"></span></div><div class="hv-tools"><span class="hv-pill hv-pill-on">Add a text</span><span class="hv-pill">Add a photo</span></div></div><span class="how-n num">3</span><h3>Tidy up and write</h3><p>Move photos inside their frames, change the text, and add a date or a note next to each photo.</p></li>
+      <li data-reveal style="--rd:4"><div class="how-v hv4" aria-hidden="true"><div class="hv-book"><div class="hv-page hv-pl"><span><img src="/public/imazine/img/pv-event-3.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><span><img src="/public/imazine/img/pv-event-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i></div><div class="hv-page hv-pr"><span><img src="/public/imazine/img/pv-sol-1.webp" alt="" loading="lazy" decoding="async" width="416" height="560"></span><i></i><i class="hv-line-s"></i></div></div><span class="hv-pill hv-pay" data-pay>Pay <b data-price>Rp250.000</b></span><span class="hv-pill hv-pay" data-nopay>Send album</span></div><span class="how-n num">4</span><h3>Preview, then order</h3><p data-pay>Flip through your album page by page. When it looks right, pay and we’ll print it.</p><p data-nopay>Flip through your album page by page. When it looks right, send it to us and we’ll print it.</p></li>
     </ol>
+    <div class="sec-cta" data-reveal><button class="btn btn-warm btn-lg" type="button" data-start>Make an album</button></div>
   </section>
 
   <section class="band wrap" id="harga" aria-labelledby="harga-h">
-    <h2 id="harga-h" class="themes-h sec-h nw"><span data-pay>Price</span><span data-nopay>Specs</span></h2>
-    <div class="price">
+    <h2 id="harga-h" class="themes-h sec-h nw" data-reveal><span data-pay>Price</span><span data-nopay>Specs</span></h2>
+    <div class="price" data-reveal>
       <div class="price-main">
         <p class="price-was" data-pay data-price-was-row><span class="price-badge">Launch price</span><s data-price-was>Rp350.000</s></p>
         <p class="price-n" data-pay data-price>Rp250.000</p>
@@ -1037,7 +1120,7 @@ html.pay [data-nopay]{display:none!important}
   </section>
 
   <section class="band wrap" id="tanya-jawab" aria-labelledby="faq-h">
-    <h2 id="faq-h" class="themes-h sec-h nw">FAQ</h2>
+    <h2 id="faq-h" class="themes-h sec-h nw" data-reveal>FAQ</h2>
     <div class="faq">
       <details><summary>How many photos do I need?</summary><p>It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.</p></details>
       <details><summary>Are the dates next to photos filled in automatically?</summary><p>No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.</p></details>
@@ -1303,6 +1386,7 @@ html.pay [data-nopay]{display:none!important}
   <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-h" aria-describedby="dlg-p">
     <h2 class="dlg-h" id="dlg-h" tabindex="-1"></h2>
     <p class="dlg-p" id="dlg-p"></p>
+    <ul class="dlg-l" id="dlg-l" hidden></ul>
     <div class="dlg-a" id="dlg-a"></div>
   </div>
 </div>
@@ -1325,38 +1409,38 @@ var I18N_ID = {
 "Skip to main content": "Langsung ke konten utama",
 "Imazine, back to home": "Imazine, kembali ke beranda",
 "Page sections": "Bagian halaman",
-"How it works": "Cara kerja",
+"How it works": "Cara kerjanya",
 "Price": "Harga",
 "Launch price": "Harga launching",
 "Specs": "Spesifikasi",
-"Steps to make your album": "Langkah membuat album",
+"Steps to make your album": "Langkah bikin album",
 "Arrange": "Susun",
 "Order": "Pesan",
 "Make an album": "Bikin album",
 "Printed photo album · A4 · 40 pages · Art Paper 260 gsm": "Album foto cetak · A4 · 40 halaman · Art Paper 260 gsm",
-"Imazine is a customizable magazine you design yourself.": "Imazine adalah majalah yang bisa kamu desain sendiri.",
-"It takes no more than 10 minutes.": "Membuatnya tidak lebih dari 10 menit.",
-"This one’s a keeper.": "Yang ini harus kita simpan.",
-"Pick a cover, upload your photos, and we lay them out into a 40-page album for you. All that’s left is to tidy up and write your story.": "Pilih cover, upload foto-fotomu, dan kami susun otomatis jadi album 40 halaman. Kamu tinggal merapikan dan menuliskan ceritanya.",
-"See how it works": "Lihat cara kerja",
+"Imazine is a customizable magazine you design yourself.": "Imazine itu majalah yang bisa kamu desain sendiri.",
+"It takes no more than 10 minutes.": "Kamu bisa buat kurang dari 10 menit.",
+"This one’s a keeper.": "Yang ini wajib disimpan.",
+"Pick a cover, upload your photos, and we lay them out into a 40-page album for you. All that’s left is to tidy up and write your story.": "Pilih cover, upload foto-fotomu, terus kami susun otomatis jadi album 40 halaman. Kamu tinggal rapikan dan tulis ceritanya.",
+"See how it works": "Lihat cara kerjanya",
 "· 40 pages": "· 40 halaman",
-"No account needed": "Tanpa bikin akun",
+"No account needed": "Nggak perlu bikin akun",
 "Pay once, no deposit": "Bayar sekali, tanpa DP",
-"Sample magazine covers. The people in these photos were made with AI. They aren’t our customers.": "Contoh Cover Majalah. Orang di foto contoh ini dibuat dengan AI, bukan pelanggan kami.",
-"From your camera roll to your bookshelf.": "Dari galeri ponsel ke rak buku.",
+"Sample magazine covers. The people in these photos were made with AI. They aren’t our customers.": "Contoh Cover Majalah. Orang di foto contoh ini dibuat pakai AI, bukan pelanggan kami.",
+"From your camera roll to your bookshelf.": "Dari galeri HP ke rak buku.",
 "Pick a cover and a layout": "Pilih cover dan layout",
-"A magazine-style cover with your own photo, for a Travel, Event, or Slice of Life album. Then choose one of four layouts.": "Cover ala majalah dengan fotomu sendiri, untuk tema Travel, Event, atau Slice of Life. Lalu pilih satu dari empat layout.",
+"A magazine-style cover with your own photo, for a Travel, Event, or Slice of Life album. Then choose one of four layouts.": "Cover ala majalah pakai fotomu sendiri, buat tema Travel, Event, atau Slice of Life. Terus pilih satu dari empat layout.",
 "Upload all your photos": "Upload semua foto",
-"Select them all at once. They go straight onto the pages, oldest first.": "Pilih sekaligus banyak. Fotonya langsung terpasang otomatis, urut dari yang paling lama.",
+"Select them all at once. They go straight onto the pages, oldest first.": "Pilih semuanya sekaligus. Fotonya langsung terpasang di halaman, urut dari yang paling lama.",
 "Tidy up and write": "Rapikan dan tulis",
-"Move photos inside their frames, change the text, and add a date or a note next to each photo.": "Geser foto di dalam bingkainya, ganti teks, lalu tulis tanggal atau catatan di samping foto.",
+"Move photos inside their frames, change the text, and add a date or a note next to each photo.": "Geser foto di dalam bingkainya, ganti teks, terus tulis tanggal atau catatan di samping tiap foto.",
 "Preview, then order": "Preview, lalu pesan",
-"Flip through your album page by page. When it looks right, pay and we’ll print it.": "Buka albumnya halaman demi halaman. Kalau sudah pas, bayar dan kami cetak.",
-"Flip through your album page by page. When it looks right, send it to us and we’ll print it.": "Buka albumnya halaman demi halaman. Kalau sudah pas, kirim ke kami dan kami cetak.",
+"Flip through your album page by page. When it looks right, pay and we’ll print it.": "Buka albumnya halaman demi halaman. Kalau udah pas, tinggal bayar dan kami cetak.",
+"Flip through your album page by page. When it looks right, send it to us and we’ll print it.": "Buka albumnya halaman demi halaman. Kalau udah pas, kirim ke kami dan kami cetak.",
 "One size, one price.": "Satu ukuran, satu harga.",
 "One size, printed with care.": "Satu ukuran, dicetak rapi.",
 "per album, plus shipping": "per album, belum termasuk ongkir",
-"Put your album together and send it to us. Our team prints it and gets in touch with you.": "Susun albummu, lalu kirim ke kami. Tim kami yang mencetak dan menghubungimu.",
+"Put your album together and send it to us. Our team prints it and gets in touch with you.": "Susun albummu, terus kirim ke kami. Tim kami yang cetak dan nanti menghubungimu.",
 "Size": "Ukuran",
 "Pages": "Halaman",
 "20 sheets (40 pages, printed on both sides)": "20 lembar (40 halaman, bolak-balik)",
@@ -1364,125 +1448,140 @@ var I18N_ID = {
 "· 20 sheets, 40 pages": "· 20 lembar, 40 halaman",
 "Art Paper 260 gsm · Soft cover": "Art Paper 260 gsm · Soft cover",
 "Paper": "Kertas",
-"Art Paper 260 gsm. Thick and sturdy, not thin like magazine paper": "Art Paper 260 gsm. Tebal dan kokoh, tidak setipis kertas majalah",
+"Art Paper 260 gsm. Thick and sturdy, not thin like magazine paper": "Art Paper 260 gsm. Tebal dan kokoh, nggak setipis kertas majalah",
 "Cover": "Cover",
 "Soft cover": "Soft cover",
 "Binding": "Jilid",
 "Bound with binding": "Jilid binding",
 "Payment and shipping": "Pembayaran dan ongkir",
-"Paid in full, once, after you’ve seen the preview. No deposit. JNE shipping is calculated from your address at checkout": "Lunas sekali bayar, setelah kamu melihat preview. Tanpa DP. Ongkir JNE dihitung otomatis sesuai alamatmu saat checkout",
-"Questions people ask.": "Yang sering ditanyakan.",
+"Paid in full, once, after you’ve seen the preview. No deposit. JNE shipping is calculated from your address at checkout": "Lunas sekali bayar, setelah kamu lihat preview. Tanpa DP. Ongkir JNE dihitung otomatis sesuai alamatmu pas checkout",
+"Questions people ask.": "Yang sering ditanyain.",
 "How many photos do I need?": "Butuh berapa foto?",
-"Are the dates next to photos filled in automatically?": "Tanggal di samping foto diisi otomatis?",
-"No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.": "Tidak. Tanggal yang tersimpan di file foto belum tentu tanggal fotonya diambil, bisa saja tanggal foto diunduh, diedit, atau dipindahkan. Karena itu kamu sendiri yang menulisnya. Kalau tanggal di file sudah benar, cukup ketuk tombolnya untuk memakai tanggal itu. Keterangan yang dibiarkan kosong tidak ikut dicetak.",
-"Can I change the text in the album?": "Teks di dalam album bisa diganti?",
-"Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.": "Bisa, semuanya. Pilih teks di halaman, lalu tulis punyamu. Teks yang dibiarkan kosong tidak ikut dicetak.",
-"Can I choose which part of a photo shows?": "Bagian foto yang terpotong bisa diatur?",
-"Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Klik dua kali fotonya (atau tekan Atur isi foto), lalu geser foto di dalam bingkainya sampai bagian yang kamu mau terlihat, atau perbesar kalau perlu.",
-"What happens after I send my album?": "Setelah albumnya dikirim, lalu apa?",
-"Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Kami akan menghubungimu lewat WhatsApp untuk konfirmasi, alamat, dan pengiriman.",
-"How do I pay?": "Bayarnya bagaimana?",
-"After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Your email is filled in for you.": "Setelah melihat preview, kamu membayar lunas, tanpa DP. Nama, HP, alamat, dan ongkir JNE diisi di form pembayaran. Emailmu sudah terisi otomatis.",
-"What are the paper and cover like?": "Kertas dan cover-nya seperti apa?",
-"The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).": "Isinya dicetak di kertas Art Paper 260 gsm, cukup tebal sehingga halamannya terasa kokoh dan foto tidak tembus ke halaman sebaliknya. Cover-nya soft cover dan albumnya dijilid binding. Ukurannya A4, 20 lembar (40 halaman, bolak-balik).",
-"Will the printed colors match my screen exactly?": "Warna cetaknya sama persis dengan di layar?",
-"Close, but never exactly. A screen gives off light while paper reflects it, so prints usually come out a little darker and softer. If a photo already looks dark on screen, brighten it before you upload.": "Mirip, tapi tidak akan sama persis. Layar memancarkan cahaya, sedangkan kertas memantulkannya, jadi hasil cetak biasanya sedikit lebih gelap dan kalem. Foto yang sudah terlihat gelap di layar sebaiknya dicerahkan dulu sebelum di-upload.",
+"Are the dates next to photos filled in automatically?": "Tanggal di samping foto otomatis keisi?",
+"No. The date saved in a photo file isn’t always the day it was taken. It might be when it was downloaded, edited, or moved. So you write it yourself. If the file date is right, one tap uses it. Captions left empty aren’t printed.": "Nggak. Tanggal yang tersimpan di file foto belum tentu tanggal fotonya diambil, bisa aja itu tanggal fotonya diunduh, diedit, atau dipindah. Makanya kamu sendiri yang nulis. Kalau tanggal di file udah benar, cukup sekali ketuk buat pakai tanggal itu. Keterangan yang dibiarin kosong nggak ikut dicetak.",
+"Can I change the text in the album?": "Teks di album bisa diganti?",
+"Yes, all of it. Tap any text on the page and write your own. Text left empty isn’t printed.": "Bisa, semuanya. Ketuk teks mana aja di halaman, terus tulis versimu sendiri. Teks yang dibiarin kosong nggak ikut dicetak.",
+"Can I choose which part of a photo shows?": "Bagian foto yang kelihatan bisa dipilih?",
+"Yes. Double-click the photo (or press Adjust photo), then drag it inside its frame until the part you want is showing, or zoom in if you need to.": "Bisa. Klik dua kali fotonya (atau tekan Atur isi foto), terus geser foto di dalam bingkainya sampai bagian yang kamu mau kelihatan, atau perbesar kalau perlu.",
+"What happens after I send my album?": "Setelah album dikirim, terus gimana?",
+"Your album and all your original photos go straight to our team. We’ll message you on WhatsApp to confirm the order, your address, and delivery.": "Album dan semua foto aslimu langsung masuk ke tim kami. Nanti kami chat kamu lewat WhatsApp buat konfirmasi pesanan, alamat, dan pengiriman.",
+"How do I pay?": "Bayarnya gimana?",
+"After the preview, you pay in full, with no deposit. You fill in your name, phone, address, and JNE shipping in the payment form. Your email is filled in for you.": "Setelah lihat preview, kamu bayar lunas, tanpa DP. Nama, HP, alamat, dan ongkir JNE kamu isi di form pembayaran. Emailmu udah terisi otomatis.",
+"What are the paper and cover like?": "Kertas dan cover-nya kayak gimana?",
+"The pages are printed on Art Paper 260 gsm, thick enough that they feel sturdy and photos don’t show through to the other side. The cover is soft cover and the album is bound with binding. It’s A4, 20 sheets (40 pages, printed on both sides).": "Isinya dicetak di kertas Art Paper 260 gsm, cukup tebal jadi halamannya terasa kokoh dan fotonya nggak tembus ke halaman sebaliknya. Cover-nya soft cover dan albumnya dijilid binding. Ukurannya A4, 20 lembar (40 halaman, bolak-balik).",
+"Will the printed colors match my screen exactly?": "Warna cetaknya bakal sama persis kayak di layar?",
+"Close, but never exactly. A screen gives off light while paper reflects it, so prints usually come out a little darker and softer. If a photo already looks dark on screen, brighten it before you upload.": "Mirip, tapi nggak bakal sama persis. Layar memancarkan cahaya, sedangkan kertas memantulkannya, jadi hasil cetak biasanya sedikit lebih gelap dan kalem. Kalau fotonya udah kelihatan gelap di layar, cerahin dulu sebelum di-upload.",
 "Can I use photos from WhatsApp or screenshots?": "Foto dari WhatsApp atau screenshot bisa dipakai?",
-"Yes, but they won’t be as sharp. WhatsApp shrinks photos when they’re sent, and screenshots are low resolution, so they can look blurry at A4 size. If you can, use the original files from your gallery or camera.": "Bisa, tapi hasilnya kurang tajam. WhatsApp memperkecil foto saat dikirim, dan screenshot resolusinya rendah, jadi di ukuran A4 bisa terlihat buram. Kalau bisa, pakai file asli dari galeri atau kamera.",
-"Which photo formats work?": "Format foto apa yang bisa dipakai?",
-"JPG, PNG, WEBP, and HEIC (the usual iPhone format), in any browser. HEIC photos are turned into high-quality JPEG on your device before they’re sent to us.": "JPG, PNG, WEBP, dan HEIC (format foto iPhone), di browser apa pun. Foto HEIC diubah jadi JPEG berkualitas tinggi di perangkatmu sebelum dikirim ke kami.",
+"Yes, but they won’t be as sharp. WhatsApp shrinks photos when they’re sent, and screenshots are low resolution, so they can look blurry at A4 size. If you can, use the original files from your gallery or camera.": "Bisa, tapi hasilnya kurang tajam. WhatsApp memperkecil foto pas dikirim, dan screenshot resolusinya rendah, jadi di ukuran A4 bisa kelihatan buram. Kalau bisa, pakai file asli dari galeri atau kamera.",
+"Which photo formats work?": "Format foto apa aja yang bisa dipakai?",
+"JPG, PNG, WEBP, and HEIC (the usual iPhone format), in any browser. HEIC photos are turned into high-quality JPEG on your device before they’re sent to us.": "JPG, PNG, WEBP, dan HEIC (format foto iPhone), di browser apa aja. Foto HEIC diubah jadi JPEG kualitas tinggi di perangkatmu sebelum dikirim ke kami.",
 "Imazine is developed by": "Imazine dikembangkan oleh",
 ", a creative innovation lab in Indonesia, with Vier Moments. © 2026 Imazine.": ", creative innovation lab Indonesia, bersama Vier Moments. © 2026 Imazine.",
 "Home": "Beranda",
 "Step 1 of 4": "Langkah 1 dari 4",
 "Step 4 of 4": "Langkah 4 dari 4",
 "What’s your story about?": "Mau cerita tentang apa?",
-"Choose a theme. The cover and layouts will follow it.": "Pilih satu tema. Cover dan layout-nya akan menyesuaikan.",
+"Choose a theme. The cover and layouts will follow it.": "Pilih satu tema. Cover dan layout-nya nanti ikut menyesuaikan.",
 "Continue": "Lanjut",
 "Choose your album cover.": "Pilih cover albummu.",
-"There are three themes: Travel, Event, and Slice of Life. Magazine covers use your own photo; the people in these samples were made with AI. Your album’s layouts follow the theme of the cover you pick.": "Ada tiga tema: Travel, Event, dan Slice of Life. Cover majalah nanti memakai fotomu sendiri; foto di contoh ini dibuat dengan AI. Layout album mengikuti tema cover yang kamu pilih.",
+"There are three themes: Travel, Event, and Slice of Life. Magazine covers use your own photo; the people in these samples were made with AI. Your album’s layouts follow the theme of the cover you pick.": "Ada tiga tema: Travel, Event, dan Slice of Life. Cover majalahnya nanti pakai fotomu sendiri; orang di contoh ini dibuat pakai AI. Layout album ngikutin tema cover yang kamu pilih.",
 "Choose a layout.": "Pilih layout.",
-"Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.": "Semua layout berisi 40 halaman. Bedanya ada di susunan foto dan seberapa banyak ruang untuk menulis.",
-"This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.": "Layout ini butuh {n} foto. Upload semuanya sekarang, lalu kamu rapikan albumnya di layar berikutnya.",
+"Every layout has 40 pages. They differ in how photos are arranged and how much room there is to write.": "Semua layout isinya 40 halaman. Bedanya di susunan foto dan seberapa banyak ruang buat nulis.",
+"This layout needs {n} photos. Upload them all now, then you’ll arrange your album on the next screen.": "Layout ini butuh {n} foto. Upload semuanya sekarang, nanti kamu rapikan albumnya di layar berikutnya.",
 "{n} more to go": "Kurang {n} foto lagi",
-"All {n} photos are in.": "Semua {n} foto sudah masuk.",
+"All {n} photos are in.": "Semua {n} foto udah masuk.",
 "Choose {n} photos from your device": "Pilih {n} foto dari perangkatmu",
 "Add {n} more photos": "Tambah {n} foto lagi",
 "Want to add a few extra?": "Mau tambah beberapa foto lagi?",
-"You can add more than needed. Extra photos wait on the shelf.": "Boleh lebih dari yang dibutuhkan. Foto lebihan disimpan di rak.",
-"Uploaded photos": "Foto yang sudah diupload",
+"You can add more than needed. Extra photos wait on the shelf.": "Boleh lebih dari yang dibutuhkan. Foto lebihnya disimpan di rak.",
+"Uploaded photos": "Foto yang udah di-upload",
 "Remove photo {n}": "Hapus foto {n}",
 "{n} more photos needed": "Butuh {n} foto lagi",
-"Ready to arrange {n} photos": "Siap merapikan {n} foto",
+"Ready to arrange {n} photos": "Siap rapikan {n} foto",
 "Continue to arranging": "Lanjut rapikan album",
 "{n} photos added. {m} more to go.": "{n} foto ditambahkan. Kurang {m} lagi.",
-"{n} photos added. All set, you can start arranging.": "{n} foto ditambahkan. Sudah lengkap, kamu bisa mulai merapikan.",
+"{n} photos added. All set, you can start arranging.": "{n} foto ditambahkan. Udah lengkap, kamu bisa mulai rapikan.",
 "Start your album": "Mulai albummu",
-"Click any gray frame to insert your photos. You can pick many at once.": "Klik bingkai abu-abu mana saja untuk memasukkan fotomu. Bisa pilih banyak sekaligus.",
-"Tap any gray frame to insert your photos. You can pick many at once.": "Ketuk bingkai abu-abu mana saja untuk memasukkan fotomu. Bisa pilih banyak sekaligus.",
-"Click to insert your photo here": "Klik untuk memasukkan fotomu di sini",
-"Tap to insert your photo here": "Ketuk untuk memasukkan fotomu di sini",
-"So no page prints with gaps, every gray frame needs its own photo first.": "Supaya tidak ada halaman yang tercetak bolong, setiap bingkai abu-abu perlu diisi fotonya dulu.",
-"Add your photos": "Masukkan fotomu",
-"Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.": "Klik bingkai abu-abu di albummu lalu pilih fotonya. Pilih banyak sekaligus, fotonya mengisi halaman mulai dari situ, urut dari yang paling lama.",
-"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya terlihat sebelum kamu memilih. Setiap bingkai abu-abu perlu diisi foto sebelum bisa dilihat preview-nya dan dipesan.",
+"Click any gray frame to insert your photos. You can pick many at once.": "Klik bingkai abu-abu mana aja buat masukin fotomu. Bisa pilih banyak sekaligus.",
+"Tap any gray frame to insert your photos. You can pick many at once.": "Ketuk bingkai abu-abu mana aja buat masukin fotomu. Bisa pilih banyak sekaligus.",
+"Click to insert your photo here": "Klik buat masukin fotomu di sini",
+"Tap to insert your photo here": "Ketuk buat masukin fotomu di sini",
+"So no page prints with gaps, every gray frame needs its own photo first.": "Biar nggak ada halaman yang tercetak bolong, tiap bingkai abu-abu harus diisi foto dulu.",
+"Add your photos": "Masukin fotomu",
+"Click any gray frame in your album and pick your photos. Pick many at once and they fill the pages from there, oldest first.": "Klik bingkai abu-abu di albummu, terus pilih fotonya. Kalau pilih banyak sekaligus, fotonya ngisi halaman mulai dari situ, urut dari yang paling lama.",
+"It depends on the layout you choose: between 65 and 84 photos. You’ll see the exact number before you pick. Every gray frame needs its own photo before you can preview and order.": "Tergantung layout yang kamu pilih: antara 65 sampai 84 foto. Jumlah pastinya kelihatan sebelum kamu pilih. Tiap bingkai abu-abu harus diisi foto dulu sebelum kamu bisa preview dan pesan.",
 "Add": "Tambah",
 "Fill with sample photos": "Isi dengan foto contoh",
 "{n} frames filled with sample photos.": "{n} bingkai diisi foto contoh.",
-"How do you want to add your photos?": "Mau masukkan foto dengan cara apa?",
-"This layout holds {n} photos. You can change or add photos any time in the editor.": "Layout ini muat {n} foto. Foto bisa diganti atau ditambah kapan saja di editor.",
+"How do you want to add your photos?": "Mau masukin foto dengan cara apa?",
+"This layout holds {n} photos. You can change or add photos any time in the editor.": "Layout ini muat {n} foto. Foto bisa diganti atau ditambah kapan aja di editor.",
 "Upload all photos at once": "Upload langsung semua foto",
-"Pick all {n} photos now. We place them on every page, oldest first, then you tidy up.": "Pilih {n} foto sekaligus. Kami susun ke semua halaman, urut dari yang paling lama, lalu kamu tinggal merapikan.",
+"Pick all {n} photos now. We place them on every page, oldest first, then you tidy up.": "Pilih {n} foto sekaligus. Kami susun ke semua halaman, urut dari yang paling lama, terus kamu tinggal rapikan.",
 "Upload photos one by one": "Upload foto satu per satu",
-"Start with gray frames. Click a frame to add its photo, page by page.": "Mulai dari bingkai abu-abu. Klik bingkainya untuk memasukkan foto, halaman demi halaman.",
+"Start with gray frames. Click a frame to add its photo, page by page.": "Mulai dari bingkai abu-abu. Klik bingkainya buat masukin foto, halaman demi halaman.",
 "Start with empty frames": "Mulai dari bingkai kosong",
+"Not ready to preview yet": "Belum bisa preview",
+"You can see the preview once everything below is ticked. So no page prints with gaps, every gray frame needs its own photo.": "Preview bisa dibuka kalau semua syarat di bawah udah tercentang. Biar nggak ada halaman yang tercetak bolong, tiap bingkai abu-abu harus diisi foto.",
+"All {n} photo frames have a photo": "Semua {n} bingkai udah ada fotonya",
+"{n} of {m} photo frames are still empty": "{n} dari {m} bingkai foto masih kosong",
+"At least {min} photos (you have {n})": "Minimal {min} foto (sekarang {n})",
+"All photo frames are filled. Your album is ready to preview.": "Semua bingkai udah terisi. Albummu siap di-preview.",
+"Tap a cover to see it up front. Tap again to start.": "Ketuk sampul biar tampil di depan. Ketuk lagi buat mulai.",
+"Show the {name} cover": "Tampilkan sampul {name}",
+"Start a {name} album": "Mulai album {name}",
+"Sample covers": "Sampul contoh",
+"per album": "per album",
+"A4 · 40 pages": "A4 · 40 halaman",
+"40 pages": "40 halaman",
+"A4 · 20 sheets": "A4 · 20 lembar",
+"A4 · 40 pages · printed album": "A4 · 40 halaman · album cetak",
 "Now, upload your photos.": "Sekarang, upload foto-fotomu.",
-"Select them all at once. We’ll place them on each page, oldest first.": "Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari foto yang paling lama.",
+"Select them all at once. We’ll place them on each page, oldest first.": "Pilih semuanya sekaligus. Kami pasang ke tiap halaman, urut dari yang paling lama.",
 "Change layout": "Ganti gaya",
 "Continue to layouts": "Lanjut pilih gaya",
 "Layout": "Gaya layout",
 "Choose photos from your device": "Pilih foto dari perangkatmu",
-"Keep arranging with those photos, or add more first.": "Lanjut menyusun dengan foto itu, atau tambah foto lain dulu.",
+"Keep arranging with those photos, or add more first.": "Lanjut menyusun pakai foto itu, atau tambah foto lain dulu.",
 "Choose photos": "Pilih foto",
 "Keep arranging": "Lanjut menyusun",
-"JPG, PNG, WEBP, or HEIC. On a computer, you can also drag photos into this box.": "JPG, PNG, WEBP, atau HEIC. Di komputer, fotonya juga bisa ditarik ke kotak ini.",
-"No photos yet? Try it with sample photos": "Belum ada fotonya? Coba dulu pakai foto contoh",
+"JPG, PNG, WEBP, or HEIC. On a computer, you can also drag photos into this box.": "JPG, PNG, WEBP, atau HEIC. Di komputer, fotonya juga bisa langsung ditarik ke kotak ini.",
+"No photos yet? Try it with sample photos": "Belum ada foto? Coba dulu pakai foto contoh",
 "Laid out for you": "Tersusun otomatis",
 "Photos are placed by date, oldest first.": "Foto dipasang urut tanggal, dari yang paling lama.",
-"You decide the dates": "Tanggal kamu yang tentukan",
-"You write the caption next to each photo number, or leave it empty.": "Keterangan di samping nomor foto kamu isi sendiri, atau biarkan kosong.",
+"You decide the dates": "Tanggalnya kamu yang tentuin",
+"You write the caption next to each photo number, or leave it empty.": "Keterangan di samping nomor foto kamu isi sendiri, atau biarin kosong.",
 "Still yours to adjust": "Tetap bisa diatur",
-"Move, zoom, swap, or replace photos any time.": "Geser, perbesar, tukar, atau ganti fotonya kapan saja.",
+"Move, zoom, swap, or replace photos any time.": "Geser, perbesar, tukar, atau ganti fotonya kapan aja.",
 "Your cover": "Cover pilihanmu",
 "Your photo as a magazine cover": "Fotomu jadi cover majalah",
-"One photo works for all five magazine styles, so you can switch styles without uploading again. If your photo is small, we enlarge it to Full HD (1920 px) so it doesn’t look pixelated, but lost detail can’t come back. The sharpest results still come from a large original photo.": "Cukup satu foto untuk kelima gaya majalah, jadi kamu bisa gonta-ganti gaya tanpa upload ulang. Kalau fotonya kecil, kami perbesar ke Full HD (1920 px) supaya tidak pecah, tapi detail yang hilang tidak bisa kembali. Hasil paling tajam tetap dari foto asli yang besar.",
+"One photo works for all five magazine styles, so you can switch styles without uploading again. If your photo is small, we enlarge it to Full HD (1920 px) so it doesn’t look pixelated, but lost detail can’t come back. The sharpest results still come from a large original photo.": "Cukup satu foto buat kelima gaya majalah, jadi kamu bisa gonta-ganti gaya tanpa upload ulang. Kalau fotonya kecil, kami perbesar ke Full HD (1920 px) biar nggak pecah, tapi detail yang udah hilang nggak bisa balik lagi. Hasil paling tajam tetap dari foto asli yang besar.",
 "Upload cover photo": "Upload foto cover",
 "Photo for the magazine cover": "Foto untuk cover majalah",
 "Move left–right": "Geser kiri–kanan",
 "Move up–down": "Geser atas–bawah",
 "Back to automatic position": "Kembalikan ke posisi otomatis",
-"You’ve positioned this photo yourself.": "Posisi foto sudah kamu atur sendiri.",
-"We positioned the photo automatically around the person in it. Use the sliders below if it’s not quite right.": "Posisi foto sudah kami atur otomatis mengikuti orang di foto. Geser slider di bawah kalau masih kurang pas.",
+"You’ve positioned this photo yourself.": "Posisi foto udah kamu atur sendiri.",
+"We positioned the photo automatically around the person in it. Use the sliders below if it’s not quite right.": "Posisi foto udah kami atur otomatis ngikutin orang di foto. Geser slider di bawah kalau masih kurang pas.",
 "Use the sliders below to choose which part of the photo shows on the cover.": "Atur bagian foto yang tampil di cover lewat slider di bawah.",
 "Put the title behind the person in the photo": "Taruh judul di belakang orang di foto",
-"No photo yet. The sample above uses an AI-made photo; upload yours to replace it.": "Belum ada foto. Contoh di atas memakai foto buatan AI; upload fotomu untuk menggantinya.",
-"The title-behind-person effect needs an internet connection and couldn’t load. The title still shows over the photo.": "Efek judul di belakang orang butuh internet dan belum bisa dimuat. Judulnya tetap tampil di atas foto.",
-"The painted look is made on your device with an oil-paint filter, not AI. Results depend on the photo.": "Efek lukisan dibuat di perangkatmu dengan filter cat minyak, bukan AI. Hasilnya bergantung pada foto.",
-"Processing photo…": "Memproses foto…",
-"Finding the person in your photo…": "Mencari orang di fotomu…",
+"No photo yet. The sample above uses an AI-made photo; upload yours to replace it.": "Belum ada foto. Contoh di atas pakai foto buatan AI; upload fotomu buat gantiin.",
+"The title-behind-person effect needs an internet connection and couldn’t load. The title still shows over the photo.": "Efek judul di belakang orang butuh internet dan belum bisa dimuat. Judulnya tetap tampil di atas foto, kok.",
+"The painted look is made on your device with an oil-paint filter, not AI. Results depend on the photo.": "Efek lukisan dibikin di perangkatmu pakai filter cat minyak, bukan AI. Hasilnya tergantung fotonya.",
+"Processing photo…": "Lagi memproses foto…",
+"Finding the person in your photo…": "Lagi nyari orang di fotomu…",
 "Change cover photo": "Ganti foto cover",
 "We couldn’t open this photo. Try a JPG, PNG, WEBP, or HEIC file.": "Foto ini belum bisa kami buka. Coba file JPG, PNG, WEBP, atau HEIC, ya.",
 "Album cover": "Cover album",
 "Selected": "Terpilih",
-"Choose a layout to continue.": "Pilih satu gaya untuk lanjut.",
+"Choose a layout to continue.": "Pilih satu gaya buat lanjut.",
 "Use this layout": "Pakai gaya ini",
 "Continue to photos": "Lanjut masukkan foto",
 "Upload a photo for the magazine cover first.": "Upload dulu foto untuk cover majalahnya, ya.",
-"Your photos stay on the shelf. But the photo arrangement and text you’ve set up will start over with the new layout.": "Fotomu tetap ada di rak. Tapi susunan foto dan teks yang sudah kamu atur akan dimulai ulang mengikuti gaya baru.",
+"Your photos stay on the shelf. But the photo arrangement and text you’ve set up will start over with the new layout.": "Fotomu tetap ada di rak. Tapi susunan foto dan teks yang udah kamu atur bakal mulai dari awal lagi ngikutin gaya baru.",
 "Switch and start over": "Ganti dan susun ulang",
 "Keep the current layout": "Tetap pakai gaya sekarang",
-"Go back to the home page?": "Kembali ke beranda?",
-"Your album is safe as long as this page stays open. To keep arranging, choose Continue your album on the home page.": "Albummu aman selama halaman ini tidak ditutup. Untuk kembali menyusun, pilih Lanjutkan album di beranda.",
+"Go back to the home page?": "Balik ke beranda?",
+"Your album is safe as long as this page stays open. To keep arranging, choose Continue your album on the home page.": "Albummu aman selama halaman ini nggak ditutup. Buat lanjut nyusun, pilih Lanjutkan album di beranda.",
 "Go home": "Ke beranda",
 "Stay here": "Tetap di sini",
 "Continue your album": "Lanjutkan album",
@@ -1500,26 +1599,26 @@ var I18N_ID = {
 "Drag the photo right on the page to choose which part shows.": "Geser fotonya langsung di halaman untuk memilih bagian yang terlihat.",
 "Swap places": "Tukar posisi",
 "Remove": "Kosongkan",
-"Pick a photo below to fill this frame.": "Pilih salah satu foto di bawah untuk mengisi bingkai ini.",
+"Pick a photo below to fill this frame.": "Pilih salah satu foto di bawah buat ngisi bingkai ini.",
 "Photo caption": "Caption foto",
 "Write a date here": "Tulis tanggal di sini",
 "Delete this photo caption": "Hapus caption foto ini",
 "Delete": "Hapus",
-"For example: 12 Jul 2026. Leave it empty if you don’t want a date.": "Contoh: 12 Jul 2026. Biarkan kosong kalau tidak ingin ada tanggal.",
-"Fill them all to continue to the preview.": "Isi semuanya dulu supaya bisa lanjut ke preview.",
-"Fill with photos you’ve added": "Isi dengan foto yang sudah ada",
+"For example: 12 Jul 2026. Leave it empty if you don’t want a date.": "Contoh: 12 Jul 2026. Biarin kosong kalau nggak mau ada tanggal.",
+"Fill them all to continue to the preview.": "Isi semuanya dulu biar bisa lanjut ke preview.",
+"Fill with photos you’ve added": "Isi pakai foto yang udah ada",
 "Auto-fill": "Isi otomatis",
 "Photo shelf": "Rak foto",
 "Add photos": "Tambah foto",
-"Pick a frame on the page, then pick its photo here.": "Pilih bingkai di halaman, lalu pilih fotonya di sini.",
+"Pick a frame on the page, then pick its photo here.": "Pilih bingkai di halaman, terus pilih fotonya di sini.",
 "Inside front cover": "Bagian dalam cover depan",
 "Inside back cover": "Bagian dalam cover belakang",
-"Pick a photo below to put it in the selected frame.": "Pilih foto di bawah untuk memasangnya di bingkai yang sedang dipilih.",
-"Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.": "Pilih bingkai di halaman, lalu pilih fotonya di sini. Urutannya dari foto paling lama.",
+"Pick a photo below to put it in the selected frame.": "Pilih foto di bawah buat dipasang di bingkai yang lagi dipilih.",
+"Pick a frame on the page, then pick its photo here. Photos are sorted oldest first.": "Pilih bingkai di halaman, terus pilih fotonya di sini. Urutannya dari foto paling lama.",
 "Frame cleared.": "Bingkai dikosongkan.",
 "Undo": "Urungkan",
-"Pick another frame to swap photos": "Pilih bingkai lain untuk menukar fotonya",
-"Pick a frame for this photo": "Pilih bingkai untuk foto ini",
+"Pick another frame to swap photos": "Pilih bingkai lain buat tukar fotonya",
+"Pick a frame for this photo": "Pilih bingkai buat foto ini",
 "Title": "Judul",
 "Short text": "Teks pendek",
 "Write the title": "Tulis judulnya",
@@ -1528,9 +1627,9 @@ var I18N_ID = {
 "Paragraph": "Paragraf",
 "Tell the story of this moment": "Ceritakan momennya",
 "This page has no text.": "Halaman ini tanpa teks.",
-"Open another page to write a title, a paragraph, or photo captions.": "Buka halaman lain untuk menulis judul, paragraf, atau keterangan foto.",
+"Open another page to write a title, a paragraph, or photo captions.": "Buka halaman lain buat nulis judul, paragraf, atau keterangan foto.",
 "Close": "Tutup",
-"So no page prints with gaps, every frame needs a photo first. You can add photos, or fill the rest with photos you’ve already added.": "Supaya tidak ada halaman yang bolong saat dicetak, semua bingkai perlu terisi dulu. Kamu bisa menambah foto, atau mengisi sisanya dengan foto yang sudah ada.",
+"So no page prints with gaps, every frame needs a photo first. You can add photos, or fill the rest with photos you’ve already added.": "Biar nggak ada halaman yang bolong pas dicetak, semua bingkai harus terisi dulu. Kamu bisa tambah foto, atau isi sisanya pakai foto yang udah ada.",
 "Show empty frames": "Lihat bingkai yang kosong",
 "Back to editing": "Kembali mengedit",
 "Change cover": "Ganti cover",
@@ -1557,30 +1656,30 @@ var I18N_ID = {
 "Use this cover": "Pakai cover ini",
 "Back to preview": "Kembali ke preview",
 "Back to your album": "Kembali ke albummu",
-"Pick another cover. Your photos, layout, and captions stay exactly as they are.": "Pilih cover lain. Foto, layout, dan caption kamu tetap seperti semula.",
-"Cover changed. Your photos and captions are still there.": "Cover sudah diganti. Foto dan caption kamu tetap aman.",
+"Pick another cover. Your photos, layout, and captions stay exactly as they are.": "Pilih cover lain. Foto, layout, dan caption-mu nggak berubah sama sekali.",
+"Cover changed. Your photos and captions are still there.": "Cover udah diganti. Foto dan caption-mu masih ada, kok.",
 "Continue to order": "Lanjut pesan",
 "Album preview": "Preview album",
 "Front cover": "Cover depan",
 "Back cover": "Cover belakang",
 "Fill in text": "Isi teks",
 "Just one more step.": "Tinggal satu langkah lagi.",
-"Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.": "Isi kontakmu, lalu kirim. Album dan semua fotomu langsung sampai ke tim kami, dan kami akan menyapamu lewat WhatsApp.",
+"Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.": "Isi kontakmu, terus kirim. Album dan semua fotomu langsung sampai ke tim kami, dan nanti kami sapa kamu lewat WhatsApp.",
 "Name": "Nama",
-"So we know what to call you.": "Biar kami tahu harus menyapamu siapa.",
+"So we know what to call you.": "Biar kami tahu harus manggil kamu siapa.",
 "WhatsApp number": "Nomor WhatsApp",
-"We’ll use this number to confirm your order and delivery address.": "Kami hubungi lewat nomor ini untuk konfirmasi dan alamat pengiriman.",
+"We’ll use this number to confirm your order and delivery address.": "Nomor ini kami pakai buat konfirmasi pesanan dan alamat pengiriman.",
 "name@email.com": "nama@email.com",
-"So we can send you updates about your album.": "Untuk mengirim kabar tentang albummu.",
-"We fill it into the payment form for you, so you only type it once.": "Kami isikan otomatis ke form pembayaran, jadi cukup diketik sekali.",
+"So we can send you updates about your album.": "Biar kami bisa kirim kabar soal albummu.",
+"We fill it into the payment form for you, so you only type it once.": "Kami isi otomatis ke form pembayaran, jadi kamu cukup ngetik sekali.",
 "Note for the print team": "Catatan untuk tim cetak",
 "(optional)": "(boleh kosong)",
 "Continue to payment": "Lanjut bayar",
 "Send album": "Kirim album",
-"When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.": "Begitu tombolnya kamu tekan, album dan semua foto aslimu kami terima. Biarkan halaman ini terbuka sampai upload selesai, ya.",
+"When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.": "Begitu tombolnya kamu tekan, album dan semua foto aslimu kami terima. Biarin halaman ini tetap terbuka sampai upload selesai, ya.",
 "Important:": "Penting:",
 "2 hours": "2 jam",
-". After that, unpaid orders are deleted and you’ll need to make your album again.": ". Lewat dari itu pesanan yang belum dibayar dihapus dan albummu perlu dibuat ulang.",
+". After that, unpaid orders are deleted and you’ll need to make your album again.": ". Lewat dari itu, pesanan yang belum dibayar dihapus dan kamu harus bikin albumnya lagi.",
 "Order summary": "Ringkasan pesanan",
 "Number of albums": "Jumlah album",
 "One fewer album": "Kurangi satu album",
@@ -1590,41 +1689,41 @@ var I18N_ID = {
 "Album price + shipping": "Harga album + ongkir",
 "Preparing photos…": "Menyiapkan foto…",
 "Please write your name first.": "Tulis namamu dulu, ya.",
-"That WhatsApp number looks incomplete. Example: 081234567890.": "Nomor WhatsApp-nya sepertinya belum lengkap. Contoh: 081234567890.",
-"That email looks incomplete. Example: name@email.com.": "Email-nya sepertinya belum lengkap. Contoh: nama@email.com.",
+"That WhatsApp number looks incomplete. Example: 081234567890.": "Nomor WhatsApp-nya kayaknya belum lengkap. Contoh: 081234567890.",
+"That email looks incomplete. Example: name@email.com.": "Email-nya kayaknya belum lengkap. Contoh: nama@email.com.",
 "rejected.": "ditolak.",
 "we couldn’t accept it.": "belum bisa kami terima.",
 "The cover didn’t upload. Please try sending again.": "Cover belum ter-upload. Coba kirim lagi, ya.",
 "We couldn’t create the magazine cover. Please try sending again.": "Cover majalahnya belum bisa dibuat. Coba kirim lagi, ya.",
-"Sending your order…": "Mengirim pesanan…",
-"Your album wasn’t sent. Your photos are still safe here, so please try again.": "Albummu belum terkirim. Fotomu masih aman di sini, coba kirim lagi.",
+"Sending your order…": "Lagi ngirim pesananmu…",
+"Your album wasn’t sent. Your photos are still safe here, so please try again.": "Albummu belum terkirim. Fotomu masih aman di sini, coba kirim lagi, ya.",
 "Uploading original photos…": "Upload foto asli…",
 "Uploading magazine cover…": "Upload cover majalah…",
 "Preparing payment…": "Menyiapkan pembayaran…",
-"Sending your album to our team…": "Mengirim album ke tim…",
+"Sending your album to our team…": "Lagi ngirim album ke tim kami…",
 "Album sent!": "Album terkirim!",
 "Some photos didn’t upload. Please try sending again.": "Beberapa foto belum ter-upload. Coba kirim lagi, ya.",
-"We couldn’t create the payment link. Please try again in a moment.": "Link pembayaran belum bisa dibuat. Coba lagi sebentar lagi.",
+"We couldn’t create the payment link. Please try again in a moment.": "Link pembayaran belum bisa dibuat. Coba lagi bentar lagi, ya.",
 "Move": "Pindahkan",
-"Drag any photo or text to place it.": "Geser foto atau teks ke mana saja.",
+"Drag any photo or text to place it.": "Geser foto atau teks ke mana aja.",
 "Add more": "Tambah",
-"Drop a photo on an empty spot, or use Add a text.": "Taruh foto di bagian kosong, atau pakai Tambah teks.",
+"Drop a photo on an empty spot, or use Add a text.": "Taruh foto di bagian yang kosong, atau pakai Tambah teks.",
 "Resize": "Ubah ukuran",
 "Drag the corners of a selected photo.": "Tarik sudut foto yang dipilih.",
 "Choose the view": "Atur isi foto",
-"Double-click a photo to pick what shows.": "Klik dua kali foto untuk memilih bagian yang tampil.",
+"Double-click a photo to pick what shows.": "Klik dua kali foto buat milih bagian yang tampil.",
 "Pinch, Ctrl + scroll, or − and +.": "Cubit, Ctrl + scroll, atau − dan +.",
 "Write": "Tulis",
-"Click any text to type in it.": "Klik teks mana saja untuk mengetik.",
+"Click any text to type in it.": "Klik teks mana aja buat ngetik.",
 "Style": "Gaya",
 "Font, size, and color sit above the text.": "Font, ukuran, dan warna ada di atas teks.",
 "Stack": "Tumpuk",
 "To front or To back sets what’s on top.": "Ke depan atau Ke belakang mengatur yang di atas.",
-"Pick a frame on the page, then pick its photo here. Or drag a photo onto any empty spot on the page.": "Pilih bingkai di halaman, lalu pilih fotonya di sini. Atau drag foto ke bagian halaman mana pun yang kosong.",
-"Pick a frame on the page, then pick its photo here, or drag a photo onto any empty spot. Photos are sorted oldest first.": "Pilih bingkai di halaman lalu pilih fotonya di sini, atau drag foto ke bagian halaman yang kosong. Urutannya dari foto paling lama.",
+"Pick a frame on the page, then pick its photo here. Or drag a photo onto any empty spot on the page.": "Pilih bingkai di halaman, terus pilih fotonya di sini. Atau drag foto ke bagian halaman mana aja yang kosong.",
+"Pick a frame on the page, then pick its photo here, or drag a photo onto any empty spot. Photos are sorted oldest first.": "Pilih bingkai di halaman terus pilih fotonya di sini, atau drag foto ke bagian halaman yang kosong. Urutannya dari foto paling lama.",
 "Click a frame, or any empty spot on the page": "Klik bingkai, atau bagian halaman yang kosong",
-"Photo placed. Drag it to move, or drag its corners to resize.": "Foto ditaruh. Geser untuk memindahkan, tarik sudutnya untuk ubah ukuran.",
-"Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.": "Drag foto dari rak ke bagian halaman yang kosong, atau pakai Tambah teks dan Tambah foto, untuk mengisi ruang kosong.",
+"Photo placed. Drag it to move, or drag its corners to resize.": "Foto udah ditaruh. Geser buat mindahin, atau tarik sudutnya buat ubah ukuran.",
+"Drag a photo from the shelf onto any empty spot, or use Add a text and Add a photo, to fill empty space.": "Drag foto dari rak ke bagian halaman yang kosong, atau pakai Tambah teks dan Tambah foto buat ngisi ruang kosong.",
 "Add to the page": "Tambah ke halaman",
 "Add a text": "Tambah teks",
 "Select all": "Pilih semua",
@@ -1634,42 +1733,42 @@ var I18N_ID = {
 "Delete text": "Hapus teks",
 "Delete frame": "Hapus bingkai",
 "Your text": "Teks tambahan",
-"Text added. Type your words, then drag it where you like.": "Teks ditambahkan. Ketik tulisanmu, lalu geser ke tempat yang kamu mau.",
+"Text added. Type your words, then drag it where you like.": "Teks ditambahkan. Ketik tulisanmu, terus geser ke mana aja kamu mau.",
 "Photo frame added. Pick a photo for it from your photos.": "Bingkai foto ditambahkan. Pilih fotonya dari daftar fotomu.",
 "Text deleted.": "Teks dihapus.",
 "Photo frame deleted.": "Bingkai foto dihapus.",
-"Use Add a text or Add a photo to fill empty space on the page you last touched.": "Pakai Tambah teks atau Tambah foto untuk mengisi ruang kosong di halaman yang terakhir kamu sentuh.",
-"Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup isi emailmu. Di layar berikutnya kamu isi nama, HP, alamat, dan ongkir JNE, lalu bayar, tanpa keluar dari Imazine.",
-"You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within": "Kamu belum membayar apa pun. Setelah menekan tombol, fotomu diunggah lalu form pembayaran terbuka di halaman ini dengan emailmu sudah terisi. Selesaikan pembayaran dalam",
+"Use Add a text or Add a photo to fill empty space on the page you last touched.": "Pakai Tambah teks atau Tambah foto buat ngisi ruang kosong di halaman yang terakhir kamu sentuh.",
+"Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup isi emailmu. Di layar berikutnya kamu isi nama, HP, alamat, dan ongkir JNE, terus bayar, tanpa keluar dari Imazine.",
+"You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within": "Kamu belum bayar apa-apa. Setelah tombolnya kamu tekan, fotomu di-upload, terus form pembayaran kebuka di halaman ini dengan emailmu udah terisi. Selesaikan pembayaran dalam",
 "Calculated in the payment form": "Dihitung di form pembayaran",
 "Total to pay": "Total dibayar",
 "Pay and choose shipping.": "Bayar dan pilih pengiriman.",
 "Your order": "Pesananmu",
-"is saved.": "sudah tersimpan.",
-"Fill in your name, phone, address, and JNE shipping in the form below, then pay.": "Isi nama, HP, alamat, dan ongkir JNE di form di bawah, lalu bayar.",
-"Your email is already filled in:": "Emailmu sudah terisi:",
+"is saved.": "udah tersimpan.",
+"Fill in your name, phone, address, and JNE shipping in the form below, then pay.": "Isi nama, HP, alamat, dan ongkir JNE di form bawah ini, terus bayar.",
+"Your email is already filled in:": "Emailmu udah terisi:",
 "Loading the payment form…": "Memuat form pembayaran…",
 "Payment and shipping form": "Form pembayaran dan pengiriman",
-"Waiting for your payment. This page moves on by itself once your payment is confirmed.": "Menunggu pembayaranmu. Halaman ini lanjut sendiri setelah pembayaranmu terkonfirmasi.",
+"Waiting for your payment. This page moves on by itself once your payment is confirmed.": "Lagi nunggu pembayaranmu. Halaman ini bakal lanjut sendiri begitu pembayaranmu terkonfirmasi.",
 "Payment received. Opening your order…": "Pembayaran diterima. Membuka pesananmu…",
-"We’ve received your payment. Our team is confirming it and will update you by email or WhatsApp.": "Pembayaranmu sudah kami terima. Tim kami sedang mengonfirmasinya dan akan mengabarimu lewat email atau WhatsApp.",
-"Form not loading, or your e-wallet app didn’t bring you back?": "Form tidak muncul, atau aplikasi e-wallet tidak kembali ke sini?",
+"We’ve received your payment. Our team is confirming it and will update you by email or WhatsApp.": "Pembayaranmu udah kami terima. Tim kami lagi ngecek dan bakal ngabarin kamu lewat email atau WhatsApp.",
+"Form not loading, or your e-wallet app didn’t bring you back?": "Form-nya nggak muncul, atau aplikasi e-wallet nggak balik ke sini?",
 "Open the payment in a new tab": "Buka pembayaran di tab baru",
-". Keep this page open, it still updates after you pay.": ". Biarkan halaman ini terbuka, halaman ini tetap diperbarui setelah kamu bayar.",
+". Keep this page open, it still updates after you pay.": ". Biarin halaman ini tetap terbuka, nanti tetap ke-update setelah kamu bayar.",
 "Complete the payment within": "Selesaikan pembayaran dalam",
 ". After that, unpaid orders are deleted.": ". Lewat dari itu, pesanan yang belum dibayar dihapus.",
 "Opening the payment form…": "Membuka form pembayaran…",
-"This order was deleted because it wasn’t paid in time. Please make your album again.": "Pesanan ini dihapus karena tidak dibayar tepat waktu. Silakan buat albummu lagi.",
-"The connection dropped. Your photos aren’t lost, so please try sending again.": "Koneksi terputus. Fotomu belum hilang, coba kirim lagi.",
-"Your album still uses sample photos": "Albummu masih memakai foto contoh",
-"Sample photos are just for trying things out. Replace them with your own photos, then order again.": "Foto contoh cuma untuk mencoba. Ganti dulu dengan fotomu sendiri, lalu pesan lagi.",
+"This order was deleted because it wasn’t paid in time. Please make your album again.": "Pesanan ini dihapus karena nggak dibayar tepat waktu. Bikin albummu lagi, ya.",
+"The connection dropped. Your photos aren’t lost, so please try sending again.": "Koneksinya putus. Fotomu nggak hilang, kok, coba kirim lagi, ya.",
+"Your album still uses sample photos": "Albummu masih pakai foto contoh",
+"Sample photos are just for trying things out. Replace them with your own photos, then order again.": "Foto contoh cuma buat coba-coba. Ganti dulu pakai fotomu sendiri, terus pesan lagi.",
 "Replace sample photos": "Ganti foto contoh",
-"Leave Imazine?": "Tinggalkan Imazine?",
-"Your album isn’t saved and will be lost if you leave this page.": "Albummu belum tersimpan dan akan hilang kalau kamu keluar dari halaman ini.",
+"Leave Imazine?": "Keluar dari Imazine?",
+"Your album isn’t saved and will be lost if you leave this page.": "Albummu belum tersimpan dan bakal hilang kalau kamu keluar dari halaman ini.",
 "Leave and delete album": "Keluar dan hapus album",
-"Holidays, road trips, and cities you want to remember.": "Liburan, road trip, dan kota yang ingin kamu ingat lagi.",
+"Holidays, road trips, and cities you want to remember.": "Liburan, road trip, dan kota-kota yang pengin kamu ingat lagi.",
 "Big days that only come once: birthdays, weddings, graduations.": "Hari besar yang cuma datang sekali: ulang tahun, pernikahan, wisuda.",
-"Ordinary days that turn out to be the ones you miss most.": "Hari-hari biasa yang ternyata paling sering dikangenin.",
+"Ordinary days that turn out to be the ones you miss most.": "Hari-hari biasa yang ternyata paling bikin kangen.",
 "Magazine Cover": "Cover Majalah",
 "Noir Magazine": "Majalah Noir",
 "Black and white, crayon title": "Hitam putih, judul krayon",
@@ -1681,16 +1780,16 @@ var I18N_ID = {
 "Painted look on green": "Efek lukisan di atas hijau",
 "Fresh Magazine": "Majalah Segar",
 "Bright green, title behind the head": "Hijau cerah, judul di belakang kepala",
-"Photos scattered like travel notes, with a big title for each section.": "Foto bertebaran seperti catatan jalan-jalan, dengan judul besar di tiap bagian.",
-"Frames that step down like stairs. Holds the most photos.": "Bingkai menurun seperti anak tangga. Paling banyak memuat foto.",
+"Photos scattered like travel notes, with a big title for each section.": "Foto bertebaran kayak catatan jalan-jalan, dengan judul besar di tiap bagian.",
+"Frames that step down like stairs. Holds the most photos.": "Bingkai turun kayak anak tangga. Paling banyak muat foto.",
 "Stamps, tilted polaroids, and lively red doodles.": "Perangko, polaroid miring, dan coretan merah yang ramai.",
-"Split into chapters with big numbers, neat like a travel magazine.": "Dibagi per bab dengan nomor besar, rapi seperti majalah perjalanan.",
+"Split into chapters with big numbers, neat like a travel magazine.": "Dibagi per bab pakai nomor besar, rapi kayak majalah jalan-jalan.",
 "Postcards and short notes for ordinary days.": "Kartu pos dan catatan pendek untuk hari-hari biasa.",
-"A magazine layout with warm colors and italic titles.": "Tata letak majalah dengan warna hangat dan judul miring.",
-"Photos taped down, like a handmade scrapbook.": "Foto ditempel selotip, seperti buku tempel buatan sendiri.",
-"Lots of lines to write on, good if you like telling stories.": "Banyak garis untuk menulis, cocok kalau kamu suka bercerita.",
-"Classic frames and serif titles for formal moments.": "Bingkai klasik dan judul serif untuk momen yang resmi.",
-"Like a gallery catalog: numbered photos with captions.": "Seperti katalog galeri: foto bernomor lengkap dengan keterangan.",
+"A magazine layout with warm colors and italic titles.": "Layout majalah dengan warna hangat dan judul miring.",
+"Photos taped down, like a handmade scrapbook.": "Foto ditempel selotip, kayak scrapbook bikinan sendiri.",
+"Lots of lines to write on, good if you like telling stories.": "Banyak garis buat nulis, cocok kalau kamu suka cerita.",
+"Classic frames and serif titles for formal moments.": "Bingkai klasik dan judul serif buat momen yang resmi.",
+"Like a gallery catalog: numbered photos with captions.": "Kayak katalog galeri: foto bernomor lengkap dengan keterangan.",
 "A soft gray background with calm, dark frames.": "Latar abu lembut dan bingkai gelap yang tenang.",
 "A story in chapters with big numbers and full-width photos.": "Cerita per bab dengan angka besar dan foto selebar halaman.",
 "Issue number": "Nomor edisi",
@@ -1719,25 +1818,25 @@ var I18N_ID = {
 "of": "dari",
 "Step {n} of 4": "Langkah {n} dari 4",
 "Fits {n} photos · 40 pages": "Muat {n} foto · 40 halaman",
-"You already have {n} photos on the shelf.": "Kamu sudah punya {n} foto di rak.",
-"This layout holds {n} photos. A few more or fewer is fine; you can adjust later.": "Gaya ini memuat {n} foto. Kurang atau lebih dari itu juga boleh, nanti bisa diatur.",
+"You already have {n} photos on the shelf.": "Kamu udah punya {n} foto di rak.",
+"This layout holds {n} photos. A few more or fewer is fine; you can adjust later.": "Gaya ini muat {n} foto. Kurang atau lebih sedikit nggak apa-apa, nanti bisa diatur.",
 " → enlarged to {w}×{h} px (Full HD).": " → dinaikkan ke {w}×{h} px (Full HD).",
-" (already large enough, not changed).": " (sudah cukup besar, tidak diubah).",
+" (already large enough, not changed).": " (udah cukup besar, nggak diubah).",
 "{cover}, {theme} theme": "{cover}, tema {theme}",
 "Scroll the {theme} shelf left": "Geser rak {theme} ke kiri",
 "Scroll the {theme} shelf right": "Geser rak {theme} ke kanan",
 "Layout: ": "Gaya: ",
 " · fits {n} photos": " · muat {n} foto",
 "Switch to the {name} layout?": "Ganti ke gaya {name}?",
-"Your photo shelf is full: one album holds up to {n} photos.": "Rak fotomu sudah penuh: satu album muat sampai {n} foto.",
-" {n} other photos couldn’t be opened.": " {n} foto lain tidak bisa dibuka.",
-" The last {n} photos weren’t added because an album holds at most {max} photos.": " {n} foto terakhir tidak ikut karena satu album maksimal {max} foto.",
-" You need at least {min} photos to order this album; you have {n}.": " Minimal {min} foto supaya albumnya bisa dipesan, baru ada {n}.",
+"Your photo shelf is full: one album holds up to {n} photos.": "Rak fotomu udah penuh: satu album muat sampai {n} foto.",
+" {n} other photos couldn’t be opened.": " {n} foto lain nggak bisa dibuka.",
+" The last {n} photos weren’t added because an album holds at most {max} photos.": " {n} foto terakhir nggak ikut masuk karena satu album maksimal {max} foto.",
+" You need at least {min} photos to order this album; you have {n}.": " Minimal {min} foto biar albumnya bisa dipesan, sekarang baru ada {n}.",
 "{n} photos added, {m} empty frames filled right away.": "{n} foto ditambahkan, {m} bingkai kosong langsung terisi.",
 "{n} photos added to the shelf.": "{n} foto masuk ke rak foto.",
 "{n} photos placed. {m} frames still empty.": "{n} foto terpasang. {m} bingkai masih kosong.",
 "{n} photos placed. {m} more photos are on the shelf.": "{n} foto terpasang. {m} foto lainnya ada di rak foto.",
-"All {n} frames filled. Just tidy up.": "Semua {n} bingkai terisi. Tinggal dirapikan.",
+"All {n} frames filled. Just tidy up.": "Semua {n} bingkai udah terisi. Tinggal dirapikan.",
 "Page {p} of {n}": "Halaman {p} dari {n}",
 "{name} layout · A4 · 40 pages": "Gaya {name} · A4 · 40 halaman",
 "{n} photo frames still empty.": "{n} bingkai foto masih kosong.",
@@ -1754,39 +1853,39 @@ var I18N_ID = {
 "Photo caption {n}": "Caption foto {n}",
 "Page {n}": "Halaman {n}",
 "Numbers and small labels ({n})": "Nomor dan label kecil ({n})",
-"{n} frames filled with photos you’ve added. You can change them any time.": "{n} bingkai terisi dengan foto yang sudah ada. Kamu bisa menggantinya kapan saja.",
+"{n} frames filled with photos you’ve added. You can change them any time.": "{n} bingkai terisi pakai foto yang udah ada. Kamu bisa ganti kapan aja.",
 "At least {n} photos": "Minimal {n} foto",
-"Your album has {n} photos so far. Add {m} more so it can be ordered.": "Albummu baru punya {n} foto. Tambah {m} foto lagi supaya albumnya bisa dipesan.",
+"Your album has {n} photos so far. Add {m} more so it can be ordered.": "Albummu baru ada {n} foto. Tambah {m} foto lagi biar bisa dipesan.",
 "{n} photo frames still empty": "{n} bingkai foto masih kosong",
 "Front cover {name}": "Cover depan {name}",
 "{n} photos placed across 40 pages": "{n} foto terpasang di 40 halaman",
-"{n} text boxes are still empty and won’t be printed.": "{n} kotak teks masih kosong dan tidak ikut dicetak.",
+"{n} text boxes are still empty and won’t be printed.": "{n} kotak teks masih kosong dan nggak ikut dicetak.",
 "{name} layout": "Gaya {name}",
 "A4 · 20 sheets, 40 pages · Art Paper 260 gsm · Soft cover · Binding · {n} photos": "A4 · 20 lembar, 40 halaman · Art Paper 260 gsm · Soft cover · Jilid binding · {n} foto",
 "Photo {n}": "Foto {n}",
-"Photo {n} didn’t upload. Your photos are still safe here, so please try sending again.": "Foto {n} belum ter-upload. Fotomu masih aman di sini, coba kirim lagi.",
-"Your album needs at least {min} different photos. You have {n} now, so add {m} more.": "Album butuh minimal {min} foto yang berbeda. Sekarang baru {n}, tambah {m} lagi, ya.",
+"Photo {n} didn’t upload. Your photos are still safe here, so please try sending again.": "Foto {n} belum ter-upload. Fotomu masih aman di sini, coba kirim lagi, ya.",
+"Your album needs at least {min} different photos. You have {n} now, so add {m} more.": "Albummu butuh minimal {min} foto yang beda-beda. Sekarang baru {n}, tambah {m} lagi, ya.",
 "{n} minutes": "{n} menit",
 "{n} hours": "{n} jam",
 "TEXT": "TEKS",
 "text": "teks",
-"Photo {n}, filled. Pick to adjust": "Foto {n}, terisi. Pilih untuk mengatur",
-"Photo {n}, empty. Pick to fill": "Foto {n}, masih kosong. Pilih untuk mengisi",
+"Photo {n}, filled. Pick to adjust": "Foto {n}, terisi. Pilih buat atur",
+"Photo {n}, empty. Pick to fill": "Foto {n}, masih kosong. Pilih buat isi",
 "Imazine — Printed photo albums": "Imazine — Album foto cetak",
-"Tell us what your album is about. You’ll see how it looks inside, then pick a cover and add your photos. We lay them out into 40 pages for you.": "Ceritakan albummu tentang apa. Kamu bisa lihat isinya dulu, lalu pilih cover dan masukkan fotomu. Kami susun jadi 40 halaman.",
+"Tell us what your album is about. You’ll see how it looks inside, then pick a cover and add your photos. We lay them out into 40 pages for you.": "Ceritain albummu tentang apa. Kamu bisa lihat isinya dulu, terus pilih cover dan masukin fotomu. Nanti kami susun jadi 40 halaman.",
 "What’s your album about?": "Albummu tentang apa?",
 "Start a Travel album": "Buat album Travel",
 "Start an Event album": "Buat album Event",
 "Start a Slice of Life album": "Buat album Slice of Life",
-"Each card shows a sample cover and two inside pages. The people in these sample photos were made with AI. They aren’t our customers.": "Tiap kartu menampilkan contoh cover dan dua halaman dalam. Orang di foto contoh ini dibuat dengan AI, bukan pelanggan kami.",
+"Each card shows a sample cover and two inside pages. The people in these sample photos were made with AI. They aren’t our customers.": "Tiap kartu nampilin contoh cover dan dua halaman dalam. Orang di foto contoh ini dibuat pakai AI, bukan pelanggan kami.",
 "Choose a theme and a cover": "Pilih tema dan cover",
-"Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.": "Travel, Event, atau Slice of Life. Lalu cover ala majalah dengan fotomu sendiri, dan satu dari empat layout.",
+"Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.": "Travel, Event, atau Slice of Life. Terus cover ala majalah pakai fotomu sendiri, dan satu dari empat layout.",
 "Choose your cover.": "Pilih cover-mu.",
-"Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.": "Lima cover ala majalah untuk album {theme}-mu. Cover-nya memakai fotomu sendiri; orang di contoh ini dibuat dengan AI.",
+"Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.": "Lima cover ala majalah buat album {theme}-mu. Cover-nya pakai fotomu sendiri; orang di contoh ini dibuat pakai AI.",
 "Change theme": "Ganti tema",
 "Edit your cover": "Edit cover-mu",
-"Edit right on the cover: drag the photo to move it, pinch or use − and + to zoom, and tap any text to change it.": "Edit langsung di cover: geser foto untuk memindahkannya, cubit atau pakai − dan + untuk zoom, dan ketuk teks mana saja untuk mengubahnya.",
-"Cover editor. Arrow keys move the photo, plus and minus zoom.": "Editor cover. Tombol panah menggeser foto, plus dan minus untuk zoom.",
+"Edit right on the cover: drag the photo to move it, pinch or use − and + to zoom, and tap any text to change it.": "Edit langsung di cover: geser foto buat mindahin, cubit atau pakai − dan + buat zoom, dan ketuk teks mana aja buat ganti isinya.",
+"Cover editor. Arrow keys move the photo, plus and minus zoom.": "Editor cover. Tombol panah buat geser foto, plus dan minus buat zoom.",
 "Use your own photo": "Pakai fotomu sendiri",
 "Change photo": "Ganti foto",
 "Zoom out": "Perkecil",
@@ -1796,41 +1895,41 @@ var I18N_ID = {
 "Behind the person": "Di belakang orang",
 "In front of the person": "Di depan orang",
 "Done": "Selesai",
-"Tip: tap the big title to put it behind or in front of the person.": "Tips: ketuk judul besar untuk menaruhnya di belakang atau di depan orang.",
-"Edit right on the page: drag the photo to move it, pinch or use − and + above it to zoom.": "Edit langsung di halaman: geser foto untuk memindahkannya, cubit atau pakai − dan + di atasnya untuk zoom.",
+"Tip: tap the big title to put it behind or in front of the person.": "Tips: ketuk judul besar buat naruh di belakang atau di depan orang.",
+"Edit right on the page: drag the photo to move it, pinch or use − and + above it to zoom.": "Edit langsung di halaman: geser foto buat mindahin, cubit atau pakai − dan + di atasnya buat zoom.",
 "Photo tools": "Alat foto",
 "Swap": "Tukar",
 "Edit cover": "Edit cover",
 "Edit pages": "Edit halaman",
-"Drag the photo to move it.": "Geser foto untuk memindahkannya.",
-"Pinch, use Ctrl + scroll, or press − and + to zoom the photo in or out.": "Cubit, pakai Ctrl + scroll, atau tekan − dan + untuk memperbesar atau memperkecil foto.",
-"Drag any text to move it left, right, up, or down.": "Geser teks mana saja ke kiri, kanan, atas, atau bawah.",
-"Tap or click a text to change what it says.": "Ketuk atau klik teks untuk mengganti isinya.",
-"Tap the big title to put it behind or in front of the person.": "Ketuk judul besar untuk menaruhnya di belakang atau di depan orang.",
+"Drag the photo to move it.": "Geser foto buat mindahin.",
+"Pinch, use Ctrl + scroll, or press − and + to zoom the photo in or out.": "Cubit, pakai Ctrl + scroll, atau tekan − dan + buat perbesar atau perkecil foto.",
+"Drag any text to move it left, right, up, or down.": "Geser teks mana aja ke kiri, kanan, atas, atau bawah.",
+"Tap or click a text to change what it says.": "Ketuk atau klik teks buat ganti isinya.",
+"Tap the big title to put it behind or in front of the person.": "Ketuk judul besar buat naruh di belakang atau di depan orang.",
 "How to edit": "Cara mengedit",
 "Small logo": "Logo kecil",
 "Move: {what}": "Pindahkan: {what}",
-". Drag or use the arrow keys to move it.": ". Geser atau pakai tombol panah untuk memindahkannya.",
+". Drag or use the arrow keys to move it.": ". Geser atau pakai tombol panah buat mindahin.",
 "Back to original position": "Kembalikan ke posisi awal",
-"Drag it to move it anywhere on the cover.": "Geser untuk memindahkannya ke mana saja di cover.",
-"Drag a photo to move it inside its frame.": "Geser foto untuk mengatur bagian yang tampil di bingkainya.",
-"Pinch, Ctrl + scroll, or − and + to zoom.": "Cubit, Ctrl + scroll, atau − dan + untuk zoom.",
-"Drag any text to move it anywhere on the page.": "Geser teks mana saja untuk memindahkannya ke mana pun di halaman.",
-"Click a text to type in it.": "Klik teks untuk mengetik di situ.",
+"Drag it to move it anywhere on the cover.": "Geser buat mindahin ke mana aja di cover.",
+"Drag a photo to move it inside its frame.": "Geser foto buat atur bagian yang tampil di bingkainya.",
+"Pinch, Ctrl + scroll, or − and + to zoom.": "Cubit, Ctrl + scroll, atau − dan + buat zoom.",
+"Drag any text to move it anywhere on the page.": "Geser teks mana aja buat mindahin ke mana pun di halaman.",
+"Click a text to type in it.": "Klik teks buat ngetik di situ.",
 "Text moved.": "Teks dipindah.",
-"Drag photos and text to move them · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Drag photos and text to move them · pinch to zoom · tap text to type.": "Geser foto dan teks buat mindahin · cubit buat zoom · ketuk teks buat ngetik.",
 "Original size": "Ukuran awal",
 "Photo resized.": "Ukuran foto diubah.",
 "Back to the original size.": "Kembali ke ukuran awal.",
-"Drag the handles on a selected photo’s corners or sides to resize it.": "Tarik pegangan di sudut atau sisi foto yang dipilih untuk mengubah ukurannya.",
-"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut foto untuk ubah ukuran · cubit untuk zoom · ketuk teks untuk mengetik.",
+"Drag the handles on a selected photo’s corners or sides to resize it.": "Tarik pegangan di sudut atau sisi foto yang dipilih buat ubah ukurannya.",
+"Drag photos and text to move them · drag a photo’s corners to resize · pinch to zoom · tap text to type.": "Geser foto dan teks buat mindahin · tarik sudut foto buat ubah ukuran · cubit buat zoom · ketuk teks buat ngetik.",
 "Adjust photo": "Atur isi foto",
 "Done adjusting": "Selesai atur",
 "Photo moved.": "Foto dipindah.",
-"Drag a photo to move it anywhere on the page.": "Geser foto untuk memindahkannya ke mana saja di halaman.",
-"Double-click a photo (or press Adjust photo) to choose which part shows in its frame.": "Klik dua kali foto (atau tekan Atur isi foto) untuk memilih bagian foto yang tampil di bingkainya.",
-"Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.": "Geser foto dan teks untuk memindahkannya · tarik sudut untuk ubah ukuran · ketuk dua kali foto untuk atur isinya · cubit untuk zoom · ketuk teks untuk mengetik.",
-"Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.": "Edit langsung di halaman: geser foto untuk memindahkannya, tarik sudutnya untuk mengubah ukuran, dan klik dua kali untuk memilih bagian foto yang tampil.",
+"Drag a photo to move it anywhere on the page.": "Geser foto buat mindahin ke mana aja di halaman.",
+"Double-click a photo (or press Adjust photo) to choose which part shows in its frame.": "Klik dua kali foto (atau tekan Atur isi foto) buat milih bagian foto yang tampil di bingkainya.",
+"Drag photos and text to move them · drag corners to resize · double-tap a photo to adjust it · pinch to zoom · tap text to type.": "Geser foto dan teks buat mindahin · tarik sudut buat ubah ukuran · ketuk dua kali foto buat atur isinya · cubit buat zoom · ketuk teks buat ngetik.",
+"Edit right on the page: drag the photo to move it, drag its corners to resize it, and double-click it to choose which part shows.": "Edit langsung di halaman: geser foto buat mindahin, tarik sudutnya buat ubah ukuran, dan klik dua kali buat milih bagian foto yang tampil.",
 "Bring to front": "Bawa ke depan",
 "Send to back": "Kirim ke belakang",
 "To front": "Ke depan",
@@ -1838,8 +1937,8 @@ var I18N_ID = {
 "Brought to front.": "Dipindah ke paling depan.",
 "Sent to back.": "Dipindah ke paling belakang.",
 "Text tools": "Alat teks",
-"Photos and text can overlap: use To front or To back to choose what sits on top.": "Foto dan teks bisa ditumpuk: pakai Ke depan atau Ke belakang untuk memilih mana yang di atas.",
-"Drag photos and text · drag corners to resize · double-tap a photo to adjust it · To front / To back to stack.": "Geser foto dan teks · tarik sudut untuk ubah ukuran · ketuk dua kali foto untuk atur isinya · Ke depan / Ke belakang untuk menumpuk.",
+"Photos and text can overlap: use To front or To back to choose what sits on top.": "Foto dan teks bisa ditumpuk: pakai Ke depan atau Ke belakang buat milih mana yang di atas.",
+"Drag photos and text · drag corners to resize · double-tap a photo to adjust it · To front / To back to stack.": "Geser foto dan teks · tarik sudut buat ubah ukuran · ketuk dua kali foto buat atur isinya · Ke depan / Ke belakang buat numpuk.",
 "Font": "Font",
 "Smaller text": "Perkecil teks",
 "Larger text": "Perbesar teks",
@@ -1856,7 +1955,7 @@ var I18N_ID = {
 "Custom color": "Warna lain",
 "Color {c}": "Warna {c}",
 "Back to the original text style.": "Kembali ke gaya teks awal.",
-"Click a text to change its font, size, color, bold, italic, and more in the bar above it.": "Klik teks untuk mengganti font, ukuran, warna, tebal, miring, dan lainnya di bilah di atasnya."
+"Click a text to change its font, size, color, bold, italic, and more in the bar above it.": "Klik teks buat ganti font, ukuran, warna, tebal, miring, dan lainnya di bilah atasnya."
 };
 
 /* ---------- language (DNA TIS, 20 Nov 2026): English is the core copy, Indonesian is the second language ----------
@@ -3428,6 +3527,8 @@ function openDialog(o) {
   var wrap = $('#dlg'), box = $('.dlg', wrap), acts = $('#dlg-a');
   $('#dlg-h').textContent = o.title;
   $('#dlg-p').textContent = o.body;
+  var dl = $('#dlg-l'); dl.textContent = ''; dl.hidden = !o.list;
+  (o.list || []).forEach(function (it) { var li = h('li', it.ok ? 'is-ok' : 'is-no'); li.appendChild(icon(it.ok ? 'check' : 'x')); li.appendChild(h('span', null, it.text)); dl.appendChild(li); });
   acts.textContent = '';
   o.actions.forEach(function (a) {
     var b = h('button', 'btn ' + (a.kind === 'primary' ? 'btn-primary' : a.kind === 'quiet' ? 'btn-quiet' : 'btn-line'), a.label);
@@ -4227,6 +4328,9 @@ function drawProgress() {
   note.hidden = !t.empty;
   $('#st-note-sample').hidden = !(ALLOW_SAMPLE && t.empty && !ADMIN_NO);
   if (t.empty) $('#st-note-t').textContent = _t('{n} photo frames still empty.', { n: t.empty });
+  if (S.view === 'studio' && S.lastEmpty > 0 && !t.empty && S.photos.length >= MIN_PHOTOS && !ADMIN_NO)
+    setTimeout(function () { if (S.view === 'studio') toast('All photo frames are filled. Your album is ready to preview.', { label: 'See preview', fn: function () { $('#st-preview').click(); } }); }, 0);   /* sesudah pesan "foto ditambahkan" */
+  S.lastEmpty = t.empty;
 }
 function emptyOnPage(p) { return S.album.pages[p].slots.filter(function (s) { return s.photo == null; }).length; }
 function drawPages() {
@@ -5141,17 +5245,20 @@ function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
   gotoPage(e[0]); selectSlot(e[0], e[1]);
 }
+/* Preview hanya bisa dibuka bila syaratnya terpenuhi. Kalau belum, popup menunjukkan daftar syarat dengan centang/silang
+   (27 Nov 2026, permintaan user), supaya jelas apa yang masih kurang. */
+function previewChecks() {
+  var tt = totals(S.album), out = [];
+  out.push({ ok: !tt.empty, text: !tt.empty ? _t('All {n} photo frames have a photo', { n: tt.total }) : _t('{n} of {m} photo frames are still empty', { n: tt.empty, m: tt.total }) });
+  if (S.photos.length < MIN_PHOTOS) out.push({ ok: false, text: _t('At least {min} photos (you have {n})', { min: MIN_PHOTOS, n: S.photos.length }) });
+  return out;
+}
 $('#st-preview').addEventListener('click', function (e) {
-  if (S.photos.length < MIN_PHOTOS) {
-    return openDialog({ trigger: e.currentTarget, title: t('At least {n} photos', { n: MIN_PHOTOS }),
-      body: t('Your album has {n} photos so far. Add {m} more so it can be ordered.', { n: S.photos.length, m: MIN_PHOTOS - S.photos.length }),
-      actions: [{ label: 'Add photos', kind: 'primary', fn: function () { $('#file-more').click(); } }, { label: 'Close' }] });
-  }
-  var t = totals(S.album);
-  if (!t.empty) return enterPreview();
-  openDialog({ trigger: e.currentTarget, title: _t('{n} photo frames still empty', { n: t.empty }),
-    body: 'So no page prints with gaps, every gray frame needs its own photo first.',
-    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } } }, { label: 'Show empty frames', fn: gotoFirstEmpty }] });
+  var checks = previewChecks();
+  if (checks.every(function (c) { return c.ok; })) return enterPreview();
+  openDialog({ trigger: e.currentTarget, title: 'Not ready to preview yet', list: checks,
+    body: 'You can see the preview once everything below is ticked. So no page prints with gaps, every gray frame needs its own photo.',
+    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } else $('#file-more').click(); } }, { label: 'Show empty frames', fn: gotoFirstEmpty }, { label: 'Close', kind: 'quiet' }] });
 });
 $('#st-back').addEventListener('click', function () { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; S.step = 'gaya'; drawSetup(); go('setup', 'setup-h'); });
 
@@ -5550,6 +5657,78 @@ if (wide.addEventListener) wide.addEventListener('change', onBreak); else wide.a
 /* ---------- boot ---------- */
 document.body.dataset.view = 'home'; document.body.dataset.scene = 'dark';
 drawHome();
+
+/* ---------- landing interaktif (27 Nov 2026) ----------
+   Tumpukan tiga sampul contoh di hero: berganti sendiri, miring mengikuti mouse, klik untuk ke depan / klik lagi untuk mulai.
+   Elemen [data-reveal] muncul saat masuk layar. Kartu tema miring halus mengikuti mouse. Bilah ajakan di HP. */
+function initLanding() {
+  var stack = $('#mag-stack'), stage = $('#hero-stage');
+  if (!stack) return;
+  var order = ['travel', 'event', 'sol'], timer = 0, paused = false, still = calc();
+  function calc() { return calm.matches; }
+  function front() { return order[0]; }
+  function place() {
+    order.forEach(function (id, i) { var m = $('.mag[data-theme="' + id + '"]', stack); m.dataset.pos = i; m.setAttribute('aria-label', i === 0 ? t('Start a {name} album', { name: t(catOf(id).name) }) : t('Show the {name} cover', { name: t(catOf(id).name) })); });
+    $$('.mag-tabs button', stage).forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.theme === front() ? 'true' : 'false'); });
+  }
+  function bring(id) { var i = order.indexOf(id); if (i > 0) { order = order.slice(i).concat(order.slice(0, i)); place(); } }
+  function next() { if (!paused && S.view === 'home' && !document.hidden) { order.push(order.shift()); place(); } }
+  function start() { clearInterval(timer); if (!calm.matches) timer = setInterval(next, 3800); }
+  function startTheme(id) { var b = $('.theme[data-theme="' + id + '"]'); if (b) b.click(); }
+  $$('.mag', stack).forEach(function (m) {
+    m.addEventListener('click', function () { if (m.dataset.pos === '0') startTheme(m.dataset.theme); else { bring(m.dataset.theme); start(); } });
+  });
+  $$('.mag-tabs button', stage).forEach(function (b) { b.addEventListener('click', function () { bring(b.dataset.theme); start(); }); });
+  stage.addEventListener('pointerenter', function () { paused = true; });
+  stage.addEventListener('pointerleave', function () { paused = false; $$('.mag', stack).forEach(function (m) { m.style.removeProperty('--rx'); m.style.removeProperty('--ry'); m.style.removeProperty('--px'); m.style.removeProperty('--py'); }); });
+  stage.addEventListener('focusin', function () { paused = true; });
+  stage.addEventListener('focusout', function () { paused = false; });
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    stage.addEventListener('pointermove', function (e) {
+      if (calm.matches) return;
+      var r = stack.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      $$('.mag', stack).forEach(function (m) {
+        var d = 1 - (+m.dataset.pos) * 0.35;   /* sampul depan bergerak paling jauh: terasa berlapis */
+        m.style.setProperty('--ry', (x * 14 * d).toFixed(2) + 'deg'); m.style.setProperty('--rx', (-y * 10 * d).toFixed(2) + 'deg');
+        m.style.setProperty('--px', (x * 18 * d).toFixed(1) + 'px'); m.style.setProperty('--py', (y * 12 * d).toFixed(1) + 'px');
+      });
+    });
+    $$('.theme').forEach(function (c) {
+      c.addEventListener('pointermove', function (e) {
+        if (calm.matches) return;
+        var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.setProperty('--ry', ((x - 0.5) * 7).toFixed(2) + 'deg'); c.style.setProperty('--rx', ((0.5 - y) * 5).toFixed(2) + 'deg');
+        c.style.setProperty('--mx', (x * 100).toFixed(1) + '%'); c.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      });
+      c.addEventListener('pointerleave', function () { c.style.removeProperty('--rx'); c.style.removeProperty('--ry'); });
+    });
+  }
+  place(); start();
+  calm.addEventListener && calm.addEventListener('change', start);
+
+  /* muncul saat di-scroll */
+  if ('IntersectionObserver' in window && !calm.matches) {
+    document.documentElement.classList.add('reveal-on');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target; io.unobserve(el); el.classList.add('is-in');
+        /* sesudah muncul, lepaskan aturannya supaya efek hover (transform) tetap jalan */
+        setTimeout(function () { el.classList.remove('is-in'); el.removeAttribute('data-reveal'); }, 900 + (+(getComputedStyle(el).getPropertyValue('--rd')) || 0) * 90);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    $$('[data-reveal]').forEach(function (el) { io.observe(el); });
+  } else $$('[data-reveal]').forEach(function (el) { el.removeAttribute('data-reveal'); });
+
+  /* bilah ajakan HP: tampil sesudah hero lewat, sembunyi saat pilihan tema terlihat */
+  var mc = $('#m-cta'), hero = $('.hero'), band = $('#mulai'), heroIn = true, bandIn = false;
+  function cta() { var on = !heroIn && !bandIn && S.view === 'home'; mc.classList.toggle('is-on', on); mc.setAttribute('aria-hidden', on ? 'false' : 'true'); $('button', mc).tabIndex = on ? 0 : -1; }
+  if ('IntersectionObserver' in window && mc) {
+    new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.target === hero) heroIn = en.isIntersecting; else bandIn = en.isIntersecting; }); cta(); }, { threshold: 0 }).observe(hero);
+    new IntersectionObserver(function (es) { es.forEach(function (en) { bandIn = en.isIntersecting; }); cta(); }, { threshold: 0.15 }).observe(band);
+  }
+}
+initLanding();
 fixWidows(document);
 loadConfig();
 

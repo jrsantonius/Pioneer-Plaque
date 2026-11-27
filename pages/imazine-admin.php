@@ -68,6 +68,7 @@ function imzAdminHead(string $title): void {
     header('Content-Type: text/html; charset=utf-8');
     ?><!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title><?= e($title) ?></title>
+<link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">
 <style>
   :root { --bg:#0c0a09; --ink:#f4ede4; --ink2:#b9ada0; --line:#2a2420; --card:#13100e; --accent:#cf7a3c; --ok:#7fc58f; --warn:#e0b25a; }
   * { box-sizing:border-box; } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
@@ -187,6 +188,7 @@ function imzSlipHtml(array $o): string {
 function imzSlipPage(array $orders, string $title): void {
     header('Content-Type: text/html; charset=utf-8'); ?><!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
 <title><?= e($title) ?></title>
+<link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png"><link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">
 <style>
   body { margin:0; font:14px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif; color:#000; background:#eee; }
   .bar { padding:12px 16px; background:#fff; border-bottom:1px solid #ccc; display:flex; gap:12px; align-items:center; }

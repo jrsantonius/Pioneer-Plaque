@@ -45,6 +45,8 @@ function openDialog(o) {
   var wrap = $('#dlg'), box = $('.dlg', wrap), acts = $('#dlg-a');
   $('#dlg-h').textContent = o.title;
   $('#dlg-p').textContent = o.body;
+  var dl = $('#dlg-l'); dl.textContent = ''; dl.hidden = !o.list;
+  (o.list || []).forEach(function (it) { var li = h('li', it.ok ? 'is-ok' : 'is-no'); li.appendChild(icon(it.ok ? 'check' : 'x')); li.appendChild(h('span', null, it.text)); dl.appendChild(li); });
   acts.textContent = '';
   o.actions.forEach(function (a) {
     var b = h('button', 'btn ' + (a.kind === 'primary' ? 'btn-primary' : a.kind === 'quiet' ? 'btn-quiet' : 'btn-line'), a.label);
@@ -844,6 +846,9 @@ function drawProgress() {
   note.hidden = !t.empty;
   $('#st-note-sample').hidden = !(ALLOW_SAMPLE && t.empty && !ADMIN_NO);
   if (t.empty) $('#st-note-t').textContent = _t('{n} photo frames still empty.', { n: t.empty });
+  if (S.view === 'studio' && S.lastEmpty > 0 && !t.empty && S.photos.length >= MIN_PHOTOS && !ADMIN_NO)
+    setTimeout(function () { if (S.view === 'studio') toast('All photo frames are filled. Your album is ready to preview.', { label: 'See preview', fn: function () { $('#st-preview').click(); } }); }, 0);   /* sesudah pesan "foto ditambahkan" */
+  S.lastEmpty = t.empty;
 }
 function emptyOnPage(p) { return S.album.pages[p].slots.filter(function (s) { return s.photo == null; }).length; }
 function drawPages() {
@@ -1758,17 +1763,20 @@ function gotoFirstEmpty() {
   var e = emptySlots(S.album)[0]; if (!e) return;
   gotoPage(e[0]); selectSlot(e[0], e[1]);
 }
+/* Preview hanya bisa dibuka bila syaratnya terpenuhi. Kalau belum, popup menunjukkan daftar syarat dengan centang/silang
+   (27 Nov 2026, permintaan user), supaya jelas apa yang masih kurang. */
+function previewChecks() {
+  var tt = totals(S.album), out = [];
+  out.push({ ok: !tt.empty, text: !tt.empty ? _t('All {n} photo frames have a photo', { n: tt.total }) : _t('{n} of {m} photo frames are still empty', { n: tt.empty, m: tt.total }) });
+  if (S.photos.length < MIN_PHOTOS) out.push({ ok: false, text: _t('At least {min} photos (you have {n})', { min: MIN_PHOTOS, n: S.photos.length }) });
+  return out;
+}
 $('#st-preview').addEventListener('click', function (e) {
-  if (S.photos.length < MIN_PHOTOS) {
-    return openDialog({ trigger: e.currentTarget, title: t('At least {n} photos', { n: MIN_PHOTOS }),
-      body: t('Your album has {n} photos so far. Add {m} more so it can be ordered.', { n: S.photos.length, m: MIN_PHOTOS - S.photos.length }),
-      actions: [{ label: 'Add photos', kind: 'primary', fn: function () { $('#file-more').click(); } }, { label: 'Close' }] });
-  }
-  var t = totals(S.album);
-  if (!t.empty) return enterPreview();
-  openDialog({ trigger: e.currentTarget, title: _t('{n} photo frames still empty', { n: t.empty }),
-    body: 'So no page prints with gaps, every gray frame needs its own photo first.',
-    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } } }, { label: 'Show empty frames', fn: gotoFirstEmpty }] });
+  var checks = previewChecks();
+  if (checks.every(function (c) { return c.ok; })) return enterPreview();
+  openDialog({ trigger: e.currentTarget, title: 'Not ready to preview yet', list: checks,
+    body: 'You can see the preview once everything below is ticked. So no page prints with gaps, every gray frame needs its own photo.',
+    actions: [{ label: 'Add photos', kind: 'primary', fn: function () { var e = emptySlots(S.album)[0]; if (e) { gotoPage(e[0]); selectSlot(e[0], e[1]); pickPhotos({ p: e[0], i: e[1] }); } else $('#file-more').click(); } }, { label: 'Show empty frames', fn: gotoFirstEmpty }, { label: 'Close', kind: 'quiet' }] });
 });
 $('#st-back').addEventListener('click', function () { S.cat = S.album.cat; S.cover = S.album.cover; S.layout = S.album.tpl.id; S.step = 'gaya'; drawSetup(); go('setup', 'setup-h'); });
 
@@ -2167,5 +2175,77 @@ if (wide.addEventListener) wide.addEventListener('change', onBreak); else wide.a
 /* ---------- boot ---------- */
 document.body.dataset.view = 'home'; document.body.dataset.scene = 'dark';
 drawHome();
+
+/* ---------- landing interaktif (27 Nov 2026) ----------
+   Tumpukan tiga sampul contoh di hero: berganti sendiri, miring mengikuti mouse, klik untuk ke depan / klik lagi untuk mulai.
+   Elemen [data-reveal] muncul saat masuk layar. Kartu tema miring halus mengikuti mouse. Bilah ajakan di HP. */
+function initLanding() {
+  var stack = $('#mag-stack'), stage = $('#hero-stage');
+  if (!stack) return;
+  var order = ['travel', 'event', 'sol'], timer = 0, paused = false, still = calc();
+  function calc() { return calm.matches; }
+  function front() { return order[0]; }
+  function place() {
+    order.forEach(function (id, i) { var m = $('.mag[data-theme="' + id + '"]', stack); m.dataset.pos = i; m.setAttribute('aria-label', i === 0 ? t('Start a {name} album', { name: t(catOf(id).name) }) : t('Show the {name} cover', { name: t(catOf(id).name) })); });
+    $$('.mag-tabs button', stage).forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.theme === front() ? 'true' : 'false'); });
+  }
+  function bring(id) { var i = order.indexOf(id); if (i > 0) { order = order.slice(i).concat(order.slice(0, i)); place(); } }
+  function next() { if (!paused && S.view === 'home' && !document.hidden) { order.push(order.shift()); place(); } }
+  function start() { clearInterval(timer); if (!calm.matches) timer = setInterval(next, 3800); }
+  function startTheme(id) { var b = $('.theme[data-theme="' + id + '"]'); if (b) b.click(); }
+  $$('.mag', stack).forEach(function (m) {
+    m.addEventListener('click', function () { if (m.dataset.pos === '0') startTheme(m.dataset.theme); else { bring(m.dataset.theme); start(); } });
+  });
+  $$('.mag-tabs button', stage).forEach(function (b) { b.addEventListener('click', function () { bring(b.dataset.theme); start(); }); });
+  stage.addEventListener('pointerenter', function () { paused = true; });
+  stage.addEventListener('pointerleave', function () { paused = false; $$('.mag', stack).forEach(function (m) { m.style.removeProperty('--rx'); m.style.removeProperty('--ry'); m.style.removeProperty('--px'); m.style.removeProperty('--py'); }); });
+  stage.addEventListener('focusin', function () { paused = true; });
+  stage.addEventListener('focusout', function () { paused = false; });
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    stage.addEventListener('pointermove', function (e) {
+      if (calm.matches) return;
+      var r = stack.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      $$('.mag', stack).forEach(function (m) {
+        var d = 1 - (+m.dataset.pos) * 0.35;   /* sampul depan bergerak paling jauh: terasa berlapis */
+        m.style.setProperty('--ry', (x * 14 * d).toFixed(2) + 'deg'); m.style.setProperty('--rx', (-y * 10 * d).toFixed(2) + 'deg');
+        m.style.setProperty('--px', (x * 18 * d).toFixed(1) + 'px'); m.style.setProperty('--py', (y * 12 * d).toFixed(1) + 'px');
+      });
+    });
+    $$('.theme').forEach(function (c) {
+      c.addEventListener('pointermove', function (e) {
+        if (calm.matches) return;
+        var r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.setProperty('--ry', ((x - 0.5) * 7).toFixed(2) + 'deg'); c.style.setProperty('--rx', ((0.5 - y) * 5).toFixed(2) + 'deg');
+        c.style.setProperty('--mx', (x * 100).toFixed(1) + '%'); c.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      });
+      c.addEventListener('pointerleave', function () { c.style.removeProperty('--rx'); c.style.removeProperty('--ry'); });
+    });
+  }
+  place(); start();
+  calm.addEventListener && calm.addEventListener('change', start);
+
+  /* muncul saat di-scroll */
+  if ('IntersectionObserver' in window && !calm.matches) {
+    document.documentElement.classList.add('reveal-on');
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target; io.unobserve(el); el.classList.add('is-in');
+        /* sesudah muncul, lepaskan aturannya supaya efek hover (transform) tetap jalan */
+        setTimeout(function () { el.classList.remove('is-in'); el.removeAttribute('data-reveal'); }, 900 + (+(getComputedStyle(el).getPropertyValue('--rd')) || 0) * 90);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    $$('[data-reveal]').forEach(function (el) { io.observe(el); });
+  } else $$('[data-reveal]').forEach(function (el) { el.removeAttribute('data-reveal'); });
+
+  /* bilah ajakan HP: tampil sesudah hero lewat, sembunyi saat pilihan tema terlihat */
+  var mc = $('#m-cta'), hero = $('.hero'), band = $('#mulai'), heroIn = true, bandIn = false;
+  function cta() { var on = !heroIn && !bandIn && S.view === 'home'; mc.classList.toggle('is-on', on); mc.setAttribute('aria-hidden', on ? 'false' : 'true'); $('button', mc).tabIndex = on ? 0 : -1; }
+  if ('IntersectionObserver' in window && mc) {
+    new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.target === hero) heroIn = en.isIntersecting; else bandIn = en.isIntersecting; }); cta(); }, { threshold: 0 }).observe(hero);
+    new IntersectionObserver(function (es) { es.forEach(function (en) { bandIn = en.isIntersecting; }); cta(); }, { threshold: 0.15 }).observe(band);
+  }
+}
+initLanding();
 fixWidows(document);
 loadConfig();

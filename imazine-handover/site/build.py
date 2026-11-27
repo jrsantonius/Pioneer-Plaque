@@ -49,6 +49,8 @@ SITE_HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
              '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
              '<meta name="description" content="A printed A4 photo album, 40 pages. Pick a magazine-style cover, upload your photos, and we lay them out into an album. Available in English and Bahasa Indonesia.">'
              '<meta name="theme-color" content="#000000">'
+             '<link rel="icon" type="image/png" sizes="64x64" href="/public/images/tis-icon-64.png">'
+             '<link rel="apple-touch-icon" href="/public/images/tis-icon-180.png">'
              '<style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>\n')
 # Font disajikan dari server sendiri (public/imazine/fonts), bukan Google Fonts: stylesheet Google memblokir tampilan halaman
 # sampai termuat, dan di sebagian jaringan Wi-Fi permintaannya menggantung (review 18 Nov 2026). font-display:swap = teks
@@ -159,6 +161,6 @@ album_js = album_js.replace('</script', '<\\/script')
 album_js = album_js.replace('"use strict";\n', '"use strict";\nfunction t(s, p) { return p ? s.replace(/\\{(\\w+)\\}/g, function (m, k) { return p[k] != null ? p[k] : m; }) : s; }\n', 1)
 ALBUM_FONTS = '<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Manrope:wght@800&display=block">\n'
 album = ('<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">\n'
-         '<title>Album cetak Imazine</title>\n' + ALBUM_FONTS + '<style>\n' + ALBUM_CSS + '\n</style></head><body>\n' + ALBUM_MARKUP + '\n<script>\n' + album_js + '\n</script>\n</body></html>\n')
+         '<title>Album cetak Imazine</title>\n<link rel=\"icon\" type=\"image/png\" sizes=\"64x64\" href=\"/public/images/tis-icon-64.png\"><link rel=\"apple-touch-icon\" href=\"/public/images/tis-icon-180.png\">\n' + ALBUM_FONTS + '<style>\n' + ALBUM_CSS + '\n</style></head><body>\n' + ALBUM_MARKUP + '\n<script>\n' + album_js + '\n</script>\n</body></html>\n')
 open(os.path.join(R, 'dist/album-cetak.html'), 'w', encoding='utf-8').write(album)
 print('album bytes', len(album.encode()))
