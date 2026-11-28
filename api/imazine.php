@@ -43,7 +43,8 @@ function imzCreateOrder(): void {
     $c = is_array($in['customer'] ?? null) ? $in['customer'] : [];
     $p = is_array($in['product'] ?? null) ? $in['product'] : [];
 
-    // Form hanya menanyakan email. Nama dan HP diambil dari Mayar setelah pembayaran (imzAdoptPayer).
+    // Form menanyakan nama penerima, WhatsApp, dan email (28 Nov 2026). Nama + nomor pesanan dan HP diisikan ke checkout Mayar
+    // lewat link (imzPayUrl), supaya nomor pesanan tercetak di label JNE.
     $name = imzStr($c['name'] ?? '', 100);
     $wa = preg_replace('/[^\d+]/', '', imzStr($c['whatsapp'] ?? '', 30));
     $email = imzStr($c['email'] ?? '', 150);
@@ -52,10 +53,8 @@ function imzCreateOrder(): void {
 
     $err = [];
     if (!isValidEmail($email)) $err['email'] = 'Email belum benar';
-    if (!IMAZINE_PAYMENT) {   // tanpa Mayar, nama dan WhatsApp diisi di form kita
-        if (mb_strlen($name) < 2) $err['name'] = 'Nama belum diisi';
-        if (strlen(preg_replace('/\D/', '', $wa)) < 9) $err['whatsapp'] = 'Nomor WhatsApp belum benar';
-    }
+    if (mb_strlen($name) < 2) $err['name'] = 'Nama belum diisi';
+    if (strlen(preg_replace('/\D/', '', $wa)) < 9) $err['whatsapp'] = 'Nomor WhatsApp belum benar';
     if ($qty < 1 || $qty > IMAZINE_MAX_QTY) $err['qty'] = 'Jumlah album tidak valid';
     if (count($photos) < IMAZINE_MIN_PHOTOS) $err['photos'] = 'Minimal ' . IMAZINE_MIN_PHOTOS . ' foto';
     elseif (count($photos) > IMAZINE_MAX_PHOTOS) $err['photos'] = 'Maksimal ' . IMAZINE_MAX_PHOTOS . ' foto';

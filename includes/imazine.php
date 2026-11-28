@@ -268,9 +268,20 @@ function imzPhotoPath(string $orderNo, string $storedName): string {
 /* Link bayar Mayar untuk satu pesanan. Form checkout produk Mayar mengisi kolom dari parameter URL (dicek langsung
  * di form Imazine, 27 Nov 2026): email, name, mobile mengisi kolom pembeli; quantity mengunci jumlah dan menyembunyikan
  * kolom jumlah. Jadi pembeli tidak mengetik email dua kali, dan email di pembayaran sama dengan email pesanan. */
+/* Nomor pesanan ditempel di nama pembeli Mayar (28 Nov 2026, permintaan user): Mayar memakai nama ini sebagai Nama Penerima,
+   jadi nomor IMZ-XXXXXX ikut tercetak di label JNE. Kolom kustom Mayar tidak bisa diisi lewat link (sudah diuji).
+   Nama dipotong supaya total tetap pendek untuk label kurir. */
+function imzPayName(array $o): string {
+    $n = trim(preg_replace('/\s+/u', ' ', imzStripOrderNo((string) ($o['name'] ?? ''))) ?? '');
+    if (mb_strlen($n) > 32) $n = rtrim(mb_substr($n, 0, 32));
+    return $n === '' ? $o['order_no'] : $n . ' (' . $o['order_no'] . ')';
+}
+/** Buang nomor pesanan yang kita tempel di nama Mayar, supaya nama di admin, slip, dan file penerima bersih. */
+function imzStripOrderNo(string $s): string {
+    return trim(preg_replace('/\s*[(\[]?\s*IMZ-[A-Z0-9]{6}\s*[)\]]?/iu', '', $s) ?? $s);
+}
 function imzPayUrl(array $o): string {
-    $q = ['email' => (string) $o['email'], 'quantity' => max(1, (int) $o['qty'])];
-    if (trim((string) ($o['name'] ?? '')) !== '') $q['name'] = trim((string) $o['name']);
+    $q = ['email' => (string) $o['email'], 'quantity' => max(1, (int) $o['qty']), 'name' => imzPayName($o)];
     if (trim((string) ($o['whatsapp'] ?? '')) !== '') $q['mobile'] = trim((string) $o['whatsapp']);
     return IMAZINE_MAYAR_URL . (strpos(IMAZINE_MAYAR_URL, '?') === false ? '?' : '&') . http_build_query($q, '', '&', PHP_QUERY_RFC3986);
 }
@@ -403,7 +414,7 @@ function imzPhoneKey(?string $p): string {
 
 /** Huruf kecil, tanpa tanda baca, spasi dirapikan: "Siti  Rahma, S.Pd." -> "siti rahma s pd". */
 function imzNameNorm(string $n): string {
-    $n = mb_strtolower($n);
+    $n = mb_strtolower(imzStripOrderNo($n));
     $n = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $n) ?? '';
     return trim($n);
 }
@@ -480,7 +491,7 @@ function imzShipFromRaw(?string $raw): ?array {
     $qty = 0;
     foreach ($p['data']['orderVariant'] as $x) $qty += (int) ($x['qty'] ?? 0);
     return [
-        'name' => trim((string) ($v['consigneeName'] ?? '')),
+        'name' => imzStripOrderNo(trim((string) ($v['consigneeName'] ?? ''))),
         'phone' => trim((string) ($v['consigneePhoneNumber'] ?? '')),
         'address' => trim((string) $v['destinationAddress']),
         'postcode' => trim((string) ($v['consigneePostcode'] ?? '')),
@@ -505,7 +516,7 @@ function imzOrderShipping(string $orderNo): ?array {
 
 /** Salin nama dan HP pembayar dari Mayar ke pesanan (form kita hanya menanyakan email). */
 function imzAdoptPayer(string $orderNo, ?string $name, ?string $mobile): void {
-    $name = trim((string) $name); $mobile = trim((string) $mobile);
+    $name = imzStripOrderNo(trim((string) $name)); $mobile = trim((string) $mobile);
     $db = imzDb();
     if ($name !== '') $db->prepare("UPDATE imazine_orders SET name = ? WHERE order_no = ? AND (name IS NULL OR name = '')")->execute([mb_substr($name, 0, 100), $orderNo]);
     if ($mobile !== '') $db->prepare("UPDATE imazine_orders SET whatsapp = ? WHERE order_no = ? AND (whatsapp IS NULL OR whatsapp = '')")->execute([mb_substr($mobile, 0, 30), $orderNo]);

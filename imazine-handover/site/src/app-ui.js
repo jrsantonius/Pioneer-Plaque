@@ -1975,7 +1975,7 @@ var RULES = {
   email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'That email looks incomplete. Example: name@email.com.'; }
 };
 var FIELD = { name: 'f-name', whatsapp: 'f-wa', email: 'f-mail' }, ERR = { name: 'e-name', whatsapp: 'e-wa', email: 'e-mail' }, HINT = { name: 'h-name', whatsapp: 'h-wa', email: 'h-mail' };
-function activeFields() { return PAY ? ['email'] : ['name', 'whatsapp', 'email']; }
+function activeFields() { return ['name', 'whatsapp', 'email']; }
 function checkField(k) {
   var inp = $('#' + FIELD[k]), msg = RULES[k](inp.value), er = $('#' + ERR[k]);
   er.textContent = msg; er.hidden = !msg; $('#' + HINT[k]).hidden = !!msg;
@@ -2149,7 +2149,7 @@ $('#co-form').addEventListener('submit', function (e) {
   var order = {
     customer: {
       email: $('#f-mail').value.trim(), note: $('#f-note').value.trim(),
-      name: PAY ? undefined : $('#f-name').value.trim(), whatsapp: PAY ? undefined : $('#f-wa').value.trim()
+      name: $('#f-name').value.trim(), whatsapp: $('#f-wa').value.trim()
     },
     product: { size: 'A4', pages: 40, paper: 'Art Paper 190 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
     category: cat.id, cover: curCover().id, coverName: curCover().name, template: S.layout,

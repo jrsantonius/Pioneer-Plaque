@@ -1422,20 +1422,20 @@ html.pay [data-nopay]{display:none!important}
       <button class="btn btn-quiet back" type="button" id="co-back"><svg class="ic"><use href="#i-left"/></svg><span>Back to preview</span></button>
       <p class="eyebrow">Step 4 of 4</p>
       <h1 class="h1 nw" id="co-h" tabindex="-1">Just one more step.</h1>
-      <p class="sub nw" data-pay>Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.</p>
+      <p class="sub nw" data-pay>Fill in who the album is going to and your email. On the next screen you add the address, choose JNE shipping, and pay, without leaving Imazine.</p>
       <p class="sub nw" data-nopay>Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.</p>
     </div>
     <div class="co-grid">
       <form class="co-form" id="co-form" novalidate>
-        <div class="fld" data-nopay>
-          <label class="fld-l" for="f-name">Name</label>
+        <div class="fld">
+          <label class="fld-l" for="f-name"><span data-nopay>Name</span><span data-pay>Recipient name</span></label>
           <input class="in" id="f-name" name="name" type="text" autocomplete="name" maxlength="100" aria-describedby="h-name e-name">
-          <div class="fld-msg"><p class="hint" id="h-name">So we know what to call you.</p><p class="err" id="e-name" hidden></p></div>
+          <div class="fld-msg"><p class="hint" id="h-name"><span data-nopay>So we know what to call you.</span><span data-pay>The name on the package. We add your order number after it, so it’s printed on the shipping label too.</span></p><p class="err" id="e-name" hidden></p></div>
         </div>
-        <div class="fld" data-nopay>
+        <div class="fld">
           <label class="fld-l" for="f-wa">WhatsApp number</label>
           <input class="in" id="f-wa" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="08xxxxxxxxxx" aria-describedby="h-wa e-wa">
-          <div class="fld-msg"><p class="hint" id="h-wa">We’ll use this number to confirm your order and delivery address.</p><p class="err" id="e-wa" hidden></p></div>
+          <div class="fld-msg"><p class="hint" id="h-wa"><span data-nopay>We’ll use this number to confirm your order and delivery address.</span><span data-pay>For the courier, and for updates about your order.</span></p><p class="err" id="e-wa" hidden></p></div>
         </div>
         <div class="fld">
           <label class="fld-l" for="f-mail">Email</label>
@@ -1448,7 +1448,7 @@ html.pay [data-nopay]{display:none!important}
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with these details already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
@@ -1779,6 +1779,9 @@ var I18N_ID = {
 "Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.": "Lengkapi kontakmu, lalu kirim. Album dan semua fotomu akan langsung diterima tim kami, dan kami akan menyapamu melalui WhatsApp.",
 "Name": "Nama",
 "So we know what to call you.": "Agar kami tahu cara menyapamu.",
+"Recipient name": "Nama penerima",
+"The name on the package. We add your order number after it, so it’s printed on the shipping label too.": "Nama yang tertulis di paket. Nomor pesananmu kami tambahkan di belakangnya, supaya ikut tercetak di label pengiriman.",
+"For the courier, and for updates about your order.": "Untuk kurir dan kabar tentang pesananmu.",
 "WhatsApp number": "Nomor WhatsApp",
 "We’ll use this number to confirm your order and delivery address.": "Kami akan menggunakan nomor ini untuk mengonfirmasi pesanan dan alamat pengiriman.",
 "name@email.com": "nama@email.com",
@@ -1850,8 +1853,8 @@ var I18N_ID = {
 "Text deleted.": "Teks dihapus.",
 "Photo frame deleted.": "Frame foto dihapus.",
 "Use Add a text or Add a photo to fill empty space on the page you last touched.": "Gunakan Tambah teks atau Tambah foto untuk mengisi ruang kosong di halaman yang terakhir kamu sentuh.",
-"Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.": "Cukup masukkan emailmu. Di layar berikutnya, kamu mengisi nama, nomor ponsel, alamat, dan ongkos kirim JNE, lalu membayar tanpa meninggalkan Imazine.",
-"You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within": "Kamu belum membayar apa pun. Setelah tombol ditekan, fotomu akan di-upload dan form pembayaran terbuka di halaman ini dengan emailmu yang sudah terisi. Selesaikan pembayaran dalam",
+"Fill in who the album is going to and your email. On the next screen you add the address, choose JNE shipping, and pay, without leaving Imazine.": "Isi nama penerima album dan emailmu. Di layar berikutnya, kamu menambahkan alamat, memilih pengiriman JNE, lalu membayar tanpa meninggalkan Imazine.",
+"You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with these details already filled in. Complete the payment within": "Kamu belum membayar apa pun. Setelah tombol ditekan, fotomu akan di-upload dan form pembayaran terbuka di halaman ini dengan data ini yang sudah terisi. Selesaikan pembayaran dalam",
 "Calculated in the payment form": "Dihitung di form pembayaran",
 "Total to pay": "Total pembayaran",
 "Pay and choose shipping.": "Bayar dan pilih pengiriman.",
@@ -5616,7 +5619,7 @@ var RULES = {
   email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'That email looks incomplete. Example: name@email.com.'; }
 };
 var FIELD = { name: 'f-name', whatsapp: 'f-wa', email: 'f-mail' }, ERR = { name: 'e-name', whatsapp: 'e-wa', email: 'e-mail' }, HINT = { name: 'h-name', whatsapp: 'h-wa', email: 'h-mail' };
-function activeFields() { return PAY ? ['email'] : ['name', 'whatsapp', 'email']; }
+function activeFields() { return ['name', 'whatsapp', 'email']; }
 function checkField(k) {
   var inp = $('#' + FIELD[k]), msg = RULES[k](inp.value), er = $('#' + ERR[k]);
   er.textContent = msg; er.hidden = !msg; $('#' + HINT[k]).hidden = !!msg;
@@ -5790,7 +5793,7 @@ $('#co-form').addEventListener('submit', function (e) {
   var order = {
     customer: {
       email: $('#f-mail').value.trim(), note: $('#f-note').value.trim(),
-      name: PAY ? undefined : $('#f-name').value.trim(), whatsapp: PAY ? undefined : $('#f-wa').value.trim()
+      name: $('#f-name').value.trim(), whatsapp: $('#f-wa').value.trim()
     },
     product: { size: 'A4', pages: 40, paper: 'Art Paper 190 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
     category: cat.id, cover: curCover().id, coverName: curCover().name, template: S.layout,

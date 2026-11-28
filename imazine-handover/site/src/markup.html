@@ -335,20 +335,20 @@
       <button class="btn btn-quiet back" type="button" id="co-back"><svg class="ic"><use href="#i-left"/></svg><span>Back to preview</span></button>
       <p class="eyebrow">Step 4 of 4</p>
       <h1 class="h1 nw" id="co-h" tabindex="-1">Just one more step.</h1>
-      <p class="sub nw" data-pay>Just enter your email. On the next screen you fill in your name, phone, address, and JNE shipping, and pay, without leaving Imazine.</p>
+      <p class="sub nw" data-pay>Fill in who the album is going to and your email. On the next screen you add the address, choose JNE shipping, and pay, without leaving Imazine.</p>
       <p class="sub nw" data-nopay>Add your contact details, then send. Your album and all your photos go straight to our team, and we’ll say hello on WhatsApp.</p>
     </div>
     <div class="co-grid">
       <form class="co-form" id="co-form" novalidate>
-        <div class="fld" data-nopay>
-          <label class="fld-l" for="f-name">Name</label>
+        <div class="fld">
+          <label class="fld-l" for="f-name"><span data-nopay>Name</span><span data-pay>Recipient name</span></label>
           <input class="in" id="f-name" name="name" type="text" autocomplete="name" maxlength="100" aria-describedby="h-name e-name">
-          <div class="fld-msg"><p class="hint" id="h-name">So we know what to call you.</p><p class="err" id="e-name" hidden></p></div>
+          <div class="fld-msg"><p class="hint" id="h-name"><span data-nopay>So we know what to call you.</span><span data-pay>The name on the package. We add your order number after it, so it’s printed on the shipping label too.</span></p><p class="err" id="e-name" hidden></p></div>
         </div>
-        <div class="fld" data-nopay>
+        <div class="fld">
           <label class="fld-l" for="f-wa">WhatsApp number</label>
           <input class="in" id="f-wa" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="08xxxxxxxxxx" aria-describedby="h-wa e-wa">
-          <div class="fld-msg"><p class="hint" id="h-wa">We’ll use this number to confirm your order and delivery address.</p><p class="err" id="e-wa" hidden></p></div>
+          <div class="fld-msg"><p class="hint" id="h-wa"><span data-nopay>We’ll use this number to confirm your order and delivery address.</span><span data-pay>For the courier, and for updates about your order.</span></p><p class="err" id="e-wa" hidden></p></div>
         </div>
         <div class="fld">
           <label class="fld-l" for="f-mail">Email</label>
@@ -361,7 +361,7 @@
         </div>
         <button class="btn btn-warm btn-lg co-pay" type="submit" id="co-pay">Continue to payment</button>
         <p class="hint co-safe" data-nopay>When you press the button, we receive your album and all your original photos. Please keep this page open until the upload finishes.</p>
-        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with your email already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
+        <p class="hint co-safe" data-pay>You haven’t paid anything yet. After you press the button, your photos upload and the payment form opens on this page with these details already filled in. Complete the payment within <span id="pay-min">2 hours</span>. After that, unpaid orders are deleted and you’ll need to make your album again.</p>
       </form>
       <aside class="co-sum" aria-label="Order summary">
         <div class="co-item">
