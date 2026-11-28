@@ -17,11 +17,29 @@ RewriteRule ^includes/ - [F,L]
 RewriteRule ^api/imazine/ index.php [QSA,L]
 RewriteRule ^api/ - [F,L]
 RewriteRule ^pages/ - [F,L]
-RewriteRule \.db$ - [F,L]
+# Database SQLite beserta file WAL/SHM/journal yang muncul saat ada tulisan
+RewriteRule \.db(-wal|-shm|-journal)?$ - [F,L]
 RewriteRule ^storage/ - [F,L]
 RewriteRule ^\.claude/ - [F,L]
+
+# Keamanan (28 Nov 2026): kode sumber, file konfigurasi dev, arsip, backup, dan dotfile tidak boleh dibaca publik.
+# .well-known tetap terbuka untuk validasi sertifikat SSL.
+RewriteRule ^(src|__MACOSX|imazine-handover|node_modules)(/|$) - [F,L]
+RewriteRule ^(package(-lock)?\.json|vercel\.json|tsconfig\.json|next-env\.d\.ts|(next|postcss|tailwind)\.config\.js)$ - [F,L]
+RewriteRule \.(zip|tar|gz|tgz|rar|7z|sql|bak|old|orig|swp|log|md|txt|sh|ini|env)$ - [F,NC,L]
+RewriteRule (^|/)\.(?!well-known(/|$)) - [F,L]
 
 # Route everything else through index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Header keamanan. HSTS dan nosniff sudah dipasang hosting, jadi tidak diset di sini.
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Content-Security-Policy "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests"
+  Header always unset X-Powered-By
+  Header unset X-Powered-By
+</IfModule>
