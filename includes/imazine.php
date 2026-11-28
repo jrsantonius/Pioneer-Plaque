@@ -133,6 +133,7 @@ function imzDb(): PDO {
             'ip_hash' => 'TEXT', 'created_ts' => 'INTEGER', 'pay_deadline' => 'INTEGER', 'claimed_at' => 'INTEGER',
             'address' => "TEXT DEFAULT ''", 'city' => "TEXT DEFAULT ''", 'province' => "TEXT DEFAULT ''", 'postal_code' => "TEXT DEFAULT ''",
             'shipping' => 'INTEGER DEFAULT 0', 'mayar_product_id' => 'TEXT', 'mayar_link' => 'TEXT', 'waybill' => 'TEXT', 'shipped_at' => 'INTEGER',
+            'ship_status' => "TEXT DEFAULT ''", 'ship_updated_at' => 'INTEGER',
         ] as $col => $type) {
             if (!in_array($col, $cols, true)) $db->exec("ALTER TABLE imazine_orders ADD COLUMN $col $type");
         }
@@ -184,6 +185,54 @@ function imzPurgeStale(): int {
         $gone++;
     }
     return $gone;
+}
+
+/** Hapus satu pesanan beserta semua berkasnya (foto asli, foto cetak, sampul, salinan data). Dipakai admin (hapus massal). */
+function imzDeleteOrder(string $orderNo): bool {
+    if (!preg_match('/^IMZ-[A-Z0-9]{6}$/', $orderNo) || !imzOrder($orderNo)) return false;
+    $dir = imzDataDir('orders/' . $orderNo);
+    if (is_dir($dir)) {
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($it as $f) { $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname()); }
+        @rmdir($dir);
+    }
+    $db = imzDb();
+    $db->prepare('DELETE FROM imazine_photos WHERE order_no = ?')->execute([$orderNo]);
+    $db->prepare('DELETE FROM imazine_orders WHERE order_no = ?')->execute([$orderNo]);
+    return true;
+}
+
+/* Status pengiriman (28 Nov 2026, permintaan user). Urutan: dikemas -> sudah terkirim (diserahkan ke kurir) -> sedang terkirim
+   (dalam perjalanan) -> sudah diterima. shipped_at tetap dipakai sebagai waktu "dikemas" (filter "Perlu dikemas", slip massal). */
+const IMZ_SHIP = ['' => 'Belum dikemas', 'dikemas' => 'Dikemas', 'terkirim' => 'Sudah terkirim', 'dalam_pengiriman' => 'Sedang terkirim', 'diterima' => 'Sudah diterima'];
+function imzShipStatus(array $o): string {
+    $s = (string) ($o['ship_status'] ?? '');
+    if ($s !== '' && isset(IMZ_SHIP[$s])) return $s;
+    return !empty($o['shipped_at']) ? 'dikemas' : '';   // pesanan lama yang hanya ditandai "dikemas"
+}
+function imzSetShipStatus(string $orderNo, string $status): bool {
+    if (!array_key_exists($status, IMZ_SHIP)) return false;
+    $o = imzOrder($orderNo);
+    if (!$o || $o['status'] !== 'lunas') return false;   // hanya pesanan lunas yang dikemas dan dikirim
+    $shipped = $status === '' ? null : ((int) $o['shipped_at'] ?: time());
+    imzDb()->prepare('UPDATE imazine_orders SET ship_status = ?, ship_updated_at = ?, shipped_at = ? WHERE order_no = ?')->execute([$status, time(), $shipped, $orderNo]);
+    return true;
+}
+
+/** Data penerima untuk file di zip unduhan admin: alamat kirim dari Mayar, kalau belum ada nama/HP dari pesanan. */
+function imzRecipient(array $o): array {
+    $s = imzOrderShipping($o['order_no']);
+    $addr = $s ? $s['address'] : '';
+    if ($s && $s['postcode'] !== '' && strpos($addr, $s['postcode']) === false) $addr .= ' ' . $s['postcode'];
+    return [
+        'orderNo' => $o['order_no'],
+        'name' => $s && $s['name'] !== '' ? $s['name'] : (string) $o['name'],
+        'address' => $addr,
+        'phone' => $s && $s['phone'] !== '' ? $s['phone'] : (string) $o['whatsapp'],
+        'email' => (string) $o['email'],
+        'courier' => $s ? trim($s['courier'] . ' ' . $s['service']) : '',
+        'qty' => (int) $o['qty'],
+    ];
 }
 
 function imzTokenOk(?array $order, ?string $token): bool {

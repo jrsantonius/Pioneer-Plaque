@@ -20,7 +20,8 @@ var MAG_FIELDS = {
 var MAG_COPY_SEGAR = {
   travel: { tagA: 'ADVENTURE', tagB: 'WANDER', tagC: 'MEMORIES', a1: 'WHERE THE ROAD', a2: 'LEADS', aSub: 'Places that change how we see', b1: 'THE NEXT', b2: 'ADVENTURE', bSub: 'Mapping the trips still to come', badge: 'TRAVEL DIARY', badgeSub: 'Stories from the road, together' },
   event:  { tagA: 'CELEBRATE', tagB: 'FAMILY', tagC: 'JOY', a1: 'THE DAY WE', a2: 'CELEBRATED', aSub: 'Every smile that filled the room', b1: 'THE MOMENTS', b2: 'THAT STAY', bSub: 'Little things we never want to forget', badge: 'SPECIAL EDITION', badgeSub: 'A day worth remembering' },
-  sol:    { tagA: 'FAMILY', tagB: 'HOME', tagC: 'MOMENTS', a1: 'ORDINARY DAYS', a2: 'MATTER', aSub: 'Why the small things are the big things', b1: 'THE NEXT', b2: 'CHAPTER', bSub: 'Building our story together', badge: 'EXCLUSIVE STORY', badgeSub: 'Timeless moments of everyday life' }
+  sol:    { tagA: 'FAMILY', tagB: 'HOME', tagC: 'MOMENTS', a1: 'ORDINARY DAYS', a2: 'MATTER', aSub: 'Why the small things are the big things', b1: 'THE NEXT', b2: 'CHAPTER', bSub: 'Building our story together', badge: 'EXCLUSIVE STORY', badgeSub: 'Timeless moments of everyday life' },
+  family: { tagA: 'FAMILY', tagB: 'HOME', tagC: 'LOVE', a1: 'ALL OF US,', a2: 'TOGETHER', aSub: 'The people who make a house a home', b1: 'GROWING', b2: 'UP', bSub: 'Little ones, big moments', badge: 'FAMILY ISSUE', badgeSub: 'Stories from our home' }
 };
 var MAG_COPY = {
   travel: { headA: "WHERE WE'VE BEEN", subA: 'The places, people, and roads that brought us here', headB: 'THE LITTLE THINGS', subB: 'Small moments we collected along the way',
@@ -28,7 +29,9 @@ var MAG_COPY = {
   event:  { headA: 'OUR BIG DAY', subA: 'The people and moments that made it unforgettable', headB: 'THE DETAILS', subB: 'Every little thing we want to remember',
             tag1: 'A CELEBRATION EDITION', tag2: 'On Joy, Family, and Milestones', tag3: 'The Day We Never Want to Forget', headline: 'OUR DAY, IN COLOR' },
   sol:    { headA: 'OUR STORY SO FAR', subA: 'The people, places, and moments that brought us here', headB: 'THE LITTLE THINGS', subB: 'Ordinary moments we keep together',
-            tag1: 'A PERSONAL EDITION', tag2: 'On Memory, Home, and Family', tag3: 'The People Who Make Life Richer', headline: 'OUR STORY, IN COLOR' }
+            tag1: 'A PERSONAL EDITION', tag2: 'On Memory, Home, and Family', tag3: 'The People Who Make Life Richer', headline: 'OUR STORY, IN COLOR' },
+  family: { headA: 'ALL OF US', subA: 'The people who make our house a home', headB: 'GROWING UP', subB: 'Little ones, big moments, and everyday love',
+            tag1: 'A FAMILY EDITION', tag2: 'On Home and Kids', tag3: 'The People We Love', headline: 'OUR FAMILY, IN COLOR' }
 };
 var MAG_MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 function magDefault(style, catId, k) {
@@ -287,7 +290,7 @@ function magGrain(x, W, H, alpha, mode) {
    yang sudah dihitung sebelumnya, jadi efek judul di belakang orang langsung tampil tanpa memuat model segmentasi.
    Dimuat sekali per tema; selama belum siap (atau gagal dimuat), sampul memakai siluet di bawah. */
 var MAG_SAMPLE_DIR = '/public/imazine/img/';
-var MAG_SAMPLE_FIT = { travel: { fx: 0.523, fy: 0.985, z: 1.58 }, event: { fx: 0.539, fy: 1, z: 1.07 }, sol: { fx: 0.66, fy: 1, z: 1.48 } };
+var MAG_SAMPLE_FIT = { travel: { fx: 0.5, fy: 1, z: 1.05 }, event: { fx: 0.539, fy: 1, z: 1.07 }, sol: { fx: 0.6, fy: 1, z: 1.2 }, family: { fx: 0.5, fy: 1, z: 1.05 } };   /* 28 Nov 2026: travel = teman, event = sendiri, sol = pasangan, family = keluarga */
 var magSamples = {};
 function magSample(catId) {
   if (!MAG_SAMPLE_FIT[catId]) return null;

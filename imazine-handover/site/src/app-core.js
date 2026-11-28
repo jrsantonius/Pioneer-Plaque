@@ -26,6 +26,15 @@ var CATS = [
       { g: 'Orang terdekat', items: ['Keluarga', 'Tumbuh kembang anak', 'Sahabat', 'Pasangan', 'Kakek & nenek', 'Anabul'] },
       { g: 'Keseharian', items: ['Rumah', 'Kuliner & ngopi', 'Kampus & kost', 'Kantor', 'Akhir pekan', 'Rekap setahun'] },
       { g: 'Hobi', items: ['Lari & sepeda', 'Mendaki', 'Berkebun', 'Masak', 'Musik', 'Jurnal diri'] }
+    ] },
+  /* tema keempat (28 Nov 2026, permintaan user): album keluarga. Layoutnya diturunkan dari layout yang ada dengan palet hangat
+     (tpl/family-*.json). Sampul ilustrasinya hanya cadangan data, pembeli memilih dari Cover Majalah. */
+  { id: 'family', name: 'Family', desc: 'Life at home with the people you love, from the kids growing up to time with grandparents.',
+    cover: { id: 'family-home', name: 'Family', img: 'sol', back: null, bg: '#f6e3d3', g: 'Keluarga', note: 'Dua kuntum bunga' },
+    layouts: ['family-1-home-scrapbook', 'family-2-family-portraits', 'family-3-growing-up', 'family-4-letters-home'],
+    groups: [
+      { g: 'Magazine Cover', mag: true, items: [] },
+      { g: 'Keluarga', items: ['Tumbuh kembang anak', 'Kakek & nenek', 'Mudik', 'Liburan keluarga', 'Rumah', 'Rekap setahun'] }
     ] }
 ];
 /* Every cover of a theme, shelf by shelf. The photo cover opens its own shelf; the stamp covers are drawn
@@ -76,7 +85,11 @@ var LAYOUTS = {
   'event-1-classic-frame': { name: 'Classic Frame', desc: 'Classic frames and serif titles for formal moments.' },
   'event-2-gallery-story': { name: 'Gallery Story', desc: 'Like a gallery catalog: numbered photos with captions.' },
   'event-3-monochrome-story': { name: 'Monochrome Story', desc: 'A soft gray background with calm, dark frames.' },
-  'event-4-chapter-spread': { name: 'Chapter Spread', desc: 'A story in chapters with big numbers and full-width photos.' }
+  'event-4-chapter-spread': { name: 'Chapter Spread', desc: 'A story in chapters with big numbers and full-width photos.' },
+  'family-1-home-scrapbook': { name: 'Home Scrapbook', desc: 'Photos taped down in warm colors, like a family scrapbook.' },
+  'family-2-family-portraits': { name: 'Family Portraits', desc: 'Classic frames for family portraits and big moments.' },
+  'family-3-growing-up': { name: 'Growing Up', desc: 'Chapters with big numbers, good for the kids growing up year by year.' },
+  'family-4-letters-home': { name: 'Letters Home', desc: 'Lots of lines to write on, for notes to the family.' }
 };
 function catOf(id) { return CATS.filter(function (c) { return c.id === id; })[0]; }
 function slotCount(tplId) { return IMZ_TPL[tplId].pages.reduce(function (n, p) { return n + p.ph.length; }, 0); }
@@ -418,6 +431,14 @@ var IMZ_COPY = {
     labels: ['Notes', 'Lately', 'Snapshots', 'Today', 'Morning', 'Afternoon', 'Evening', 'Weekend', 'Little moments', 'Favorites', 'At home', 'Out and about'],
     paras: ['The days that feel ordinary are the ones we miss the most.', 'Coffee, sunlight, and nowhere to be.', 'Nothing special happened, and that was the best part.', 'These are the little moments that make a life.', 'Slow mornings, long talks, and dinners that ran late.', 'We never planned these photos; we just did not want to forget.', 'Home is wherever these people are.', 'Some days are made of small things done together.', 'A quiet record of the days in between the big ones.', 'The light in the kitchen, the cat on the sofa, the same old jokes.', 'Ordinary days, written down so they stay a little longer.', 'This page is for the everyday that we love.'],
     caps: ['Morning light', 'Coffee first', 'Lazy Sunday', 'At home', 'Kitchen table', 'Window seat', 'Little walk', 'Just us', 'Favorite corner', 'Evening', 'Home cooked', 'Weekend', 'Quiet hour', 'Simple joy', 'Out and about', 'Good day'],
+    pre: 'home'
+  },
+  family: {
+    title: 'Our Family', run: 'Family Album',
+    heads: ['Home', 'All of Us', 'Growing Up', 'Sunday Lunch', 'Family Time', 'Little Ones', 'With Grandma', 'Home Again', 'Together', 'Our Days', 'Firsts', 'Weekend Plans', 'Story Time', 'Big Hugs', 'Every Year', 'Love Lives Here'],
+    labels: ['Notes', 'At home', 'Snapshots', 'Lately', 'Firsts', 'Weekend', 'Little moments', 'Favorites', 'Together', 'Family trip', 'Growing up', 'This year'],
+    paras: ['Home is wherever these people are.', 'The kids grow up fast, so we keep a few pages of it here.', 'Noisy dinners, bedtime stories, and a lot of laughing.', 'These are the people who make an ordinary day feel like home.', 'We took these photos so the little ones can look back one day.', 'Sunday mornings, family trips, and the long drive home.', 'Every year the table gets a little louder, and we love it.', 'From first steps to first days of school.', 'Grandma’s cooking, cousins everywhere, and nobody wants to go home.', 'A record of the years we spent growing up together.', 'Some of the best days happened right here at home.', 'This page is for the family we love.'],
+    caps: ['All of us', 'Sunday lunch', 'First steps', 'Bedtime story', 'With Grandma', 'Big hug', 'Family trip', 'At home', 'Little one', 'Birthday', 'Weekend', 'Morning', 'Laughing', 'Together', 'Growing up', 'Home again'],
     pre: 'home'
   }
 };

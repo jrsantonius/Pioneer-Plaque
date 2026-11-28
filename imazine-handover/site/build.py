@@ -10,8 +10,8 @@ markup = rd('src/markup.html')
 # Hero beranda: tiga contoh Cover Majalah (foto contoh orang, dibuat AI, dirender dengan magcover.js). Tidak masuk IMG/IMZ_IMG:
 # di /imazine disajikan sebagai file terpisah dari public/imazine/img (bisa di-cache, halaman tetap ringan); di build uji
 # (imazine.html, test.html) tetap disisipkan sebagai data URI supaya bisa dibuka tanpa server.
-HERO = {k: uri('img/c-mag-%s.webp' % k) for k in ('travel', 'event', 'sol')}
-for k, v in [('logo_white', IMG['logo_white']), ('logo_black', IMG['logo_black']), ('hero_travel', HERO['travel']), ('hero_event', HERO['event']), ('hero_sol', HERO['sol'])]:
+HERO = {k: uri('img/c-mag-%s.webp' % k) for k in ('travel', 'event', 'sol', 'family')}
+for k, v in [('logo_white', IMG['logo_white']), ('logo_black', IMG['logo_black']), ('hero_travel', HERO['travel']), ('hero_event', HERO['event']), ('hero_sol', HERO['sol']), ('hero_family', HERO['family'])]:
     markup = markup.replace('{{%s}}' % k, v)
 FALLBACK = '''@font-face{font-family:"Manrope Fallback";src:local("Arial"),local("Helvetica Neue"),local("Liberation Sans");size-adjust:100.4%;ascent-override:106.2%;descent-override:29.9%;line-gap-override:0%}
 @font-face{font-family:"Instrument Serif Fallback";src:local("Georgia"),local("Times New Roman");size-adjust:77.2%;ascent-override:128.2%;descent-override:40.1%;line-gap-override:0%}
@@ -58,7 +58,7 @@ SITE_HEAD = ('<!doctype html><html lang="en" class="pay"><head><meta charset="ut
              '<meta property="og:title" content="Imazine — Printed photo albums, magazine style">'
              '<meta property="og:description" content="A customizable magazine you design yourself: pick a cover, add your photos, and get a printed A4 album of 40 pages. It takes no more than 10 minutes.">'
              '<meta property="og:image" content="https://theinnovatorsstudio.id/public/imazine/img/og-imazine.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
-             '<meta property="og:image:alt" content="Three sample Imazine magazine covers">'
+             '<meta property="og:image:alt" content="Sample Imazine magazine covers">'
              '<meta name="twitter:card" content="summary_large_image">'
              '<style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>\n')
 # Font disajikan dari server sendiri (public/imazine/fonts), bukan Google Fonts: stylesheet Google memblokir tampilan halaman
@@ -115,6 +115,9 @@ body{background:#2b2724;color:#f4ede4;font:14px/1.45 -apple-system,BlinkMacSyste
 .sheet .cv,.sheet.cover>img{width:100%;height:100%;display:block;object-fit:cover}
 .sheet.spread{width:min(431mm, calc(100vw - 32px));height:auto;max-width:none;max-height:none;aspect-ratio:431/303}
 .spread-host{display:none}
+/* mode unduh .zip (album-pack.js): tombol cetak, petunjuk, dan peringatan Safari soal cetak disembunyikan */
+body.mode-pack .act label,body.mode-pack #save,body.mode-pack #save-cover,body.mode-pack #how,body.mode-pack .safari{display:none}
+body.mode-pack .prog{color:#f4ede4;font-size:15px}
 body.mode-spread .book{display:none}
 body.mode-spread .spread-host{display:flex;justify-content:center;padding:24px 16px 80px}
 /* tablet: bar tetap di atas, tapi lebih ringkas */
@@ -164,7 +167,7 @@ ALBUM_MARKUP = '''<header class="bar" id="bar"><div class="bar-in">
 <section class="spread-host" id="spread" aria-label="File cetak sampul"></section>
 <style id="pg-size"></style>'''
 album_js = '(function(){\n"use strict";\nvar IMZ_TPL=%s;\nvar IMZ_IMG=%s;\n%s\n%s\n%s\n%s\n})();' % (
-    json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps({k: IMG[k] for k in ('bali', 'sol', 'journey')}), covers_js, rd('src/render.js'), rd('src/app-core.js'), rd('src/album-print.js'))
+    json.dumps(TPL, separators=(',', ':'), ensure_ascii=False), json.dumps({k: IMG[k] for k in ('bali', 'sol', 'journey')}), covers_js, rd('src/render.js'), rd('src/app-core.js'), rd('src/album-pack.js') + '\n' + rd('src/album-print.js'))
 album_js = album_js.replace('</script', '<\\/script')
 # render.js memakai t(); halaman album admin hanya berbahasa Inggris untuk teks bantuannya.
 album_js = album_js.replace('"use strict";\n', '"use strict";\nfunction t(s, p) { return p ? s.replace(/\\{(\\w+)\\}/g, function (m, k) { return p[k] != null ? p[k] : m; }) : s; }\n', 1)

@@ -97,11 +97,12 @@ function busy(on, done, of) {
 /* ---------- home: the first question is the theme (review 20 Nov 2026) ----------
    Each card in the markup shows the theme's sample cover; here an open spread of the theme's first layout is added,
    filled with AI sample photos (img/pv-*.webp), so the buyer sees what that kind of album looks like before choosing. */
-var HOME_COVER = { travel: 'mag-segar', event: 'mag-noir', sol: 'mag-lukis' };   /* the sample cover each card shows: picking the theme starts on it */
+var HOME_COVER = { travel: 'mag-segar', event: 'mag-noir', sol: 'mag-lukis', family: 'mag-krem' };   /* the sample cover each card shows: picking the theme starts on it */
 var PV_DIM = {
   travel: [[416, 560], [560, 364], [560, 408], [417, 560], [560, 332], [560, 376]],
   event: [[560, 391], [560, 360], [560, 454], [560, 387], [560, 180], [560, 383]],
-  sol: [[440, 560], [560, 397], [560, 376], [560, 385], [560, 375], [560, 180]]
+  sol: [[440, 560], [560, 397], [560, 376], [560, 385], [560, 375], [560, 180]],
+  family: [[313, 560], [376, 560], [376, 560], [560, 313]]
 };
 function pvPhotos(id) {
   return PV_DIM[id].map(function (d, i) { var u = MAG_SAMPLE_DIR + 'pv-' + id + '-' + (i + 1) + '.webp'; return { url: u, thumb: u, w: d[0], h: d[1], date: null, sample: true }; });
@@ -2207,12 +2208,12 @@ document.body.dataset.view = 'home'; document.body.dataset.scene = 'dark';
 drawHome();
 
 /* ---------- landing interaktif (27 Nov 2026) ----------
-   Tumpukan tiga sampul contoh di hero: berganti sendiri, miring mengikuti mouse, klik untuk ke depan / klik lagi untuk mulai.
+   Tumpukan empat sampul contoh di hero: berganti sendiri, miring mengikuti mouse, klik untuk ke depan / klik lagi untuk mulai.
    Elemen [data-reveal] muncul saat masuk layar. Kartu tema miring halus mengikuti mouse. Bilah ajakan di HP. */
 function initLanding() {
   var stack = $('#mag-stack'), stage = $('#hero-stage');
   if (!stack) return;
-  var order = ['travel', 'event', 'sol'], timer = 0, paused = false, still = calc();
+  var order = ['travel', 'event', 'sol', 'family'], timer = 0, paused = false, still = calc();
   function calc() { return calm.matches; }
   function front() { return order[0]; }
   function place() {

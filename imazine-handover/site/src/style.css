@@ -984,3 +984,11 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .tip-tx b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .tips-dots { margin-top: 0; }
 }
+
+/* ---------- tema Family (28 Nov 2026): empat tema, empat sampul contoh ----------
+   desktop: kartu tema 2 x 2 (empat kolom terlalu sempit untuk sampul + spread); hero: sampul keempat menunggu di belakang */
+@media (min-width: 1000px) { .themes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mag[data-pos="3"] { z-index: 0; --sx: 0%; --rot: 5deg; --sc: .74; filter: brightness(.62) saturate(.8); }
+.hv-chips { gap: 1.2cqw; }
+.hv-chips span { padding: 1.3cqw 2.2cqw; font-size: max(8px, 3cqw); }
+@media (max-width: 520px) { .mag-tabs button { padding: 0 11px; } }

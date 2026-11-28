@@ -464,7 +464,7 @@ var I18N_ID = {
 "Start a Slice of Life album": "Buat album Slice of Life",
 "Each card shows a sample cover and two inside pages. The people in these sample photos were made with AI. They aren’t our customers.": "Setiap kartu menampilkan contoh cover dan dua halaman dalam. Orang dalam foto contoh ini dibuat dengan AI, bukan pelanggan kami.",
 "Choose a theme and a cover": "Pilih tema dan cover",
-"Travel, Event, or Slice of Life. Then a magazine-style cover with your own photo, and one of four layouts.": "Travel, Event, atau Slice of Life. Lalu cover bergaya majalah dengan fotomu sendiri, dan satu dari empat layout.",
+"Travel, Event, Slice of Life, or Family. Then a magazine-style cover with your own photo, and one of four layouts.": "Travel, Event, Slice of Life, atau Family. Lalu cover bergaya majalah dengan fotomu sendiri, dan satu dari empat layout.",
 "Choose your cover.": "Pilih cover-mu.",
 "Five magazine-style covers for your {theme} album. The cover uses your own photo; the people in these samples were made with AI.": "Lima cover bergaya majalah untuk album {theme}-mu. Cover menggunakan fotomu sendiri; orang dalam contoh ini dibuat dengan AI.",
 "Change theme": "Ganti tema",
@@ -549,5 +549,12 @@ var I18N_ID = {
 "Double-tap a photo to pick what shows.": "Ketuk dua kali foto untuk memilih bagian yang tampil.",
 "Pinch with two fingers, or use − and +.": "Cubit dengan dua jari, atau gunakan − dan +.",
 "Ctrl + scroll, or − and +.": "Ctrl + scroll, atau − dan +.",
-"Tap any text to type in it.": "Ketuk teks mana pun untuk mengetik."
+"Tap any text to type in it.": "Ketuk teks mana pun untuk mengetik.",
+"Life at home with the people you love, from the kids growing up to time with grandparents.": "Kehidupan di rumah bersama orang-orang tersayang, dari anak-anak yang tumbuh besar sampai waktu bersama kakek dan nenek.",
+"Start a Family album": "Buat album Family",
+"Home Scrapbook": "Home Scrapbook",
+"Photos taped down in warm colors, like a family scrapbook.": "Foto ditempel dengan warna hangat, seperti scrapbook keluarga.",
+"Classic frames for family portraits and big moments.": "Bingkai klasik untuk potret keluarga dan momen besar.",
+"Chapters with big numbers, good for the kids growing up year by year.": "Dibagi per bab dengan angka besar, cocok untuk merekam anak-anak tumbuh dari tahun ke tahun.",
+"Lots of lines to write on, for notes to the family.": "Banyak baris untuk menulis, untuk catatan bagi keluarga."
 };

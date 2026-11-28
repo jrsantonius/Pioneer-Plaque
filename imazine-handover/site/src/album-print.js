@@ -217,4 +217,4 @@ window.addEventListener('afterprint', function () {
   document.title = NO + ' album';
 });
 document.body.insertAdjacentHTML('beforeend', stampDefs());
-boot();
+if (location.pathname === '/imazine/admin/unduh') packBoot(); else boot();   /* mode unduh .zip: album-pack.js */

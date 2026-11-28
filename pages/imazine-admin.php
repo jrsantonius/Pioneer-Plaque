@@ -8,6 +8,9 @@
  *   /imazine/admin/pesanan/{no}/foto/{idx}    satu foto asli
  *   /imazine/admin/pesanan/{no}/album         album jadi (sudah diedit pembeli), disimpan sebagai PDF A4
  *   /imazine/admin/pesanan/{no}/cetak/{idx}   satu foto ukuran cetak (dipakai halaman album)
+ *   /imazine/admin/unduh?no=IMZ-A,IMZ-B       unduh .zip: album PDF + data penerima per pesanan (dibuat di browser admin)
+ *   POST /imazine/admin/massal                hapus / tandai status pengiriman untuk beberapa pesanan sekaligus
+ *   POST /imazine/admin/pesanan/{no}/pengiriman   ubah status pengiriman satu pesanan
  *   POST /imazine/admin                       login   |   POST /imazine/admin/keluar   logout
  */
 require_once __DIR__ . '/../includes/imazine.php';
@@ -90,6 +93,16 @@ function imzAdminHead(string $title): void {
   .filters { display:flex; flex-wrap:wrap; gap:6px; margin:16px 0; } .filters .pill { text-decoration:none; padding:5px 12px; font-size:13px; } .filters .pill.on { background:var(--line); }
   .match-form input { padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:#0c0a09; color:var(--ink); width:150px; font-size:16px; }
   .fname { word-break:break-all; }
+  .sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  .sel { padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:#0c0a09; color:var(--ink); font-size:16px; }
+  .btn.danger { background:none; color:#ff8b7a; border:1px solid #6b2a22; }
+  .btn:disabled { opacity:.4; cursor:default; }
+  .flash { margin:0 0 12px; border-color:var(--ok); }
+  .bulk { position:sticky; top:0; z-index:3; display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 12px; margin:0 0 10px; background:var(--card); border:1px solid var(--line); border-radius:12px; }
+  .bulk.on { border-color:var(--accent); }
+  .bulk-n { font-weight:600; min-width:90px; } .bulk-st { display:flex; gap:8px; align-items:center; }
+  th.c-sel, td.c-sel { width:36px; } .c-sel input { width:20px; height:20px; accent-color:var(--accent); cursor:pointer; }
+  .ship { font-size:13px; } .ship-belum { color:var(--ink2); } .ship-dikemas { color:var(--warn); } .ship-terkirim, .ship-dalam_pengiriman { color:#8fb8ff; } .ship-diterima { color:var(--ok); }
   /* tablet */
   @media (max-width:900px) { .wrap { padding:20px 20px 56px; } .hide-m { display:none; } }
   /* ponsel */
@@ -110,7 +123,8 @@ function imzAdminHead(string $title): void {
     table.orders .c-buyer { grid-column:1 / -1; }
     table.orders .c-cover, table.orders .c-photos, table.orders .c-date { color:var(--ink2); font-size:13px; }
     table.orders .c-photos:not(:empty)::after { content:" foto"; }
-    table.orders .c-ship:not(:empty)::before { content:"Dikemas: "; color:var(--ink2); }
+    table.orders .c-sel { position:relative; z-index:1; grid-column:1 / -1; }
+    .bulk .btn, .bulk-st { flex:1 1 auto; } .bulk-st .sel { flex:1 1 auto; }
     table.orders .c-date { grid-column:1 / -1; }
   }
   @media (pointer:coarse) { .btn { padding:11px 18px; } .filters .pill { padding:7px 14px; } }
@@ -155,14 +169,39 @@ if (preg_match('#^/imazine/admin/pembayaran/(\d+)$#', $path, $pm) && $method ===
     exit;
 }
 
-// ---- dikemas: tim menandai album sudah dikemas dan siap dijemput kurir ----
-if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})/dikemas$#', $path, $dm) && $method === 'POST') {
-    $ord = imzOrder($dm[1]);
-    if ($ord && $ord['status'] === 'lunas') {
-        if (($_POST['aksi'] ?? '') === 'batal') imzDb()->prepare('UPDATE imazine_orders SET shipped_at = NULL WHERE order_no = ?')->execute([$ord['order_no']]);
-        else imzDb()->prepare('UPDATE imazine_orders SET shipped_at = ? WHERE order_no = ?')->execute([time(), $ord['order_no']]);
-    }
+// ---- dikemas (rute lama, tetap diterima) dan status pengiriman satu pesanan ----
+if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})/(dikemas|pengiriman)$#', $path, $dm) && $method === 'POST') {
+    $to = $dm[2] === 'dikemas' ? ((($_POST['aksi'] ?? '') === 'batal') ? '' : 'dikemas') : (string) ($_POST['status'] ?? '');
+    imzSetShipStatus($dm[1], $to);
     header('Location: /imazine/admin/pesanan/' . $dm[1]);
+    exit;
+}
+
+// ---- tindakan massal dari daftar pesanan (28 Nov 2026) ----
+if ($path === '/imazine/admin/massal' && $method === 'POST') {
+    $nos = array_values(array_unique(array_filter((array) ($_POST['no'] ?? []), fn($n) => is_string($n) && preg_match('/^IMZ-[A-Z0-9]{6}$/', $n))));
+    $aksi = (string) ($_POST['aksi'] ?? '');
+    $kembali = (string) ($_POST['kembali'] ?? '');
+    $back = '/imazine/admin' . (preg_match('/^[a-z_]{1,30}$/', $kembali) ? '?status=' . $kembali : '');
+    if (!$nos) $msg = 'Belum ada pesanan yang dipilih.';
+    elseif ($aksi === 'unduh') { header('Location: /imazine/admin/unduh?no=' . implode(',', $nos)); exit; }
+    elseif ($aksi === 'hapus') {
+        $gone = array_values(array_filter($nos, 'imzDeleteOrder'));
+        imzLog('admin.log', date('Y-m-d H:i:s') . ' hapus massal: ' . implode(', ', $gone));
+        $msg = count($gone) . ' pesanan dihapus.';
+    } elseif ($aksi === 'status' && array_key_exists((string) ($_POST['status'] ?? '-'), IMZ_SHIP)) {
+        $to = (string) $_POST['status'];
+        $ok = count(array_filter($nos, fn($n) => imzSetShipStatus($n, $to)));
+        $msg = $ok . ' pesanan ditandai "' . IMZ_SHIP[$to] . '".' . ($ok < count($nos) ? ' ' . (count($nos) - $ok) . ' dilewati karena belum lunas.' : '');
+    } else $msg = 'Pilih tindakan dulu.';
+    header('Location: ' . $back . (strpos($back, '?') === false ? '?' : '&') . 'pesan=' . rawurlencode($msg));
+    exit;
+}
+
+// ---- unduh .zip (album PDF + data penerima): halaman album yang sama, dalam mode unduh (src/album-pack.js) ----
+if ($path === '/imazine/admin/unduh') {
+    header('Content-Type: text/html; charset=utf-8');
+    readfile(__DIR__ . '/imazine-album.html');
     exit;
 }
 
@@ -223,6 +262,7 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
         $data = json_decode($o['order_json'], true) ?: [];
         $data['status'] = $o['status'];
         $data['paidAt'] = $o['paid_at'];
+        $data['recipient'] = imzRecipient($o);   // untuk file data penerima di zip unduhan
         $data['photoFiles'] = array_map(fn($p) => ['idx' => (int) $p['idx'], 'originalName' => $p['original_name'], 'file' => $p['stored_name'], 'mime' => $p['mime'], 'bytes' => (int) $p['bytes']], $photos);
         echo json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
@@ -380,16 +420,15 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
     </div>
     <?php endforeach; ?>
 
-    <?php if ($o['status'] === 'lunas'): ?>
-    <h2>Pengemasan</h2>
-    <form class="acts" method="post" action="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/dikemas">
-      <?php if ($o['shipped_at']): ?>
-        <span class="muted">Dikemas <?= e(date('d M Y H:i', (int) $o['shipped_at'])) ?>.</span>
-        <button class="btn ghost" type="submit" name="aksi" value="batal">Batalkan tanda dikemas</button>
-      <?php else: ?>
-        <button class="btn" type="submit">Tandai sudah dikemas</button>
-        <span class="muted">Alamat, label JNE, pickup, dan resi diurus di dashboard Mayar (menu Order).</span>
-      <?php endif; ?>
+    <?php if ($o['status'] === 'lunas'): $ss = imzShipStatus($o); ?>
+    <h2>Pengiriman</h2>
+    <form class="acts" method="post" action="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/pengiriman">
+      <label class="sr" for="ship-st">Status pengiriman</label>
+      <select id="ship-st" name="status" class="sel">
+        <?php foreach (IMZ_SHIP as $k => $lbl): ?><option value="<?= e($k) ?>"<?= $k === $ss ? ' selected' : '' ?>><?= e($lbl) ?></option><?php endforeach; ?>
+      </select>
+      <button class="btn" type="submit">Simpan status</button>
+      <span class="muted"><?= $o['shipped_at'] ? 'Dikemas ' . e(date('d M Y H:i', (int) $o['shipped_at'])) . '. ' : '' ?><?= !empty($o['ship_updated_at']) ? 'Diubah ' . e(date('d M Y H:i', (int) $o['ship_updated_at'])) . '. ' : '' ?>Label JNE, pickup, dan resi diurus di dashboard Mayar (menu Order).</span>
     </form>
     <?php endif; ?>
     <?php if (is_array($json['magCover'] ?? null)): $mc = $json['magCover']; $cr = imzCoverFile($o['order_no'], 'render'); $cp = imzCoverFile($o['order_no'], 'photo'); ?>
@@ -397,9 +436,7 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
     <div class="card" style="margin-bottom:12px">
       <p style="margin:0 0 10px"><strong>Gaya <?= e((string) ($mc['style'] ?? '')) ?></strong> &middot; <?= (int) ($mc['render']['width'] ?? 0) ?>&times;<?= (int) ($mc['render']['height'] ?? 0) ?> px<br><span class="muted">Foto asli pembeli: <?= e((string) ($mc['photoName'] ?? '')) ?> (<?= (int) ($mc['original']['width'] ?? 0) ?>&times;<?= (int) ($mc['original']['height'] ?? 0) ?> px). Render Full HD dibuat di browser pembeli dari foto yang dinaikkan skalanya, bukan AI.</span></p>
       <?php if ($cr): ?>
-        <a href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul" target="_blank"><img src="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul" alt="Sampul majalah" style="max-width:220px;border:1px solid #ccc;display:block;margin-bottom:10px"></a>
-        <a class="btn" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul?unduh=1">Unduh sampul (JPEG)</a>
-        <?php if ($cp): ?> <a class="btn" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul/foto?unduh=1">Unduh foto asli sampul</a><?php endif; ?>
+        <a href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul" target="_blank"><img src="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/sampul" alt="Sampul majalah" style="max-width:220px;border:1px solid #ccc;display:block"></a>
       <?php else: ?><span class="muted">Belum terunggah.</span><?php endif; ?>
     </div>
     <?php endif; ?>
@@ -407,9 +444,10 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
     <?php $allIn = count($photos) >= (int) $o['photo_count']; ?>
     <div class="card" style="margin-bottom:12px">
       <?php if (!empty($json['editedAt'])): ?><p class="muted" style="margin:0 0 8px">Sudah diedit tim <?= (int) ($json['editCount'] ?? 1) ?>&times;, terakhir <?= e(date('d M Y H:i', strtotime((string) $json['editedAt']))) ?>. Versi asli pembeli tersimpan di server (order-asli.json).</p><?php endif; ?>
-      <p style="margin:0 0 10px"><strong>Album jadi (PDF A4)</strong><br><span class="muted">40 halaman persis seperti yang disusun pembeli: tata letak, crop foto, dan semua teksnya. Foto dipakai dalam ukuran cetak, bukan versi kecil dari browser.</span></p>
+      <p style="margin:0 0 10px"><strong>Album jadi (.zip)</strong><br><span class="muted">Isi zip: album PDF A4 (sampul depan, 40 halaman persis seperti yang disusun pembeli, sampul belakang; 300 dpi) dan file data penerima (nomor pesanan, nama, alamat, HP, email). Dibuat di browser ini, jadi pakai Chrome atau Edge di komputer.</span></p>
       <?php if ($allIn): ?>
-        <a class="btn" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/album" target="_blank">Buka album &amp; simpan PDF</a>
+        <a class="btn" href="/imazine/admin/unduh?no=<?= e($o['order_no']) ?>" target="_blank">Unduh album (.zip)</a>
+        <a class="btn ghost" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/album" target="_blank">Lihat album</a>
         <a class="btn ghost" href="/imazine/admin/pesanan/<?= e($o['order_no']) ?>/edit">Edit album</a>
       <?php else: ?>
         <span class="muted">Belum bisa: baru <?= count($photos) ?> dari <?= (int) $o['photo_count'] ?> foto terunggah.</span>
@@ -442,7 +480,7 @@ if (preg_match('#^/imazine/admin/pesanan/(IMZ-[A-Z0-9]{6})(?:/(data\.json|foto\.
 imzPurgeStale();
 $filter = $_GET['status'] ?? '';
 $allowed = ['draf', 'menunggu_bayar', 'lunas', 'perlu_dikemas'];
-$sql = 'SELECT order_no, status, name, email, cover_name, qty, total, photo_count, created_at, paid_at, shipped_at, (order_json LIKE \'%"test":true%\') AS is_test FROM imazine_orders';
+$sql = 'SELECT order_no, status, name, email, cover_name, qty, total, photo_count, created_at, paid_at, shipped_at, ship_status, (order_json LIKE \'%"test":true%\') AS is_test FROM imazine_orders';
 $args = [];
 if ($filter === 'perlu_dikemas') { $sql .= " WHERE status = 'lunas' AND shipped_at IS NULL"; }
 elseif (in_array($filter, $allowed, true)) { $sql .= ' WHERE status = ?'; $args[] = $filter; }
@@ -478,19 +516,51 @@ if ($need): ?>
   <a class="pill <?= $cls ?><?= $filter === $k ? ' on' : '' ?>" href="/imazine/admin<?= $k !== '' ? '?status=' . $k : '' ?>"<?= $filter === $k ? ' aria-current="page"' : '' ?>><?= $lbl ?></a>
 <?php endforeach; ?>
 </nav>
+<?php if (isset($_GET['pesan']) && is_string($_GET['pesan'])): ?><p class="card flash" role="status"><?= e(mb_substr($_GET['pesan'], 0, 200)) ?></p><?php endif; ?>
 <?php if (!$rows): ?><p class="muted">Belum ada pesanan.</p><?php else: ?>
-<table class="orders"><thead><tr><th>Nomor</th><th>Status</th><th>Pembeli</th><th class="hide-s">Sampul</th><th class="hide-s">Foto</th><th>Total</th><th>Dikemas</th><th class="hide-s hide-m">Dibuat</th></tr></thead><tbody>
+<form id="bulk" class="bulk" method="post" action="/imazine/admin/massal">
+  <input type="hidden" name="kembali" value="<?= e($filter) ?>">
+  <span class="bulk-n" id="bulk-n">0 dipilih</span>
+  <button class="btn ghost" type="submit" name="aksi" value="unduh" data-need>Unduh (.zip)</button>
+  <span class="bulk-st"><label class="sr" for="bulk-status">Tandai status</label>
+    <select id="bulk-status" name="status" class="sel"><option value="-">Tandai status&hellip;</option><?php foreach (IMZ_SHIP as $k => $lbl): ?><option value="<?= e($k) ?>"><?= e($lbl) ?></option><?php endforeach; ?></select>
+    <button class="btn ghost" type="submit" name="aksi" value="status" data-need>Tandai</button></span>
+  <button class="btn danger" type="submit" name="aksi" value="hapus" data-need>Hapus</button>
+</form>
+<table class="orders"><thead><tr><th class="c-sel"><input type="checkbox" id="sel-all" aria-label="Pilih semua pesanan di daftar ini"></th><th>Nomor</th><th>Status</th><th>Pembeli</th><th class="hide-s">Sampul</th><th class="hide-s">Foto</th><th>Total</th><th>Pengiriman</th><th class="hide-s hide-m">Dibuat</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?>
   <tr>
+    <td class="c-sel"><input type="checkbox" name="no[]" value="<?= e($r['order_no']) ?>" form="bulk" aria-label="Pilih <?= e($r['order_no']) ?>"></td>
     <td class="c-no"><a href="/imazine/admin/pesanan/<?= e($r['order_no']) ?>"><?= e($r['order_no']) ?></a></td>
     <td class="c-st"><span class="pill <?= e($r['status']) ?>"><?= e($r['status']) ?></span><?php if ($r['is_test']): ?> <span class="pill uji" title="Memakai foto contoh. Jangan dicetak.">UJI</span><?php endif; ?></td>
     <td class="c-buyer fname"><?= e($r['name'] !== '' ? $r['name'] : $r['email']) ?></td>
     <td class="c-cover hide-s"><?= e((string) $r['cover_name']) ?></td>
     <td class="c-photos hide-s"><?= (int) $r['photo_count'] ?></td>
     <td class="c-total"><?= e(imzRupiah((int) $r['total'])) ?></td>
-    <td class="c-ship"><?= $r['status'] === 'lunas' ? ($r['shipped_at'] ? e(date('d M H:i', (int) $r['shipped_at'])) : '<span class="muted">belum</span>') : '' ?></td>
+    <td class="c-ship"><?php if ($r['status'] === 'lunas'): $ss = imzShipStatus($r); ?><span class="ship ship-<?= e($ss ?: 'belum') ?>"><?= e(IMZ_SHIP[$ss]) ?></span><?php endif; ?></td>
     <td class="c-date hide-s hide-m muted"><?= e($r['created_at']) ?></td>
   </tr>
 <?php endforeach; ?>
 </tbody></table>
+<script>
+(function () {
+  var form = document.getElementById('bulk'), all = document.getElementById('sel-all'), n = document.getElementById('bulk-n');
+  var boxes = [].slice.call(document.querySelectorAll('input[name="no[]"]'));
+  function sync() {
+    var k = boxes.filter(function (b) { return b.checked; }).length;
+    n.textContent = k + ' dipilih'; form.classList.toggle('on', k > 0);
+    all.checked = k > 0 && k === boxes.length; all.indeterminate = k > 0 && k < boxes.length;
+    [].forEach.call(form.querySelectorAll('[data-need]'), function (b) { b.disabled = !k; });
+  }
+  all.addEventListener('change', function () { boxes.forEach(function (b) { b.checked = all.checked; }); sync(); });
+  boxes.forEach(function (b) { b.addEventListener('change', sync); });
+  form.addEventListener('submit', function (e) {
+    var act = e.submitter ? e.submitter.value : '', picked = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+    if (act === 'unduh') { e.preventDefault(); window.open('/imazine/admin/unduh?no=' + picked.join(','), '_blank'); return; }
+    if (act === 'status' && document.getElementById('bulk-status').value === '-') { e.preventDefault(); alert('Pilih status dulu.'); return; }
+    if (act === 'hapus' && !confirm('Hapus ' + picked.length + ' pesanan beserta semua fotonya?\n\n' + picked.join(', ') + '\n\nTidak bisa dibatalkan.')) e.preventDefault();
+  });
+  sync();
+})();
+</script>
 <?php endif; imzAdminFoot();
