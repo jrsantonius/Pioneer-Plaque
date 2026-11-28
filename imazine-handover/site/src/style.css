@@ -887,3 +887,100 @@ body[data-view="studio"] .toast, body[data-view="preview"] .toast { bottom: auto
   .mag, .m-cta, .theme, .how li .how-v { transition: none; }
   .faq details[open] p { animation: none; }
 }
+
+/* ---------- HP (28 Nov 2026, audit tampilan HP) ----------
+   1. tombol utama studio dan preview pindah ke bilah bawah (terjangkau jempol), seperti tombol lanjut di langkah 1-2
+   2. HP posisi lanskap: halaman di kiri, panel alat di kanan
+   3. area ketuk minimal 44 px, petunjuk studio lebih besar dan tidak terpotong, input 16 px supaya iPhone tidak zoom sendiri */
+.mag-tabs button { min-height: 44px; }
+.faq p { max-width: 56ch; }
+.sub, .faq p, .faq summary, .how p, .theme-body p, .price-spec dd, .setup-pick, .tip-tx span, .st-note p, .mag-sub, .mag-note, .howto li { text-wrap: pretty; }
+.tips-dots { display: none; }
+@media (pointer: coarse) {
+  .tx-font { height: 44px; font-size: 16px; }
+  .tx-tg { min-width: 44px; height: 44px; }
+  .tx-size .btn-icon { width: 44px; height: 44px; min-height: 44px; }
+  .ph-bar .btn { min-height: 44px; }
+  .ph-bar .btn-icon { width: 44px; height: 44px; }
+}
+@media (pointer: coarse) and (max-width: 560px) { .ph-bar .btn-quiet { width: 44px; } }
+@media (max-width: 999px) {
+  .studio { --add-h: 56px; }
+  .add-bar .add-btn { min-height: 44px; font-size: 14px; }
+  .tips { gap: 0; padding: 2px 0 0; scroll-padding-inline: 0; }
+  .tip-c { flex: 0 0 100%; box-sizing: border-box; padding: 8px 12px; box-shadow: none; }
+  .tip-tx b { font-size: 13px; line-height: 1.3; }
+  .tip-tx span { font-size: 13px; line-height: 1.4; }
+  .tips-dots { display: flex; justify-content: center; gap: 6px; margin-top: -2px; }
+  .tips-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); transition: background-color var(--d-1) var(--ease), transform var(--d-1) var(--ease); }
+  .tips-dots i.is-on { background: var(--ink-2); transform: scale(1.2); }
+  .st-stage { grid-template-rows: minmax(0, 1fr) auto auto auto; }
+}
+
+/* HP potret: bilah atas hanya kembali + judul; jumlah foto dan "See preview" di bilah bawah */
+@media (max-width: 760px) {
+  .studio { --panel-h: clamp(240px, 36dvh, 380px); grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "back title title" "stage stage stage" "panel panel panel" "prog prog cta"; }
+  .studio::before, .studio::after { content: ""; background: var(--sheet); }
+  .studio::before { grid-area: 1 / 1 / 2 / -1; border-bottom: 1px solid var(--line); }
+  .studio::after { grid-area: 4 / 1 / 5 / -1; border-top: 1px solid var(--line); }
+  .st-bar { display: contents; }
+  .st-bar > * { position: relative; z-index: 1; align-self: center; }
+  .st-bar .back { grid-area: back; margin: 4px 0 4px calc(var(--gut-l) - 12px); }
+  .st-title { grid-area: title; margin: 0; padding: 8px var(--gut-r) 8px 2px; }
+  .st-prog { grid-area: prog; min-width: 0; max-width: 220px; padding: 10px 12px max(10px, env(safe-area-inset-bottom, 0px)) var(--gut-l); }
+  #st-preview { grid-area: cta; min-height: 48px; padding: 0 20px; margin: 8px var(--gut-r) max(8px, env(safe-area-inset-bottom, 0px)) 0; }
+  .st-panel { padding-bottom: 0; }
+  .st-pages { height: calc(var(--panel-h) - 49px - var(--add-h)); margin-bottom: 0; }
+
+  .preview { grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "back cover edit" "stage stage stage" "notes notes notes" "cta cta cta"; }
+  .preview::before { content: ""; grid-area: 1 / 1 / 2 / -1; border-bottom: 1px solid var(--line-dark); }
+  .pv-bar { display: contents; }
+  .pv-bar > * { position: relative; z-index: 1; align-self: center; }
+  .pv-bar #pv-back { grid-area: back; margin: 6px 6px 6px calc(var(--gut-l) - 12px); }
+  .pv-bar #pv-cover { grid-area: cover; margin: 6px 4px; min-width: 0; justify-content: center; }
+  .pv-bar #pv-edit { grid-area: edit; margin: 6px var(--gut-r) 6px 4px; min-width: 0; justify-content: center; }
+  .pv-bar #pv-next { grid-area: cta; min-height: 48px; margin: 8px var(--gut-r) max(10px, env(safe-area-inset-bottom, 0px)) var(--gut-l); }
+  .pv-stage { grid-area: stage; }
+  .pv-notes { grid-area: notes; padding-bottom: 10px; }
+}
+
+/* HP lanskap: tinggi layar pendek, jadi halaman album di kiri dan panel alat di kanan; petunjuk disembunyikan supaya halaman cukup besar */
+@media (max-width: 999px) and (orientation: landscape) and (max-height: 560px) {
+  .studio { --add-h: 52px; grid-template-columns: minmax(0, 1fr) clamp(270px, 40vw, 360px); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "bar bar" "stage panel"; }
+  .studio::before, .studio::after { content: none; }
+  .st-bar { display: flex; min-height: 48px; padding-block: 2px; }
+  .st-bar > * { z-index: auto; }
+  .st-bar .back, .st-title, .st-prog, #st-preview { grid-area: auto; margin: 0; padding-block: 0; }
+  .st-title { margin-right: auto; padding-inline: 0; }
+  .st-prog { padding-inline: 0; max-width: none; }
+  #st-preview { min-height: 44px; padding: 0 16px; }
+  .st-name { font-size: 17px; }
+  .st-stage { grid-template-rows: minmax(0, 1fr) auto; padding: 6px max(8px, env(safe-area-inset-left, 0px)) 4px; gap: 4px; }
+  .tips, .tips-dots { display: none; }
+  .st-panel { height: auto; border-top: 0; border-left: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px); }
+  .add-bar { height: var(--add-h); padding: 4px 12px; }
+  .st-pages { height: calc(100% - 49px - var(--add-h)); margin-bottom: 0; }
+  .pane { padding: 8px 12px 10px; }
+
+  .preview { grid-template-columns: none; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: none; }
+  .preview::before { content: none; }
+  .pv-bar { display: flex; flex-wrap: nowrap; min-height: 48px; padding-block: 2px; }
+  .pv-bar > * { z-index: auto; }
+  .pv-bar #pv-back, .pv-bar #pv-cover, .pv-bar #pv-edit, .pv-bar #pv-next { grid-area: auto; margin: 0; flex: none; }
+  .pv-bar #pv-next { order: 3; margin-left: auto; min-height: 44px; }
+  .pv-bar #pv-cover, .pv-bar #pv-edit { order: 2; }
+  .pv-stage { grid-area: auto; padding: 6px 12px 4px; }
+  .pv-notes { grid-area: auto; padding-block: 6px max(6px, env(safe-area-inset-bottom, 0px)); }
+}
+/* HP potret: kartu petunjuk satu baris (ikon menggantikan judul) supaya halaman album tetap besar setelah ada bilah bawah */
+@media (max-width: 760px) {
+  .studio { --panel-h: clamp(232px, 35dvh, 380px); }
+  .st-title { padding-block: 6px; }
+  .st-stage { gap: 3px; padding-bottom: 2px; }
+  .tip-c { padding: 5px 10px; gap: 8px; min-height: 40px; }
+  .tip-i { width: 26px; height: 26px; }
+  .tip-tx b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .tips-dots { margin-top: 0; }
+}

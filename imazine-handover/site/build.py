@@ -45,7 +45,7 @@ open(os.path.join(R, 'dist/test.html'), 'w', encoding='utf-8').write(skeleton + 
 print('page bytes', len(page.encode()), 'css', len(css), 'js', len(js))
 # Production: dokumen lengkap untuk /imazine (public/imazine/index.html). Tanpa doctype dan meta viewport, browser
 # merender dalam quirks mode selebar 980px dan semua aturan @media untuk HP/tablet tidak pernah terpakai.
-SITE_HEAD = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+SITE_HEAD = ('<!doctype html><html lang="en" class="pay"><head><meta charset="utf-8">'
              '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
              '<meta name="description" content="A printed A4 photo album, 40 pages. Pick a magazine-style cover, upload your photos, and we lay them out into an album. Available in English and Bahasa Indonesia.">'
              '<meta name="theme-color" content="#000000">'

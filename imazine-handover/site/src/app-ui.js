@@ -165,9 +165,8 @@ function drawSetup() {
   if (S.step === 'sampul') {
     body.appendChild(coverShelf());
     foot.hidden = false;
-    drawCoverPick();
     $('#setup-next').textContent = S.coverFrom ? 'Use this cover' : 'Continue to layouts';
-    $('#setup-next').disabled = false;
+    drawCoverPick();
   } else if (S.step === 'gaya') {
     var grid = h('div', 'styles'); grid.setAttribute('role', 'radiogroup'); grid.setAttribute('aria-label', 'Layout');
     cat.layouts.forEach(function (id, i) {
@@ -282,7 +281,15 @@ function coverArt(cat, cv, label, size) {
   else { el.removeAttribute('role'); el.removeAttribute('aria-label'); el.setAttribute('aria-hidden', 'true'); }
   return el;
 }
-function drawCoverPick() { var p = $('#setup-pick'); p.textContent = ''; p.appendChild(document.createTextNode('Cover: ')); p.appendChild(h('b', null, curCover().name)); p.appendChild(document.createTextNode(' · ' + catOf(S.cat).name)); }
+/* Langkah sampul (28 Nov 2026, audit HP): sama seperti langkah layout, tombol lanjut pudar dengan keterangan sampai foto sampul diunggah. */
+function coverNeedsPhoto() { return !!(curCover().mag && !S.mag.photo && !ALLOW_SAMPLE); }   /* mode uji: foto contoh boleh dipakai */
+function drawCoverPick() {
+  if (S.step !== 'sampul') return;
+  var p = $('#setup-pick'), need = coverNeedsPhoto(); p.textContent = '';
+  if (need) p.textContent = 'Upload a cover photo to continue.';
+  else { p.appendChild(document.createTextNode('Cover: ')); p.appendChild(h('b', null, curCover().name)); p.appendChild(document.createTextNode(' · ' + catOf(S.cat).name)); }
+  $('#setup-next').disabled = need;
+}
 function drawHeroCover(hero, cat, cv) {
   hero.textContent = '';
   var art = h('div', 'cvp-art'); art.appendChild(coverArt(cat, cv, 'Cover ' + cv.name, 720)); hero.appendChild(art);
@@ -322,7 +329,7 @@ function magEditor(cat) {
   var fitBtn = h('button', 'btn btn-sm btn-line', 'Automatic position'); fitBtn.type = 'button';
   bar.appendChild(pick); bar.appendChild(zm); bar.appendChild(fitBtn); el.appendChild(bar);
   var inp = h('input'); inp.type = 'file'; inp.accept = 'image/*,.heic,.heif'; inp.hidden = true; inp.setAttribute('aria-label', 'Photo for the magazine cover'); el.appendChild(inp);
-  var how = howTo([['photo', 'Drag the photo to move it.'], ['zoom', 'Pinch, use Ctrl + scroll, or press − and + to zoom the photo in or out.'], ['move', 'Drag any text to move it left, right, up, or down.'], ['text', 'Tap or click a text to change what it says.']]);
+  var how = howTo([['photo', 'Drag the photo to move it.'], ['zoom', coarse.matches ? 'Pinch with two fingers, or press − and +, to zoom the photo in or out.' : 'Use Ctrl + scroll, or press − and +, to zoom the photo in or out.'], ['move', 'Drag any text to move it left, right, up, or down.'], ['text', coarse.matches ? 'Tap a text to change what it says.' : 'Click a text to change what it says.']]);
   var howMast = h('li', null, 'Tap the big title to put it behind or in front of the person.'); how.appendChild(howMast);
   el.appendChild(how);
   var info = h('p', 'mag-info'); info.setAttribute('role', 'status'); info.setAttribute('aria-live', 'polite'); el.appendChild(info);
@@ -373,6 +380,14 @@ function magEditor(cat) {
   function layoutHits() {
     hitsEl.textContent = '';
     var seen = {};
+    if (coarse.matches) {   /* HP: bantalan ketuk minimal 44 px di belakang tiap teks (ukuran dihitung CSS, ikut berubah saat layar diputar) */
+      last.hits.forEach(function (b) {
+        if (b.k !== 'mast' && b.k !== 'logo' && !fieldOf(b.k)) return;
+        var pad = h('span', 'mag-pad'); pad.dataset.k = b.k; if (b.g) pad.dataset.g = b.g; pad.setAttribute('aria-hidden', 'true');
+        pad.style.setProperty('--x', pctX(b.x)); pad.style.setProperty('--y', pctY(b.y)); pad.style.setProperty('--w', pctX(b.w)); pad.style.setProperty('--h', pctY(b.h));
+        hitsEl.appendChild(pad);
+      });
+    }
     last.hits.forEach(function (b) {
       var f = b.k === 'mast' ? [b.k, 'Title'] : b.k === 'logo' ? [b.k, 'Small logo'] : fieldOf(b.k); if (!f) return;
       var bt = h('button', 'mag-hit' + (sel === b.k || moving && moving === b.g ? ' is-sel' : '')); bt.type = 'button'; bt.dataset.k = b.k; if (b.g) bt.dataset.g = b.g;
@@ -480,7 +495,7 @@ function magEditor(cat) {
       return;
     }
     dragged = false;
-    var hb = e.target.closest('.mag-hit');
+    var hb = e.target.closest('.mag-hit, .mag-pad');
     if (hb && hb.dataset.g) { var m0 = moves()[hb.dataset.g] || [0, 0]; drag = { x: e.clientX, y: e.clientY, x0: e.clientX, y0: e.clientY, id: e.pointerId, g: hb.dataset.g, m0: m0.slice() }; return; }
     drag = S.mag.photo ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
   });
@@ -510,7 +525,7 @@ function magEditor(cat) {
   stage.addEventListener('click', function (e) {
     if (dragged) { dragged = false; return; }
     if (e.target.closest('.mag-add')) return inp.click();
-    var b = e.target.closest('.mag-hit');
+    var b = e.target.closest('.mag-hit, .mag-pad');
     if (b) return openText(b.dataset.k);
     if (!S.mag.photo) return inp.click();   /* belum ada foto sendiri: ketuk foto contoh = unggah */
     if (!pop.hidden) closePop(false);
@@ -577,6 +592,7 @@ function magEditor(cat) {
     segNote.hidden = !S.mag.photo || cvr.mag === 'krem' || ok && !segNote.textContent;
     if (S.mag.photo && !ok && cvr.mag !== 'krem' && !segNote.textContent) { segNote.textContent = 'The title-behind-person effect needs an internet connection and couldn’t load. The title still shows over the photo.'; segNote.hidden = false; }
     howMast.hidden = !canMast();
+    drawCoverPick();
     note.textContent = cvr.mag === 'lukis' ? 'The painted look is made on your device with an oil-paint filter, not AI. Results depend on the photo.' : '';
     note.hidden = !note.textContent;
     paint(false);
@@ -814,6 +830,20 @@ function enterStudio(rebuild, tail) {
 /* HP/tablet: "Tap", komputer: "Click" */
 var coarse = window.matchMedia('(pointer: coarse)');
 function clickWord() { return coarse.matches ? 'Tap' : 'Click'; }
+/* Petunjuk studio (28 Nov 2026, audit HP): teks untuk layar sentuh dan untuk mouse dibedakan. Di HP kartu petunjuk tampil satu per satu (geser) dengan titik penanda. */
+(function () {
+  var sw = coarse.matches ? { 'Double-click a photo to pick what shows.': 'Double-tap a photo to pick what shows.', 'Pinch, Ctrl + scroll, or − and +.': 'Pinch with two fingers, or use − and +.', 'Click any text to type in it.': 'Tap any text to type in it.' }
+                          : { 'Pinch, Ctrl + scroll, or − and +.': 'Ctrl + scroll, or − and +.' };
+  $$('.tips .tip-tx > span').forEach(function (el) { var k = el.textContent.trim(); if (sw[k]) el.textContent = sw[k]; });
+  var ul = $('.tips'); if (!ul) return;
+  var cards = $$('.tip-c', ul), dots = h('div', 'tips-dots'); dots.setAttribute('aria-hidden', 'true');
+  cards.forEach(function () { dots.appendChild(h('i')); });
+  ul.parentNode.insertBefore(dots, ul.nextSibling);
+  var raf = 0;
+  function mark() { raf = 0; var w = ul.clientWidth || 1, i = Math.min(Math.round(ul.scrollLeft / w), cards.length - 1); $$('i', dots).forEach(function (d, j) { d.classList.toggle('is-on', j === i); }); }
+  ul.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(mark); }, { passive: true });
+  mark();
+})();
 function viewPages(p) {                       /* which pages share the screen with page p */
   if (!wide.matches) return [p];
   if (p === 0) return [null, 0];
@@ -1884,7 +1914,7 @@ $('#pv-book').addEventListener('pointerup', function (e) {
 /* Foto contoh boleh dipesan? Selalu di localhost; di situs asli hanya saat server mengizinkan (IMAZINE_ALLOW_SAMPLES, untuk uji).
    Pesanan seperti itu ditandai UJI di admin. */
 var ALLOW_SAMPLE = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-var PAY = false;   /* pembayaran Mayar; bawaan mati (album langsung dikirim ke tim), nilai asli dari /api/imazine/config */
+var PAY = true;   /* pembayaran Mayar; bawaan hidup seperti di server live (28 Nov 2026: cegah konten bergeser saat config tiba), nilai asli dari /api/imazine/config */
 function applyPay() {
   document.documentElement.classList.toggle('pay', PAY);
   $('#h-mail').textContent = PAY ? 'We fill it into the payment form for you, so you only type it once.' : 'So we can send you updates about your album.';
@@ -1913,7 +1943,7 @@ function loadConfig() {
     if (typeof c.priceNormal === 'number') PRICE_NORMAL = c.priceNormal;
     drawPrices();
     if (typeof c.payment === 'boolean' && c.payment !== PAY) { PAY = c.payment; applyPay(); }
-    if (c.samples === true) { ALLOW_SAMPLE = true; if (S.view === 'studio' && S.album) drawProgress(); }
+    if (c.samples === true) { ALLOW_SAMPLE = true; if (S.view === 'studio' && S.album) drawProgress(); drawCoverPick(); }
     if (c.minPhotos > 0) MIN_PHOTOS = c.minPhotos;
     if (c.maxPhotos >= MIN_PHOTOS) MAX_PHOTOS = c.maxPhotos;
     if (c.payMinutes > 0) { PAY_MIN = c.payMinutes; var pm = $('#pay-min'); if (pm) pm.textContent = payMinText(); }
@@ -1926,7 +1956,7 @@ function drawCheckout() {
   var cv = curCover(), co = $('#co-cover'); co.textContent = ''; co.appendChild(coverArt(cat, cv, 'Cover ' + cv.name));
   $('#co-name').textContent = cv.name;
   $('#co-spec-a').textContent = _t('{name} layout', { name: LAYOUTS[S.layout].name });
-  $('#co-spec-b').textContent = _t('A4 · 20 sheets, 40 pages · Art Paper 260 gsm · Soft cover · Binding · {n} photos', { n: t.filled });
+  $('#co-spec-b').textContent = _t('A4 · 20 sheets, 40 pages · Art Paper 190 gsm · Soft cover · Binding · {n} photos', { n: t.filled });
   $('#qty-n').textContent = S.qty; $('#qty-dn').disabled = S.qty <= 1; $('#qty-up').disabled = S.qty >= 20;
   var st = $('#sum-total'); st.textContent = '';
   if (PRICE_NORMAL > PRICE) { var was = document.createElement('s'); was.className = 'sum-was'; was.textContent = rupiah(PRICE_NORMAL * S.qty); st.appendChild(was); st.appendChild(document.createTextNode(' ')); }
@@ -2120,7 +2150,7 @@ $('#co-form').addEventListener('submit', function (e) {
       email: $('#f-mail').value.trim(), note: $('#f-note').value.trim(),
       name: PAY ? undefined : $('#f-name').value.trim(), whatsapp: PAY ? undefined : $('#f-wa').value.trim()
     },
-    product: { size: 'A4', pages: 40, paper: 'Art Paper 260 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
+    product: { size: 'A4', pages: 40, paper: 'Art Paper 190 gsm', cover: 'Soft Cover', binding: 'Jilid binding', qty: S.qty },
     category: cat.id, cover: curCover().id, coverName: curCover().name, template: S.layout,
     magCover: curCover().mag ? magOrderInfo(cat) : undefined,
     photos: used.map(function (old, i) { var p = S.photos[old]; return { id: i, file: p.name, width: p.w, height: p.h, date: p.date ? p.date.toISOString().slice(0, 10) : null, sample: p.sample ? true : undefined }; }),

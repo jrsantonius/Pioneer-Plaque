@@ -179,7 +179,7 @@ function imzSlipHtml(array $o): string {
       <p class="slip-f"><strong><?= e($sship['name']) ?></strong><?= $sship['phone'] !== '' ? ' &middot; ' . e($sship['phone']) : '' ?><br><?= e($sship['address']) ?><br><?= e($sship['courier']) ?> <?= e($sship['service']) ?></p>
       <?php endif; ?>
       <p class="slip-k">Isi paket</p>
-      <p class="slip-f">Album foto cetak A4, 20 lembar (40 halaman bolak-balik), Art Paper 260 gsm, soft cover, jilid binding &times; <?= (int) $o['qty'] ?><br>Sampul: <?= e((string) $o['cover_name']) ?></p>
+      <p class="slip-f">Album foto cetak A4, 20 lembar (40 halaman bolak-balik), Art Paper 190 gsm, soft cover, jilid binding &times; <?= (int) $o['qty'] ?><br>Sampul: <?= e((string) $o['cover_name']) ?></p>
       <?php if ($o['note']): ?><p class="slip-k">Catatan pembeli</p><p class="slip-f"><?= e($o['note']) ?></p><?php endif; ?>
       <p class="slip-w">Sebelum paket ditutup, pastikan nama dan alamat di label JNE (dari Mayar) sama dengan di atas.</p>
     </section><?php

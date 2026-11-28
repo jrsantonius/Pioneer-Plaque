@@ -35,3 +35,8 @@
 .mag-bar > [hidden] { display: none; }
 .mag-zoom { display: inline-flex; align-items: center; gap: 4px; padding: 2px; border-radius: 999px; background: var(--surface-2); }
 .mag-zv { min-width: 46px; text-align: center; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+/* HP (28 Nov 2026, audit): area ketuk teks sampul minimal 44 px; tombol teks asli tetap di atas bantalan */
+.mag-pad { position: absolute; cursor: move; -webkit-tap-highlight-color: transparent;
+  left: calc(var(--x) + var(--w) / 2 - max(44px, var(--w) + 12px) / 2); width: max(44px, var(--w) + 12px);
+  top: calc(var(--y) + var(--h) / 2 - max(44px, var(--h)) / 2); height: max(44px, var(--h)); }
+.mag-ed h3 { letter-spacing: -.02em; }
